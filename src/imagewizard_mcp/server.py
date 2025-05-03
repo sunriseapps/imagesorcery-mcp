@@ -8,34 +8,34 @@ from mcp.types import Tool, TextContent, ImageContent, EmbeddedResource
 from pydantic import BaseModel
 
 
-class BasicTools(str, Enum):
+class Tools(str, Enum):
     ALWAYS_TRUE = "always_true"
 
 
-class BasicResult(BaseModel):
+class Result(BaseModel):
     result: bool
     message: str
 
 
-class BasicServer:
-    def always_true(self) -> BasicResult:
+class WizardServer:
+    def always_true(self) -> Result:
         """A simple tool that always returns true"""
-        return BasicResult(
+        return Result(
             result=True,
             message="This tool always returns true",
         )
 
 
 async def serve() -> None:
-    server = Server("mcp-basic")
-    basic_server = BasicServer()
+    server = Server("imagewizard-mcp")
+    wizard_server = WizardServer()
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
         """List available tools."""
         return [
             Tool(
-                name=BasicTools.ALWAYS_TRUE.value,
+                name=Tools.ALWAYS_TRUE.value,
                 description="A simple tool that always returns true",
                 inputSchema={
                     "type": "object",
@@ -52,8 +52,8 @@ async def serve() -> None:
         """Handle tool calls."""
         try:
             match name:
-                case BasicTools.ALWAYS_TRUE.value:
-                    result = basic_server.always_true()
+                case Tools.ALWAYS_TRUE.value:
+                    result = wizard_server.always_true()
                 case _:
                     raise ValueError(f"Unknown tool: {name}")
 

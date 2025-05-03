@@ -2,12 +2,12 @@ from .server import serve
 
 
 def main():
-    """Basic MCP Server - Simple tool that always returns True"""
+    """ImageWizard MCP - Image manipulation functionality for MCP"""
     import argparse
     import asyncio
 
     parser = argparse.ArgumentParser(
-        description="A basic MCP server with a simple tool"
+        description="give a model the ability to manipulate images"
     )
 
     args = parser.parse_args()
