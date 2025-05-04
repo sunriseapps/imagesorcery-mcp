@@ -19,10 +19,8 @@ dependencies = [
     "mcp>=1.0.0",
     "pydantic>=2.0.0",
 ]
-
 [project.scripts]
-mcp-server-basic = "mcp_server_basic:main"
-
+imagewizard-mcp = "imagewizard_mcp:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

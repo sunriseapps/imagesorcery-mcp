@@ -9,27 +9,18 @@ A simple Model Context Protocol server that provides a single tool that always r
 
 ## Installation
 
-### Using uv (recommended)
-
-When using [`uv`](https://docs.astral.sh/uv/) no specific installation is needed. We will
-use [`uvx`](https://docs.astral.sh/uv/guides/tools/) to directly run *mcp-server-basic*.
-
-```bash
-uvx mcp-server-basic
-```
-
 ### Using PIP
 
-Alternatively you can install `mcp-server-basic` via pip:
+You can install `imagewizard-mcp` via pip:
 
 ```bash
-pip install mcp-server-basic
+pip install imagewizard-mcp
 ```
 
 After installation, you can run it as a script using:
 
 ```bash
-python -m mcp_server_basic
+python -m imagewizard-mcp
 ```
 
 ## Configuration
@@ -44,8 +35,8 @@ Add to your Claude settings:
 ```json
 "mcpServers": {
     "basic": {
-      "command": "/path/to/mcp_server_basic/venv/bin/python",
-      "args": ["-m", "mcp_server_basic"],
+      "command": "/path/to/imagewizard-mcp/venv/bin/imagewizard-mcp",
+      "args": [],
       "env": {},
       "disabled": false,
       "autoApprove": []
