@@ -70,6 +70,86 @@ Response:
 2. "Check if the basic server is working correctly"
 3. "Verify the connection to the basic MCP server"
 
+## Contributing
+
+We welcome contributions to imagewizard-mcp! Here's how you can help:
+
+### Development Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/titulus/imagewizard-mcp.git
+```
+
+2. Create and activate a virtual environment:
+```bash
+cd imagewizard-mcp
+python -m venv venv
+```
+
+On Windows:
+```bash
+venv\Scripts\activate
+```
+
+On macOS/Linux:
+```bash
+source venv/bin/activate
+```
+
+3. Install development dependencies:
+```bash
+pip install -e ".[dev]"
+```
+
+### Making Changes
+
+1. Create a new branch for your feature:
+```bash
+git checkout -b feature-name
+```
+
+2. Make your changes
+3. Run tests to ensure everything works:
+```bash
+pytest
+```
+
+4. Format your code:
+```bash
+black .
+```
+
+### Submitting Changes
+
+1. Push your changes to your fork:
+```bash
+git push origin feature-name
+```
+
+2. Create a pull request with a description of your changes
+
+### Code Style
+
+- Follow PEP 8 style guidelines
+- Use type hints where appropriate
+- Include docstrings for all functions, classes, and methods
+
+### Reporting Issues
+
+If you find a bug or have a feature request:
+
+1. Check existing issues first
+2. Create a new issue with a detailed description and steps to reproduce
+
+### Adding New Tools
+
+When adding new tools to the MCP server:
+
+1. Implement the tool in the appropriate module
+2. Add comprehensive tests for the new tool
+3. Update documentation to include the new tool and its usage
+
 ## License
 
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
