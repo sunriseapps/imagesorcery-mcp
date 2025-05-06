@@ -9,18 +9,14 @@ A simple Model Context Protocol server that provides a single tool that always r
 
 ## Installation
 
-### Using PIP
-
-You can install `imagewizard-mcp` via pip:
+### Using repo installation
 
 ```bash
-pip install imagewizard-mcp
-```
-
-After installation, you can run it as a script using:
-
-```bash
-python -m imagewizard-mcp
+git clone https://github.com/titulus/imagewizard-mcp.git
+cd imagewizard-mcp
+python -m venv venv
+source venv/bin/activate
+pip install -e ".[dev]"
 ```
 
 ## Configuration
@@ -35,8 +31,8 @@ Add to your Claude settings:
 ```json
 "mcpServers": {
     "basic": {
-      "command": "/path/to/imagewizard-mcp/venv/bin/imagewizard-mcp",
-      "args": [],
+      "command": "/path/to/imagewizard-mcp/venv/bin/python",
+      "args": ["/path/to/imagewizard-mcp/src/imagewizard_mcp/server.py"],
       "env": {},
       "disabled": false,
       "autoApprove": []
