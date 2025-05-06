@@ -9,7 +9,6 @@ mcp = FastMCP("imagewizard-mcp")
 
 @mcp.tool()
 def always_true() -> Result:
-    """A simple tool that always returns true"""
     return Result(
         result=True,
         message="This tool always returns true",

@@ -106,15 +106,15 @@ git checkout -b feature-name
 ```
 
 2. Make your changes
+  2.1 Write your code
+  2.2 Update README.md with your changes
+  2.3 Write tests for your code
+
 3. Run tests to ensure everything works:
 ```bash
 pytest
 ```
-
-4. Format your code:
-```bash
-black .
-```
+If it's not - fix the code and tests. It is strictly required to have all new code be covered with documentation and tests and all tests passing.
 
 ### Submitting Changes
 
@@ -129,7 +129,7 @@ git push origin feature-name
 
 - Follow PEP 8 style guidelines
 - Use type hints where appropriate
-- Include docstrings for all functions, classes, and methods
+- Use pydantic for data validation and serialization
 
 ### Reporting Issues
 
