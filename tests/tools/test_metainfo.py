@@ -83,7 +83,8 @@ class TestMetainfoToolDefinition:
             required_params = ["input_path"]
             for param in required_params:
                 assert param in metainfo_tool.inputSchema["properties"], (
-                    f"get_metainfo tool should have a '{param}' property in its inputSchema"
+                    f"get_metainfo tool should have a '{param}' property "
+                    f"in its inputSchema"
                 )
 
             # Check parameter types

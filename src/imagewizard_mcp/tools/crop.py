@@ -33,7 +33,11 @@ def register_tool(mcp: FastMCP):
         output_path: Annotated[
             str,
             Field(
-                description="Path to save the output image. If not provided, will use input filename with '_cropped' suffix."
+                description=(
+                    "Path to save the output image. "
+                    "If not provided, will use input filename "
+                    "with '_cropped' suffix."
+                )
             ),
         ] = None,
     ) -> str:

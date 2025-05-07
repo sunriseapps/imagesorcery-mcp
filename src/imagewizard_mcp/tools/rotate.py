@@ -14,13 +14,19 @@ def register_tool(mcp: FastMCP):
         angle: Annotated[
             float,
             Field(
-                description="Angle of rotation in degrees (positive for counterclockwise)"
+                description=(
+                    "Angle of rotation in degrees (positive for counterclockwise)"
+                )
             ),
         ],
         output_path: Annotated[
             str,
             Field(
-                description="Path to save the output image. If not provided, will use input filename with '_rotated' suffix."
+                description=(
+                    "Path to save the output image. "
+                    "If not provided, will use input filename "
+                    "with '_rotated' suffix."
+                )
             ),
         ] = None,
     ) -> str:

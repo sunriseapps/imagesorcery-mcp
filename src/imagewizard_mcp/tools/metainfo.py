@@ -16,7 +16,8 @@ def register_tool(mcp: FastMCP):
         Get metadata information about an image file.
 
         Returns:
-            Dictionary containing metadata about the image (size, dimensions, format, etc.)
+            Dictionary containing metadata about the image (size, dimensions,
+            format, etc.)
         """
         # Check if input file exists
         if not os.path.exists(input_path):

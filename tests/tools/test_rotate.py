@@ -134,34 +134,44 @@ class TestRotateToolExecution:
             rotated_img = cv2.imread(output_path)
 
             # For a 90-degree rotation, width and height should be approximately swapped
-            # Due to the rotate_bound function, dimensions might be slightly larger to fit the entire rotated image
-            # We check that the original width is close to the rotated height and vice versa
+            # Due to the rotate_bound function, dimensions might be slightly larger
+            # to fit the entire rotated image
+            # We check that the original width is close to the rotated height
+            # and vice versa
             original_height, original_width = original_img.shape[:2]
             rotated_height, rotated_width = rotated_img.shape[:2]
 
             # Allow for a small margin of error due to padding in rotate_bound
             margin = 5
             assert abs(original_width - rotated_height) <= margin, (
-                "Original width should approximately match rotated height for 90-degree rotation"
+                "Original width should approximately match rotated height "
+                "for 90-degree rotation"
             )
             assert abs(original_height - rotated_width) <= margin, (
-                "Original height should approximately match rotated width for 90-degree rotation"
+                "Original height should approximately match rotated width "
+                "for 90-degree rotation"
             )
 
             # Verify the rotation by checking the position of the red rectangle
-            # In the original image, the red rectangle is in the top-left corner (10,10) to (40,40)
-            # After 90-degree counterclockwise rotation, it should be in the top-right area
+            # In the original image, the red rectangle is in the top-left corner
+            # (10,10) to (40,40)
+            # After 90-degree counterclockwise rotation, it should be in the
+            # top-right area
 
             # Check if the top-right area has red pixels (BGR format)
-            # For 90-degree counterclockwise rotation, the red rectangle should move from top-left to top-right
+            # For 90-degree counterclockwise rotation, the red rectangle should move
+            # from top-left to top-right
             # We need to check the appropriate coordinates in the rotated image
 
-            # The exact coordinates depend on how rotate_bound handles the rotation and padding
-            # For a 90-degree counterclockwise rotation of a 100x200 image with a red rectangle at (10,10)-(40,40),
+            # The exact coordinates depend on how rotate_bound handles the rotation
+            # and padding
+            # For a 90-degree counterclockwise rotation of a 100x200 image with a
+            # red rectangle at (10,10)-(40,40),
             # the red rectangle should be approximately in the top-right area
 
             # Check if there are red pixels in the expected area after rotation
-            # For 90-degree counterclockwise rotation, the top-left (10,10) would move to approximately (10, rotated_width-40)
+            # For 90-degree counterclockwise rotation, the top-left (10,10) would move
+            # to approximately (10, rotated_width-40)
             has_red_pixels = False
             for y in range(10, 40):
                 for x in range(rotated_width - 40, rotated_width - 10):
@@ -177,7 +187,8 @@ class TestRotateToolExecution:
                     break
 
             assert has_red_pixels, (
-                "Red rectangle should be in the top-right area after 90-degree counterclockwise rotation"
+                "Red rectangle should be in the top-right area after "
+                "90-degree counterclockwise rotation"
             )
 
     @pytest.mark.asyncio
@@ -188,7 +199,7 @@ class TestRotateToolExecution:
         output_path = str(tmp_path / "output_clockwise.png")
 
         async with Client(mcp_server) as client:
-            result = await client.call_tool(
+            await client.call_tool(
                 "rotate",
                 {
                     "input_path": test_image_path,
@@ -204,7 +215,8 @@ class TestRotateToolExecution:
             rotated_img = cv2.imread(output_path)
             rotated_height, rotated_width = rotated_img.shape[:2]
 
-            # For -90-degree (clockwise) rotation, the red rectangle should move from top-left to bottom-left
+            # For -90-degree (clockwise) rotation, the red rectangle should move
+            # from top-left to bottom-left
             # Check if there are red pixels in the expected area after rotation
             has_red_pixels = False
             for y in range(rotated_height - 40, rotated_height - 10):
@@ -221,7 +233,8 @@ class TestRotateToolExecution:
                     break
 
             assert has_red_pixels, (
-                "Red rectangle should be in the bottom-left area after 90-degree clockwise rotation"
+                "Red rectangle should be in the bottom-left area after "
+                "90-degree clockwise rotation"
             )
 
     @pytest.mark.asyncio

@@ -74,6 +74,7 @@ class TestEchoToolExecution:
         async with Client(mcp_server) as client:
             test_text = "Hello, MCP!"
             result = await client.call_tool("echo", {"text": test_text})
-            # The tool returns a list of results, we expect one result with the echoed text
+            # The tool returns a list of results,
+            # we expect one result with the echoed text
             assert len(result) == 1
             assert result[0].text == test_text

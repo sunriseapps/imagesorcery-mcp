@@ -13,31 +13,50 @@ def register_tool(mcp: FastMCP):
         width: Annotated[
             Optional[int],
             Field(
-                description="Target width in pixels. If None, will be calculated based on height and preserve aspect ratio"
+                description=(
+                    "Target width in pixels. "
+                    "If None, will be calculated based on height "
+                    "and preserve aspect ratio"
+                )
             ),
         ] = None,
         height: Annotated[
             Optional[int],
             Field(
-                description="Target height in pixels. If None, will be calculated based on width and preserve aspect ratio"
+                description=(
+                    "Target height in pixels. "
+                    "If None, will be calculated based on width "
+                    "and preserve aspect ratio"
+                )
             ),
         ] = None,
         scale_factor: Annotated[
             Optional[float],
             Field(
-                description="Scale factor to resize the image (e.g., 0.5 for half size, 2.0 for double size). Overrides width and height if provided"
+                description=(
+                    "Scale factor to resize the image "
+                    "(e.g., 0.5 for half size, 2.0 for double size). "
+                    "Overrides width and height if provided"
+                )
             ),
         ] = None,
         interpolation: Annotated[
             str,
             Field(
-                description="Interpolation method: 'nearest', 'linear', 'area', 'cubic', 'lanczos'"
+                description=(
+                    "Interpolation method: 'nearest', 'linear', 'area', "
+                    "'cubic', 'lanczos'"
+                )
             ),
         ] = "linear",
         output_path: Annotated[
             str,
             Field(
-                description="Path to save the output image. If not provided, will use input filename with '_resized' suffix."
+                description=(
+                    "Path to save the output image. "
+                    "If not provided, will use input filename "
+                    "with '_resized' suffix."
+                )
             ),
         ] = None,
     ) -> str:
@@ -80,7 +99,8 @@ def register_tool(mcp: FastMCP):
 
         if interpolation not in interpolation_methods:
             raise ValueError(
-                f"Invalid interpolation method. Choose from: {', '.join(interpolation_methods.keys())}"
+                f"Invalid interpolation method. Choose from: "
+                f"{', '.join(interpolation_methods.keys())}"
             )
 
         interp = interpolation_methods[interpolation]

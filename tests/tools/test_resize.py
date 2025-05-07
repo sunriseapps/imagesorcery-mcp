@@ -118,13 +118,15 @@ class TestResizeToolDefinition:
                     f"resize tool should have a '{param}' property in its inputSchema"
                 )
 
-                # Check parameter types - accounting for optional parameters that use anyOf structure
+                # Check parameter types - accounting for optional parameters
+                # that use anyOf structure
                 assert (
                     resize_tool.inputSchema["properties"]["input_path"].get("type")
                     == "string"
                 ), "input_path should be of type string"
 
-                # For optional integer parameters, check if they have the correct type in anyOf structure
+                # For optional integer parameters, check if they have the correct type
+                # in anyOf structure
                 for param in ["width", "height"]:
                     param_schema = resize_tool.inputSchema["properties"][param]
                     if "anyOf" in param_schema:
@@ -236,7 +238,8 @@ class TestResizeToolExecution:
     async def test_resize_with_width_only_smaller(
         self, mcp_server: FastMCP, test_image_path, tmp_path
     ):
-        """Tests the resize tool execution with only width specified (smaller, preserving aspect ratio)."""
+        """Tests the resize tool execution with only width specified
+        (smaller, preserving aspect ratio)."""
         output_path = str(tmp_path / "output_width_only_smaller.png")
 
         async with Client(mcp_server) as client:
@@ -267,7 +270,8 @@ class TestResizeToolExecution:
     async def test_resize_with_width_only_larger(
         self, mcp_server: FastMCP, test_image_path, tmp_path
     ):
-        """Tests the resize tool execution with only width specified (larger, preserving aspect ratio)."""
+        """Tests the resize tool execution with only width specified
+        (larger, preserving aspect ratio)."""
         output_path = str(tmp_path / "output_width_only_larger.png")
 
         async with Client(mcp_server) as client:
@@ -298,7 +302,8 @@ class TestResizeToolExecution:
     async def test_resize_with_height_only_smaller(
         self, mcp_server: FastMCP, test_image_path, tmp_path
     ):
-        """Tests the resize tool execution with only height specified (smaller, preserving aspect ratio)."""
+        """Tests the resize tool execution with only height specified
+        (smaller, preserving aspect ratio)."""
         output_path = str(tmp_path / "output_height_only_smaller.png")
 
         async with Client(mcp_server) as client:
@@ -329,7 +334,8 @@ class TestResizeToolExecution:
     async def test_resize_with_height_only_larger(
         self, mcp_server: FastMCP, test_image_path, tmp_path
     ):
-        """Tests the resize tool execution with only height specified (larger, preserving aspect ratio)."""
+        """Tests the resize tool execution with only height specified
+        (larger, preserving aspect ratio)."""
         output_path = str(tmp_path / "output_height_only_larger.png")
 
         async with Client(mcp_server) as client:
