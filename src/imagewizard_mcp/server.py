@@ -1,11 +1,11 @@
 from fastmcp import FastMCP
-from imagewizard_mcp.tools.always_true import always_true as always_true_impl
+from imagewizard_mcp.tools.always_true import register_tool as register_always_true_tool
+from imagewizard_mcp.tools.echo import register_tool as register_echo_tool
 
 mcp = FastMCP("imagewizard-mcp")
 
-@mcp.tool()
-def always_true() -> bool:
-    return always_true_impl()
+register_always_true_tool(mcp)
+register_echo_tool(mcp)
 
 if __name__ == "__main__":
     mcp.run()

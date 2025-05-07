@@ -2,10 +2,12 @@
 
 A simple Model Context Protocol server that provides a single tool that always returns true. This is a basic boilerplate for MCP servers.
 
-## Available Tool
+## Available Tools
 
 - `always_true` - A tool that always returns true.
   - No required arguments
+- `echo` - A tool that echoes the input text.
+  - Required arguments: `text` (string)
 
 ## Installation
 
@@ -130,6 +132,7 @@ git push origin feature-name
 - Follow PEP 8 style guidelines
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
+- Register tools using `register_tool` functions within their respective modules.
 
 ### Reporting Issues
 
