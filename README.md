@@ -34,6 +34,14 @@ A simple Model Context Protocol server that provides tools for basic operations.
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_resized' suffix
   - Returns: string (path to the resized image)
 
+- `rotate` - Rotates an image using imutils.rotate_bound function.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+    - `angle` (float): Angle of rotation in degrees (positive for counterclockwise)
+  - Optional arguments:
+    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_rotated' suffix
+  - Returns: string (path to the rotated image)
+
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
     - `input_path` (string): Path to the input image
@@ -47,38 +55,6 @@ A simple Model Context Protocol server that provides tools for basic operations.
     - creation and modification timestamps
     - additional image-specific information
 
-Call the get_metainfo tool:
-```json
-{
-  "name": "get_metainfo",
-  "arguments": {
-    "input_path": "/path/to/image.png"
-  }
-}
-```
-
-Response:
-```json
-{
-  "result": {
-    "filename": "image.png",
-    "path": "/path/to/image.png",
-    "size_bytes": 12345,
-    "size_kb": 12.06,
-    "size_mb": 0.01,
-    "dimensions": {
-      "width": 800,
-      "height": 600,
-      "aspect_ratio": 1.33
-    },
-    "format": "PNG",
-    "color_mode": "RGB",
-    "created_at": "2023-06-15T10:30:45",
-    "modified_at": "2023-06-15T10:30:45",
-    "additional_info": {}
-  }
-}
-```
 
 ## Installation
 
@@ -192,6 +168,59 @@ Response:
 }
 ```
 
+Call the rotate tool:
+```json
+{
+  "name": "rotate",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "angle": 90,
+    "output_path": "/path/to/output.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "/path/to/output.png"
+}
+```
+
+
+Call the get_metainfo tool:
+```json
+{
+  "name": "get_metainfo",
+  "arguments": {
+    "input_path": "/path/to/image.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": {
+    "filename": "image.png",
+    "path": "/path/to/image.png",
+    "size_bytes": 12345,
+    "size_kb": 12.06,
+    "size_mb": 0.01,
+    "dimensions": {
+      "width": 800,
+      "height": 600,
+      "aspect_ratio": 1.33
+    },
+    "format": "PNG",
+    "color_mode": "RGB",
+    "created_at": "2023-06-15T10:30:45",
+    "modified_at": "2023-06-15T10:30:45",
+    "additional_info": {}
+  }
+}
+```
+
 ## Examples of Questions for Claude
 
 1. "Can you use the always_true tool?"
@@ -201,6 +230,7 @@ Response:
 5. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
 6. "Get metadata information about my image 'photo.jpg'"
 7. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
+8. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
 
 ## Contributing
 
