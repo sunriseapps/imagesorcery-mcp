@@ -1,9 +1,8 @@
-from .server import serve
+from .server import mcp
 
 
 def main():
-    import asyncio
-    asyncio.run(serve())
+    mcp.run()
 
 
 if __name__ == "__main__":
