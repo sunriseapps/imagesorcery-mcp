@@ -271,10 +271,13 @@ pip install -e ".[dev]"
 git checkout -b feature-name
 ```
 
-2. Make your changes
-  2.1 Write your code
-  2.2 Update README.md with your changes
-  2.3 Write tests for your code
+2. Make your changes.
+  2.0 Read `pyproject.toml`.
+  2.1 Write your code in new and existing files.
+      If new dependencies needed, update `pyproject.toml` and install them.
+  2.2 Update `README.md` with your changes.
+  2.3 Write tests for your code.
+      See existing tests for examples (e.g. `tests/tools/test_crop.py`).
 
 3. Run tests to ensure everything works:
 ```bash
