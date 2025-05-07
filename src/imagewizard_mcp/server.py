@@ -1,15 +1,12 @@
 from fastmcp import FastMCP
 
-from imagewizard_mcp.tools import metainfo
-from imagewizard_mcp.tools.crop import register_tool as register_crop_tool
-from imagewizard_mcp.tools.resize import register_tool as register_resize_tool
-from imagewizard_mcp.tools.rotate import register_tool as register_rotate_tool
+from imagewizard_mcp.tools import crop, metainfo, resize, rotate
 
 mcp = FastMCP(name="imagewizard-mcp", instructions="A simple MCP server.")
 
-register_crop_tool(mcp)
-register_resize_tool(mcp)
-register_rotate_tool(mcp)
+crop.register_tool(mcp)
+resize.register_tool(mcp)
+rotate.register_tool(mcp)
 metainfo.register_tool(mcp)
 
 if __name__ == "__main__":
