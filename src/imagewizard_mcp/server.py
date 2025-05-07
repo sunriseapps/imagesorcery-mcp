@@ -2,7 +2,10 @@ from fastmcp import FastMCP
 from imagewizard_mcp.tools.always_true import register_tool as register_always_true_tool
 from imagewizard_mcp.tools.echo import register_tool as register_echo_tool
 
-mcp = FastMCP("imagewizard-mcp")
+mcp = FastMCP(
+    name="imagewizard-mcp",
+    instructions="A simple MCP server."
+)
 
 register_always_true_tool(mcp)
 register_echo_tool(mcp)
