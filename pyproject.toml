@@ -31,12 +31,7 @@ dev = ["pytest", "ruff"]
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
 [tool.ruff]
-# Enable flake8-bugbear (`B`) rules.
-select = ["E", "F", "B", "I"]
-ignore = []
-
 # Same as Black.
 line-length = 88
 indent-width = 4
@@ -71,3 +66,8 @@ exclude = [
     "node_modules",
     "venv",
 ]
+
+[tool.ruff.lint]
+# Enable flake8-bugbear (`B`) rules.
+select = ["E", "F", "B", "I"]
+ignore = []

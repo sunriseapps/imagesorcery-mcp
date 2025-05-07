@@ -20,33 +20,49 @@ class TestAlwaysTrueToolDefinition:
             tools = await client.list_tools()
             # Verify that tools list is not empty
             assert tools, "Tools list should not be empty"
-            
+
             # Check if always_true is in the list of tools
             tool_names = [tool.name for tool in tools]
-            assert "always_true" in tool_names, "always_true tool should be in the list of available tools"
+            assert "always_true" in tool_names, (
+                "always_true tool should be in the list of available tools"
+            )
 
     @pytest.mark.asyncio
     async def test_always_true_description(self, mcp_server: FastMCP):
         """Tests that always_true tool has the correct description."""
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
-            always_true_tool = next((tool for tool in tools if tool.name == "always_true"), None)
-            
+            always_true_tool = next(
+                (tool for tool in tools if tool.name == "always_true"), None
+            )
+
             # Check description
-            assert always_true_tool.description, "always_true tool should have a description"
-            assert "always returns true" in always_true_tool.description.lower(), "Description should mention that it always returns true"
+            assert always_true_tool.description, (
+                "always_true tool should have a description"
+            )
+            assert "always returns true" in always_true_tool.description.lower(), (
+                "Description should mention that it always returns true"
+            )
 
     @pytest.mark.asyncio
     async def test_always_true_parameters(self, mcp_server: FastMCP):
         """Tests that always_true tool has the correct parameter structure."""
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
-            always_true_tool = next((tool for tool in tools if tool.name == "always_true"), None)
-            
+            always_true_tool = next(
+                (tool for tool in tools if tool.name == "always_true"), None
+            )
+
             # Check input schema - this tool should have an empty properties object
-            assert hasattr(always_true_tool, 'inputSchema'), "always_true tool should have an inputSchema"
-            assert 'properties' in always_true_tool.inputSchema, "inputSchema should have properties field"
-            assert not always_true_tool.inputSchema['properties'], "always_true tool should not have any properties in its inputSchema"
+            assert hasattr(always_true_tool, "inputSchema"), (
+                "always_true tool should have an inputSchema"
+            )
+            assert "properties" in always_true_tool.inputSchema, (
+                "inputSchema should have properties field"
+            )
+            assert not always_true_tool.inputSchema["properties"], (
+                "always_true tool should not have any properties in its inputSchema"
+            )
 
 
 class TestAlwaysTrueToolExecution:

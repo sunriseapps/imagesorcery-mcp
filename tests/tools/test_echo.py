@@ -20,10 +20,12 @@ class TestEchoToolDefinition:
             tools = await client.list_tools()
             # Verify that tools list is not empty
             assert tools, "Tools list should not be empty"
-            
+
             # Check if echo is in the list of tools
             tool_names = [tool.name for tool in tools]
-            assert "echo" in tool_names, "echo tool should be in the list of available tools"
+            assert "echo" in tool_names, (
+                "echo tool should be in the list of available tools"
+            )
 
     @pytest.mark.asyncio
     async def test_echo_description(self, mcp_server: FastMCP):
@@ -31,10 +33,12 @@ class TestEchoToolDefinition:
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
             echo_tool = next((tool for tool in tools if tool.name == "echo"), None)
-            
+
             # Check description
             assert echo_tool.description, "echo tool should have a description"
-            assert "echo" in echo_tool.description.lower(), "Description should mention that it echoes text"
+            assert "echo" in echo_tool.description.lower(), (
+                "Description should mention that it echoes text"
+            )
 
     @pytest.mark.asyncio
     async def test_echo_parameters(self, mcp_server: FastMCP):
@@ -42,15 +46,23 @@ class TestEchoToolDefinition:
         async with Client(mcp_server) as client:
             tools = await client.list_tools()
             echo_tool = next((tool for tool in tools if tool.name == "echo"), None)
-            
+
             # Check input schema
-            assert hasattr(echo_tool, 'inputSchema'), "echo tool should have an inputSchema"
-            assert 'properties' in echo_tool.inputSchema, "inputSchema should have properties field"
-            assert 'text' in echo_tool.inputSchema['properties'], "echo tool should have a 'text' property in its inputSchema"
-            
+            assert hasattr(echo_tool, "inputSchema"), (
+                "echo tool should have an inputSchema"
+            )
+            assert "properties" in echo_tool.inputSchema, (
+                "inputSchema should have properties field"
+            )
+            assert "text" in echo_tool.inputSchema["properties"], (
+                "echo tool should have a 'text' property in its inputSchema"
+            )
+
             # Check that text property is of type string
-            text_property = echo_tool.inputSchema['properties']['text']
-            assert text_property.get('type') == 'string', "text property should be of type string"
+            text_property = echo_tool.inputSchema["properties"]["text"]
+            assert text_property.get("type") == "string", (
+                "text property should be of type string"
+            )
 
 
 class TestEchoToolExecution:
