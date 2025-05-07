@@ -12,17 +12,16 @@ A simple Model Context Protocol server that provides tools for basic operations.
   - Required arguments: `text` (string) - The text to echo
   - Returns: string (the same text that was provided)
 
-- `crop` - Crops an image based on provided coordinates.
+- `crop` - Crops an image using OpenCV's NumPy slicing approach.
   - Required arguments:
     - `input_path` (string): Path to the input image
-    - `left` (integer): Left coordinate of crop box
-    - `top` (integer): Top coordinate of crop box
-    - `right` (integer): Right coordinate of crop box
-    - `bottom` (integer): Bottom coordinate of crop box
+    - `y_start` (integer): Starting y-coordinate (row) for the crop region (top)
+    - `y_end` (integer): Ending y-coordinate (row) for the crop region (bottom)
+    - `x_start` (integer): Starting x-coordinate (column) for the crop region (left)
+    - `x_end` (integer): Ending x-coordinate (column) for the crop region (right)
   - Optional arguments:
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
   - Returns: string (path to the cropped image)
-
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
     - `input_path` (string): Path to the input image

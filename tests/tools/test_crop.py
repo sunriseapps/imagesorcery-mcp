@@ -1,6 +1,7 @@
 import os
 import pytest
-from PIL import Image
+import cv2
+import numpy as np
 from fastmcp import FastMCP, Client
 
 from imagewizard_mcp.server import mcp as image_wizard_mcp_server
@@ -14,18 +15,17 @@ def mcp_server():
 def test_image_path(tmp_path):
     """Create a test image for cropping."""
     img_path = tmp_path / "test_image.png"
-    img = Image.new('RGB', (200, 200), color='white')
+    # Create a white image
+    img = np.ones((200, 200, 3), dtype=np.uint8) * 255
     
     # Draw some colored areas to verify cropping
-    for x in range(50, 100):
-        for y in range(50, 100):
-            img.putpixel((x, y), (255, 0, 0))  # Red square
+    # Red square (50,50) to (100,100)
+    img[50:100, 50:100] = [0, 0, 255]  # OpenCV uses BGR
             
-    for x in range(100, 150):
-        for y in range(100, 150):
-            img.putpixel((x, y), (0, 0, 255))  # Blue square
+    # Blue square (100,100) to (150,150)
+    img[100:150, 100:150] = [255, 0, 0]  # OpenCV uses BGR
     
-    img.save(img_path)
+    cv2.imwrite(str(img_path), img)
     return str(img_path)
 
 
@@ -67,7 +67,7 @@ class TestCropToolDefinition:
             assert 'properties' in crop_tool.inputSchema, "inputSchema should have properties field"
             
             # Check required parameters
-            required_params = ["input_path", "left", "top", "right", "bottom"]
+            required_params = ["input_path", "x_start", "y_start", "x_end", "y_end"]
             for param in required_params:
                 assert param in crop_tool.inputSchema['properties'], f"crop tool should have a '{param}' property in its inputSchema"
             
@@ -76,10 +76,10 @@ class TestCropToolDefinition:
             
             # Check parameter types
             assert crop_tool.inputSchema['properties']['input_path'].get('type') == 'string', "input_path should be of type string"
-            assert crop_tool.inputSchema['properties']['left'].get('type') == 'integer', "left should be of type integer"
-            assert crop_tool.inputSchema['properties']['top'].get('type') == 'integer', "top should be of type integer"
-            assert crop_tool.inputSchema['properties']['right'].get('type') == 'integer', "right should be of type integer"
-            assert crop_tool.inputSchema['properties']['bottom'].get('type') == 'integer', "bottom should be of type integer"
+            assert crop_tool.inputSchema['properties']['x_start'].get('type') == 'integer', "x_start should be of type integer"
+            assert crop_tool.inputSchema['properties']['y_start'].get('type') == 'integer', "y_start should be of type integer"
+            assert crop_tool.inputSchema['properties']['x_end'].get('type') == 'integer', "x_end should be of type integer"
+            assert crop_tool.inputSchema['properties']['y_end'].get('type') == 'integer', "y_end should be of type integer"
             assert crop_tool.inputSchema['properties']['output_path'].get('type') == 'string', "output_path should be of type string"
 
 
@@ -94,10 +94,10 @@ class TestCropToolExecution:
         async with Client(mcp_server) as client:
             result = await client.call_tool("crop", {
                 "input_path": test_image_path,
-                "left": 50,
-                "top": 50,
-                "right": 100,
-                "bottom": 100,
+                "x_start": 50,
+                "y_start": 50,
+                "x_end": 100,
+                "y_end": 100,
                 "output_path": output_path
             })
             
@@ -109,10 +109,10 @@ class TestCropToolExecution:
             assert os.path.exists(output_path)
             
             # Verify the cropped image dimensions
-            with Image.open(output_path) as img:
-                assert img.size == (50, 50)
-                # Check if the red square was properly cropped
-                assert img.getpixel((0, 0)) == (255, 0, 0)
+            img = cv2.imread(output_path)
+            assert img.shape[:2] == (50, 50)  # height, width
+            # Check if the red square was properly cropped (BGR in OpenCV)
+            assert all(img[0, 0] == [0, 0, 255])  # Red in BGR
 
     @pytest.mark.asyncio
     async def test_crop_default_output_path(self, mcp_server: FastMCP, test_image_path):
@@ -120,10 +120,10 @@ class TestCropToolExecution:
         async with Client(mcp_server) as client:
             result = await client.call_tool("crop", {
                 "input_path": test_image_path,
-                "left": 50,
-                "top": 50,
-                "right": 100,
-                "bottom": 100
+                "x_start": 50,
+                "y_start": 50,
+                "x_end": 100,
+                "y_end": 100
             })
             
             # Check that the tool returned a result
