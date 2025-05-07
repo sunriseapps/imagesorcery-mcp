@@ -8,6 +8,15 @@ A simple Model Context Protocol server that provides a single tool that always r
   - No required arguments
 - `echo` - A tool that echoes the input text.
   - Required arguments: `text` (string)
+- `crop` - A tool that crops an image based on provided coordinates.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+    - `left` (integer): Left coordinate of crop box
+    - `top` (integer): Top coordinate of crop box
+    - `right` (integer): Right coordinate of crop box
+    - `bottom` (integer): Bottom coordinate of crop box
+  - Optional arguments:
+    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
 
 ## Installation
 
@@ -62,11 +71,35 @@ Response:
 }
 ```
 
+Call the crop tool:
+```json
+{
+  "name": "crop",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "left": 10,
+    "top": 20,
+    "right": 100,
+    "bottom": 150,
+    "output_path": "/path/to/output.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "/path/to/output.png",
+  "message": "Image successfully cropped and saved to /path/to/output.png"
+}
+```
+
 ## Examples of Questions for Claude
 
 1. "Can you use the always_true tool?"
 2. "Check if the basic server is working correctly"
 3. "Verify the connection to the basic MCP server"
+4. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
 
 ## Contributing
 
