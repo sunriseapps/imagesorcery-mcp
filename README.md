@@ -295,22 +295,19 @@ git checkout -b feature-name
 
 2. Make your changes.
   2.0 Read `pyproject.toml`.
+      Make attention to sections: `[tool.ruff]`, `[tool.ruff.lint]`, `[project.optional-dependencies]` and `[project]dependencies`.
   2.1 Write your code in new and existing files.
       If new dependencies needed, update `pyproject.toml` and install them.
   2.2 Update `README.md` with your changes.
   2.3 Write tests for your code.
       See existing tests for examples (e.g. `tests/tools/test_crop.py`).
 
-3. Run tests to ensure everything works:
+3. Run tests and linter to ensure everything works:
 ```bash
 pytest
-```
-If it's not - fix the code and tests. It is strictly required to have all new code be covered with documentation and tests and all tests passing.
-
-4. Run the linter to ensure code quality:
-```bash
 ruff check .
 ```
+If it fails - fix the code and tests. It is strictly required to have all new code to comply with the code style and pass all tests.
 
 ### Submitting Changes
 
