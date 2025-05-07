@@ -1,18 +1,11 @@
 from fastmcp import FastMCP
-from pydantic import BaseModel
-
-class Result(BaseModel):
-    result: bool
-    message: str
+from imagewizard_mcp.tools.always_true import always_true as always_true_impl, Result
 
 mcp = FastMCP("imagewizard-mcp")
 
 @mcp.tool()
 def always_true() -> Result:
-    return Result(
-        result=True,
-        message="This tool always returns true",
-    )
+    return always_true_impl()
 
 if __name__ == "__main__":
     mcp.run()
