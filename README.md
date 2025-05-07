@@ -4,13 +4,6 @@ A simple Model Context Protocol server that provides tools for basic operations.
 
 ## Available Tools
 
-- `always_true` - This tool always returns true.
-  - No required arguments
-  - Returns: boolean (always true)
-
-- `echo` - Echoes the input text.
-  - Required arguments: `text` (string) - The text to echo
-  - Returns: string (the same text that was provided)
 
 - `crop` - Crops an image using OpenCV's NumPy slicing approach.
   - Required arguments:
@@ -93,37 +86,6 @@ Add to your Claude settings:
 
 ## Example Interactions
 
-Call the always_true tool:
-```json
-{
-  "name": "always_true",
-  "arguments": {}
-}
-```
-
-Response:
-```json
-{
-  "result": true
-}
-```
-
-Call the echo tool:
-```json
-{
-  "name": "echo",
-  "arguments": {
-    "text": "Hello, world!"
-  }
-}
-```
-
-Response:
-```json
-{
-  "result": "Hello, world!"
-}
-```
 
 Call the crop tool:
 ```json
@@ -223,14 +185,10 @@ Response:
 
 ## Examples of Questions for Claude
 
-1. "Can you use the always_true tool?"
-2. "Check if the basic server is working correctly"
-3. "Verify the connection to the basic MCP server"
-4. "Echo back the text 'Hello from MCP server'"
-5. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
-6. "Get metadata information about my image 'photo.jpg'"
-7. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
-8. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
+1. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
+2. "Get metadata information about my image 'photo.jpg'"
+3. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
+4. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
 
 ## Contributing
 
