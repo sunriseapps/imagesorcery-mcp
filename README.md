@@ -22,6 +22,18 @@ A simple Model Context Protocol server that provides tools for basic operations.
   - Optional arguments:
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
   - Returns: string (path to the cropped image)
+
+- `resize` - Resizes an image using OpenCV.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+  - Optional arguments:
+    - `width` (integer): Target width in pixels. If None, will be calculated based on height and preserve aspect ratio
+    - `height` (integer): Target height in pixels. If None, will be calculated based on width and preserve aspect ratio
+    - `scale_factor` (float): Scale factor to resize the image (e.g., 0.5 for half size, 2.0 for double size). Overrides width and height if provided
+    - `interpolation` (string): Interpolation method: 'nearest', 'linear', 'area', 'cubic', 'lanczos'. Default is 'linear'
+    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_resized' suffix
+  - Returns: string (path to the resized image)
+
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
     - `input_path` (string): Path to the input image
@@ -159,6 +171,27 @@ Response:
 }
 ```
 
+Call the resize tool:
+```json
+{
+  "name": "resize",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "width": 800,
+    "height": 600,
+    "interpolation": "linear",
+    "output_path": "/path/to/output.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "/path/to/output.png"
+}
+```
+
 ## Examples of Questions for Claude
 
 1. "Can you use the always_true tool?"
@@ -167,6 +200,7 @@ Response:
 4. "Echo back the text 'Hello from MCP server'"
 5. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
 6. "Get metadata information about my image 'photo.jpg'"
+7. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
 
 ## Contributing
 
