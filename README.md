@@ -1,6 +1,6 @@
-# Basic MCP Server
+# ImageWizard MCP Server
 
-A simple Model Context Protocol server that provides tools for basic operations. This is a basic boilerplate for MCP servers.
+An MCP server providing tools for image processing operations.
 
 ## Available Tools
 

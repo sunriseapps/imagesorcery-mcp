@@ -2,7 +2,7 @@ from fastmcp import FastMCP
 
 from imagewizard_mcp.tools import crop, metainfo, resize, rotate
 
-mcp = FastMCP(name="imagewizard-mcp", instructions="A simple MCP server.")
+mcp = FastMCP(name="imagewizard-mcp", instructions="An MCP server providing tools for image processing operations.")
 
 crop.register_tool(mcp)
 resize.register_tool(mcp)
