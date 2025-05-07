@@ -1,6 +1,6 @@
+import os
 import subprocess
 import sys
-import os
 
 # Get the directory of the current script (__main__.py)
 script_dir = os.path.dirname(os.path.abspath(__file__))

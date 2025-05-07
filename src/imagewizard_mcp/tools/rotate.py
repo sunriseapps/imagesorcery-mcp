@@ -1,9 +1,11 @@
 import os
+from typing import Annotated
+
 import cv2
 import imutils
 from fastmcp import FastMCP
-from typing import Annotated
 from pydantic import Field
+
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()

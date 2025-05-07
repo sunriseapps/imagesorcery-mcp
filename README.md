@@ -264,6 +264,28 @@ source venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+### Code Quality
+
+#### Linting with Ruff
+
+We use Ruff for linting our codebase. To run the linter:
+
+```bash
+ruff check .
+```
+
+To automatically fix issues that can be fixed:
+
+```bash
+ruff check --fix .
+```
+
+To format your code with Ruff:
+
+```bash
+ruff format .
+```
+
 ### Making Changes
 
 1. Create a new branch for your feature:
@@ -285,6 +307,11 @@ pytest
 ```
 If it's not - fix the code and tests. It is strictly required to have all new code be covered with documentation and tests and all tests passing.
 
+4. Run the linter to ensure code quality:
+```bash
+ruff check .
+```
+
 ### Submitting Changes
 
 1. Push your changes to your fork:
@@ -296,7 +323,7 @@ git push origin feature-name
 
 ### Code Style
 
-- Follow PEP 8 style guidelines
+- Follow PEP 8 style guidelines (enforced by Ruff)
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
 - Register tools using `register_tool` functions within their respective modules.

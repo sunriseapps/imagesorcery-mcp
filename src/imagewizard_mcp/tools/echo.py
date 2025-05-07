@@ -1,6 +1,8 @@
-from fastmcp import FastMCP
 from typing import Annotated
+
+from fastmcp import FastMCP
 from pydantic import Field
+
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()

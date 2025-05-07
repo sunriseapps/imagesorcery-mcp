@@ -1,10 +1,12 @@
 import os
-import pytest
+
 import cv2
 import numpy as np
-from fastmcp import FastMCP, Client
+import pytest
+from fastmcp import Client, FastMCP
 
 from imagewizard_mcp.server import mcp as image_wizard_mcp_server
+
 
 @pytest.fixture
 def mcp_server():
