@@ -1,21 +1,21 @@
 import os
 from PIL import Image
 from fastmcp import FastMCP
+from typing import Annotated
+from pydantic import Field
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
-    def crop(input_path: str, left: int, top: int, right: int, bottom: int, output_path: str = None) -> str:
+    def crop(
+        input_path: Annotated[str, Field(description="Path to the input image")],
+        left: Annotated[int, Field(description="Left coordinate of crop box")],
+        top: Annotated[int, Field(description="Top coordinate of crop box")],
+        right: Annotated[int, Field(description="Right coordinate of crop box")],
+        bottom: Annotated[int, Field(description="Bottom coordinate of crop box")],
+        output_path: Annotated[str, Field(description="Path to save the output image. If not provided, will use input filename with '_cropped' suffix.")] = None
+    ) -> str:
         """
         Crop an image based on provided coordinates.
-        
-        Args:
-            input_path: Path to the input image
-            left: Left coordinate of crop box
-            top: Top coordinate of crop box
-            right: Right coordinate of crop box
-            bottom: Bottom coordinate of crop box
-            output_path: Path to save the output image. If not provided,
-                         will use input filename with '_cropped' suffix.
         
         Returns:
             Path to the cropped image

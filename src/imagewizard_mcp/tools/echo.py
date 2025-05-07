@@ -1,7 +1,9 @@
 from fastmcp import FastMCP
+from typing import Annotated
+from pydantic import Field
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
-    def echo(text: str) -> str:
+    def echo(text: Annotated[str, Field(description="The text to echo.")]) -> str:
         """Echoes the input text."""
         return text

@@ -1,14 +1,18 @@
 # Basic MCP Server
 
-A simple Model Context Protocol server that provides a single tool that always returns true. This is a basic boilerplate for MCP servers.
+A simple Model Context Protocol server that provides tools for basic operations. This is a basic boilerplate for MCP servers.
 
 ## Available Tools
 
-- `always_true` - A tool that always returns true.
+- `always_true` - This tool always returns true.
   - No required arguments
-- `echo` - A tool that echoes the input text.
-  - Required arguments: `text` (string)
-- `crop` - A tool that crops an image based on provided coordinates.
+  - Returns: boolean (always true)
+
+- `echo` - Echoes the input text.
+  - Required arguments: `text` (string) - The text to echo
+  - Returns: string (the same text that was provided)
+
+- `crop` - Crops an image based on provided coordinates..
   - Required arguments:
     - `input_path` (string): Path to the input image
     - `left` (integer): Left coordinate of crop box
@@ -17,6 +21,7 @@ A simple Model Context Protocol server that provides a single tool that always r
     - `bottom` (integer): Bottom coordinate of crop box
   - Optional arguments:
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
+  - Returns: string (path to the cropped image)
 
 ## Installation
 
@@ -53,7 +58,7 @@ Add to your Claude settings:
 </details>
 
 
-## Example Interaction
+## Example Interactions
 
 Call the always_true tool:
 ```json
@@ -66,8 +71,24 @@ Call the always_true tool:
 Response:
 ```json
 {
-  "result": true,
-  "message": "This tool always returns true"
+  "result": true
+}
+```
+
+Call the echo tool:
+```json
+{
+  "name": "echo",
+  "arguments": {
+    "text": "Hello, world!"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "Hello, world!"
 }
 ```
 
@@ -89,8 +110,7 @@ Call the crop tool:
 Response:
 ```json
 {
-  "result": "/path/to/output.png",
-  "message": "Image successfully cropped and saved to /path/to/output.png"
+  "result": "/path/to/output.png"
 }
 ```
 
@@ -99,7 +119,8 @@ Response:
 1. "Can you use the always_true tool?"
 2. "Check if the basic server is working correctly"
 3. "Verify the connection to the basic MCP server"
-4. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
+4. "Echo back the text 'Hello from MCP server'"
+5. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
 
 ## Contributing
 
