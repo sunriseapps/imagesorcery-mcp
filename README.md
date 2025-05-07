@@ -12,7 +12,7 @@ A simple Model Context Protocol server that provides tools for basic operations.
   - Required arguments: `text` (string) - The text to echo
   - Returns: string (the same text that was provided)
 
-- `crop` - Crops an image based on provided coordinates..
+- `crop` - Crops an image based on provided coordinates.
   - Required arguments:
     - `input_path` (string): Path to the input image
     - `left` (integer): Left coordinate of crop box
@@ -22,6 +22,52 @@ A simple Model Context Protocol server that provides tools for basic operations.
   - Optional arguments:
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
   - Returns: string (path to the cropped image)
+
+- `get_metainfo` - Gets metadata information about an image file.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+  - Returns: dictionary containing metadata about the image including:
+    - filename
+    - file path
+    - file size (in bytes, KB, and MB)
+    - dimensions (width, height, aspect ratio)
+    - image format
+    - color mode
+    - creation and modification timestamps
+    - additional image-specific information
+
+Call the get_metainfo tool:
+```json
+{
+  "name": "get_metainfo",
+  "arguments": {
+    "input_path": "/path/to/image.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": {
+    "filename": "image.png",
+    "path": "/path/to/image.png",
+    "size_bytes": 12345,
+    "size_kb": 12.06,
+    "size_mb": 0.01,
+    "dimensions": {
+      "width": 800,
+      "height": 600,
+      "aspect_ratio": 1.33
+    },
+    "format": "PNG",
+    "color_mode": "RGB",
+    "created_at": "2023-06-15T10:30:45",
+    "modified_at": "2023-06-15T10:30:45",
+    "additional_info": {}
+  }
+}
+```
 
 ## Installation
 
@@ -121,6 +167,7 @@ Response:
 3. "Verify the connection to the basic MCP server"
 4. "Echo back the text 'Hello from MCP server'"
 5. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
+6. "Get metadata information about my image 'photo.jpg'"
 
 ## Contributing
 
