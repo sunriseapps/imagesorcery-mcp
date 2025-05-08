@@ -3,7 +3,15 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 
-from imagewizard_mcp.tools import crop, detect, metainfo, models, resize, rotate
+from imagewizard_mcp.tools import (
+    crop,
+    detect,
+    draw_text,
+    metainfo,
+    models,
+    resize,
+    rotate,
+)
 
 # Change to project root directory
 os.chdir(Path(__file__).parent.parent.parent)
@@ -22,6 +30,7 @@ rotate.register_tool(mcp)
 metainfo.register_tool(mcp)
 detect.register_tool(mcp)
 models.register_tool(mcp)
+draw_text.register_tool(mcp)
 
 if __name__ == "__main__":
     mcp.run()

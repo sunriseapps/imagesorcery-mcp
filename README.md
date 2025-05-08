@@ -35,6 +35,21 @@ An MCP server providing tools for image processing operations.
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_rotated' suffix
   - Returns: string (path to the rotated image)
 
+- `draw_texts` - Draws text on an image using OpenCV.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+    - `texts` (array): List of text items to draw. Each item should have:
+      - `text` (string): The text to draw
+      - `x` (integer): X-coordinate for the text position
+      - `y` (integer): Y-coordinate for the text position
+      - `font_scale` (float, optional): Scale factor for the font. Default is 1.0
+      - `color` (array, optional): Color in BGR format [B,G,R]. Default is [0,0,0] (black)
+      - `thickness` (integer, optional): Line thickness. Default is 1
+      - `font_face` (string, optional): Font face to use. Default is "FONT_HERSHEY_SIMPLEX"
+  - Optional arguments:
+    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_with_text' suffix
+  - Returns: string (path to the image with drawn text)
+
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
     - `input_path` (string): Path to the input image
@@ -199,6 +214,43 @@ Response:
 }
 ```
 
+Call the draw_texts tool:
+```json
+{
+  "name": "draw_texts",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "texts": [
+      {
+        "text": "Hello World",
+        "x": 50,
+        "y": 50,
+        "font_scale": 1.0,
+        "color": [0, 0, 255],
+        "thickness": 2
+      },
+      {
+        "text": "Testing",
+        "x": 100,
+        "y": 150,
+        "font_scale": 2.0,
+        "color": [255, 0, 0],
+        "thickness": 3,
+        "font_face": "FONT_HERSHEY_COMPLEX"
+      }
+    ],
+    "output_path": "/path/to/output.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "/path/to/output.png"
+}
+```
+
 
 Call the get_metainfo tool:
 ```json
@@ -303,6 +355,7 @@ Note: If you try to use a model size that hasn't been downloaded, you'll get an 
 4. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
 5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
 6. "List all available models in the models directory"
+7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
 
 
 ## Contributing
