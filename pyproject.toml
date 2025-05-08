@@ -20,10 +20,11 @@ dependencies = [
     "opencv-python>=4.5.0", # For image processing and computer vision tasks
     "imutils>=0.5.4", # For image processing typical tasks which are not included in OpenCV
     "Pillow", # For retrieving image metadata
+    "ultralytics", # For object detection
 ]
-
 [project.scripts]
 imagewizard-mcp = "imagewizard_mcp:main"
+download-yolo-models = "imagewizard_mcp.scripts.download_models:main"
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff"]

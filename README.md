@@ -48,6 +48,19 @@ An MCP server providing tools for image processing operations.
     - creation and modification timestamps
     - additional image-specific information
 
+- `detect` - Detects objects in an image using YOLOv8 from Ultralytics.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+  - Optional arguments:
+    - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.25
+    - `model_size` (string): YOLOv8 model size: 'n', 's', 'm', 'l', or 'x'. Default is 'm'
+  - Returns: dictionary containing:
+    - `image_path`: Path to the input image
+    - `detections`: List of detected objects, each with:
+      - `class`: Class name of the detected object
+      - `confidence`: Confidence score (0.0 to 1.0)
+      - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+
 
 ## Installation
 
@@ -59,6 +72,28 @@ cd imagewizard-mcp
 python -m venv venv
 source venv/bin/activate
 pip install -e ".[dev]"
+```
+
+### Downloading YOLOv8 models for offline use
+
+The `detect` tool requires YOLOv8 models, which are downloaded automatically when the tool is first used. However, if you plan to use the tool in an offline environment, you should download the models during installation:
+
+```bash
+# After installing the package
+download-yolo-models --model-size m  # Downloads the medium-sized model (default)
+
+# Or download all available models
+download-yolo-models --all  # Downloads all model sizes (n, s, m, l, x)
+```
+
+This ensures the models are available locally when you need to use the `detect` tool without internet access.
+
+### Quick setup
+
+For a quick setup that installs all dependencies and downloads the YOLOv8 model:
+
+```bash
+./setup.sh
 ```
 
 ## Configuration
@@ -183,12 +218,47 @@ Response:
 }
 ```
 
+Call the detect tool:
+```json
+{
+  "name": "detect",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "confidence": 0.3,
+    "model_size": "m"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": {
+    "image_path": "/path/to/input.png",
+    "detections": [
+      {
+        "class": "person",
+        "confidence": 0.92,
+        "bbox": [10.5, 20.3, 100.2, 200.1]
+      },
+      {
+        "class": "car",
+        "confidence": 0.85,
+        "bbox": [150.2, 30.5, 250.1, 120.7]
+      }
+    ]
+  }
+}
+```
+
+
 ## Examples of Questions for Claude
 
 1. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
 2. "Get metadata information about my image 'photo.jpg'"
 3. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
 4. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
+5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
 
 ## Contributing
 
