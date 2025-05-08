@@ -1,10 +1,19 @@
+import os
+from pathlib import Path
+
 from fastmcp import FastMCP
 
 from imagewizard_mcp.tools import crop, detect, metainfo, resize, rotate
 
+# Change to project root directory
+os.chdir(Path(__file__).parent.parent.parent)
+
 mcp = FastMCP(
     name="imagewizard-mcp",
-    instructions="An MCP server providing tools for image processing operations.",
+    instructions=(
+        "An MCP server providing tools for image processing operations. "
+        "Input images must be specified with full paths."
+    ),
 )
 
 crop.register_tool(mcp)

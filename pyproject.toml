@@ -27,7 +27,7 @@ imagewizard-mcp = "imagewizard_mcp:main"
 download-yolo-models = "imagewizard_mcp.scripts.download_models:main"
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff"]
+dev = ["pytest", "ruff", "pytest-asyncio"]
 
 [build-system]
 requires = ["hatchling"]

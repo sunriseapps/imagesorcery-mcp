@@ -25,7 +25,7 @@ def register_tool(mcp: FastMCP):
                 ge=0.0,
                 le=1.0,
             ),
-        ] = 0.25,
+        ] = 0.75,
         model_size: Annotated[
             str,
             Field(
