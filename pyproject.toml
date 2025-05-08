@@ -25,6 +25,7 @@ dependencies = [
 [project.scripts]
 imagewizard-mcp = "imagewizard_mcp:main"
 download-yolo-models = "imagewizard_mcp.scripts.download_models:main"
+create-model-descriptions = "imagewizard_mcp.scripts.create_model_descriptions:main"
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pytest-asyncio"]
@@ -72,4 +73,6 @@ exclude = [
 [tool.ruff.lint]
 # Enable flake8-bugbear (`B`) rules.
 select = ["E", "F", "B", "I"]
-ignore = []
+ignore = [
+    "E501", # Ignore line length violations
+]

@@ -19,8 +19,12 @@ pip install -e ".[dev]"
 # Create models directory
 mkdir -p models
 
+# Create model descriptions file
+echo "Creating model descriptions file..."
+create-model-descriptions
+
 # Download YOLOv8 model
 echo "Downloading YOLOv8 model..."
 download-yolo-models --model-size m
 
-echo "✅ Setup
+echo "✅ Setup complete!"

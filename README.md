@@ -61,6 +61,13 @@ An MCP server providing tools for image processing operations.
       - `confidence`: Confidence score (0.0 to 1.0)
       - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
 
+- `get_models` - Lists all available models in the models directory.
+  - Required arguments: None
+  - Returns: dictionary containing:
+    - `models`: List of available models, each with:
+      - `name`: Name of the model file
+      - `description`: Description of the model's purpose and characteristics
+
 
 ## Installation
 
@@ -226,6 +233,32 @@ Response:
 }
 ```
 
+Call the get_models tool:
+```json
+{
+  "name": "get_models",
+  "arguments": {}
+}
+```
+
+Response:
+```json
+{
+  "result": {
+    "models": [
+      {
+        "name": "yolov8m.pt",
+        "description": "YOLOv8 Medium - Default model with good balance between accuracy and speed."
+      },
+      {
+        "name": "yolov8n.pt",
+        "description": "YOLOv8 Nano - Smallest and fastest model, suitable for edge devices with limited resources."
+      }
+    ]
+  }
+}
+```
+
 Call the detect tool:
 ```json
 {
@@ -269,6 +302,8 @@ Note: If you try to use a model size that hasn't been downloaded, you'll get an 
 3. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
 4. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
 5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
+6. "List all available models in the models directory"
+
 
 ## Contributing
 
