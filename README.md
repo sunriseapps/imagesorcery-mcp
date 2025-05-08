@@ -76,7 +76,7 @@ pip install -e ".[dev]"
 
 ### Downloading YOLOv8 models for offline use
 
-The `detect` tool requires YOLOv8 models, which are downloaded automatically when the tool is first used. However, if you plan to use the tool in an offline environment, you should download the models during installation:
+The `detect` tool requires YOLOv8 models to be pre-downloaded to the `models` directory in the project root. The models are not downloaded automatically when the tool is used. You need to download them explicitly:
 
 ```bash
 # After installing the package
@@ -86,7 +86,15 @@ download-yolo-models --model-size m  # Downloads the medium-sized model (default
 download-yolo-models --all  # Downloads all model sizes (n, s, m, l, x)
 ```
 
-This ensures the models are available locally when you need to use the `detect` tool without internet access.
+Models will be downloaded to the `models` directory in the project root. This directory is included in `.gitignore` to prevent large model files from being committed to the repository.
+
+Available model sizes:
+- `n` - nano (smallest, fastest, less accurate)
+- `s` - small
+- `m` - medium (default)
+- `l` - large
+- `x` - extra large (largest, slowest, most accurate)
+
 
 ### Quick setup
 
@@ -250,6 +258,8 @@ Response:
   }
 }
 ```
+
+Note: If you try to use a model size that hasn't been downloaded, you'll get an error message indicating that you need to download the model first.
 
 
 ## Examples of Questions for Claude

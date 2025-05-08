@@ -104,8 +104,6 @@ class TestDetectToolDefinition:
             ), "model_size should be of type string"
 
 
-
-
 class TestDetectToolExecution:
     """Tests for the detect tool execution and results."""
 
