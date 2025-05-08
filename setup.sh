@@ -16,9 +16,11 @@ source venv/bin/activate
 echo "Installing package dependencies..."
 pip install -e ".[dev]"
 
+# Create models directory
+mkdir -p models
+
 # Download YOLOv8 model
 echo "Downloading YOLOv8 model..."
 download-yolo-models --model-size m
 
-echo "✅ Setup complete! You can now use imagewizard-mcp."
-echo "To activate the environment: source venv/bin/activate"
+echo "✅ Setup

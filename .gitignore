@@ -4,3 +4,12 @@ __pycache__
 .pytest_cache
 .coverage
 htmlcov
+
+# Ultralytics directories
+/models/
+/weights/
+/runs/
+/datasets/
+
+# Ultralytics settings
+models/settings.json
