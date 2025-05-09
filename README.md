@@ -50,6 +50,21 @@ An MCP server providing tools for image processing operations.
     - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_with_text' suffix
   - Returns: string (path to the image with drawn text)
 
+- `draw_rectangles` - Draws rectangles on an image using OpenCV.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+    - `rectangles` (array): List of rectangle items to draw. Each item should have:
+      - `x1` (integer): X-coordinate of the top-left corner
+      - `y1` (integer): Y-coordinate of the top-left corner
+      - `x2` (integer): X-coordinate of the bottom-right corner
+      - `y2` (integer): Y-coordinate of the bottom-right corner
+      - `color` (array, optional): Color in BGR format [B,G,R]. Default is [0,0,0] (black)
+      - `thickness` (integer, optional): Line thickness. Default is 1
+      - `filled` (boolean, optional): Whether to fill the rectangle. Default is false
+  - Optional arguments:
+    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_with_rectangles' suffix
+  - Returns: string (path to the image with drawn rectangles)
+
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
     - `input_path` (string): Path to the input image
@@ -253,6 +268,42 @@ Response:
 }
 ```
 
+Call the draw_rectangles tool:
+```json
+{
+  "name": "draw_rectangles",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "rectangles": [
+      {
+        "x1": 50,
+        "y1": 50,
+        "x2": 150,
+        "y2": 100,
+        "color": [0, 0, 255],
+        "thickness": 2
+      },
+      {
+        "x1": 200,
+        "y1": 150,
+        "x2": 300,
+        "y2": 250,
+        "color": [255, 0, 0],
+        "thickness": 3,
+        "filled": true
+      }
+    ],
+    "output_path": "/path/to/output.png"
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": "/path/to/output.png"
+}
+```
 
 Call the get_metainfo tool:
 ```json
@@ -359,6 +410,7 @@ Note: If you try to use a model size that hasn't been downloaded, you'll get an 
 5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
 6. "List all available models in the models directory"
 7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
+8. "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'"
 
 
 ## Contributing

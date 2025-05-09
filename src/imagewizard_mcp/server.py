@@ -6,6 +6,7 @@ from fastmcp import FastMCP
 from imagewizard_mcp.tools import (
     crop,
     detect,
+    draw_rectangle,
     draw_text,
     metainfo,
     models,
@@ -31,6 +32,7 @@ metainfo.register_tool(mcp)
 detect.register_tool(mcp)
 models.register_tool(mcp)
 draw_text.register_tool(mcp)
+draw_rectangle.register_tool(mcp)
 
 if __name__ == "__main__":
     mcp.run()
