@@ -21,7 +21,11 @@ dependencies = [
     "imutils>=0.5.4", # For image processing typical tasks which are not included in OpenCV
     "Pillow", # For retrieving image metadata
     "ultralytics", # For object detection
+    "requests", # For HTTP requests to download models
+    "tqdm", # For progress bars during downloads
+    "huggingface_hub", # For accessing models from Hugging Face
 ]
+
 [project.scripts]
 imagewizard-mcp = "imagewizard_mcp:main"
 download-yolo-models = "imagewizard_mcp.scripts.download_models:main"

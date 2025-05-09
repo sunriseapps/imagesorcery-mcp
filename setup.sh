@@ -25,6 +25,6 @@ create-model-descriptions
 
 # Download YOLOv8 model
 echo "Downloading YOLOv8 model..."
-download-yolo-models --model-size m
+download-yolo-models --ultralytics yoloe-11l-seg.pt
 
 echo "✅ Setup complete!"
