@@ -76,16 +76,6 @@ An MCP server providing tools for image processing operations.
       - `confidence`: Confidence score (0.0 to 1.0)
       - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
 
-- `classify` - Classifies an image into user-defined categories.
-  - Required arguments:
-    - `input_path` (string): Path to the input image
-    - `categories` (array): List of categories to classify the image into (e.g., ['indoor', 'outdoor', 'landscape'])
-  - Returns: dictionary containing:
-    - `image_path`: Path to the input image
-    - `classifications`: List of classification results, each with:
-      - `category`: Category name
-      - `confidence`: Confidence score (0.0 to 1.0)
-      - `note`: Additional information about the classification
 ```
 
 - `get_models` - Lists all available models in the models directory.
@@ -297,47 +287,6 @@ Response:
 }
 ```
 
-Call the classify tool:
-```json
-{
-  "name": "classify",
-  "arguments": {
-    "input_path": "/path/to/input.png",
-    "categories": ["indoor", "outdoor", "landscape", "portrait"]
-  }
-}
-```
-
-Response:
-```json
-{
-  "result": {
-    "image_path": "/path/to/input.png",
-    "classifications": [
-      {
-        "category": "landscape",
-        "confidence": 0.35,
-        "note": "Classification based on general image features"
-      },
-      {
-        "category": "outdoor",
-        "confidence": 0.30,
-        "note": "Classification based on general image features"
-      },
-      {
-        "category": "indoor",
-        "confidence": 0.20,
-        "note": "Classification based on general image features"
-      },
-      {
-        "category": "portrait",
-        "confidence": 0.15,
-        "note": "Classification based on general image features"
-      }
-    ]
-  }
-}
-```
 
 Call the get_models tool:
 ```json
@@ -410,7 +359,6 @@ Note: If you try to use a model size that hasn't been downloaded, you'll get an 
 5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
 6. "List all available models in the models directory"
 7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
-8. "Classify my image 'photo.jpg' into categories 'indoor' and 'outdoor'"
 
 
 ## Contributing
