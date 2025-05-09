@@ -1,11 +1,26 @@
 import os
 
 import cv2
+import easyocr
 import numpy as np
 import pytest
 from fastmcp import Client, FastMCP
 
 from imagewizard_mcp.server import mcp as image_wizard_mcp_server
+
+# Add this line to filter out the PyTorch warnings
+pytestmark = pytest.mark.filterwarnings("ignore:.*'pin_memory' argument is set as true but no accelerator is found.*:UserWarning")
+
+# Initialize the OCR reader for testing
+reader = None
+
+
+def get_ocr_reader():
+    """Get or initialize the EasyOCR reader for testing."""
+    global reader
+    if reader is None:
+        reader = easyocr.Reader(['en'])
+    return reader
 
 
 @pytest.fixture
@@ -112,6 +127,10 @@ class TestDrawTextsToolExecution:
     ):
         """Tests the draw_texts tool execution and return value."""
         output_path = str(tmp_path / "output.png")
+        
+        # Define the text to draw
+        text1 = "Hello World"
+        text2 = "Testing"
 
         async with Client(mcp_server) as client:
             result = await client.call_tool(
@@ -120,7 +139,7 @@ class TestDrawTextsToolExecution:
                     "input_path": test_image_path,
                     "texts": [
                         {
-                            "text": "Hello World",
+                            "text": text1,
                             "x": 50,
                             "y": 50,
                             "font_scale": 1.0,
@@ -128,7 +147,7 @@ class TestDrawTextsToolExecution:
                             "thickness": 2
                         },
                         {
-                            "text": "Testing",
+                            "text": text2,
                             "x": 100,
                             "y": 150,
                             "font_scale": 2.0,
@@ -151,10 +170,27 @@ class TestDrawTextsToolExecution:
             # Verify the image was created with correct dimensions
             img = cv2.imread(output_path)
             assert img.shape[:2] == (300, 400)  # height, width
+            
+            # Use OCR to verify the text was actually drawn
+            reader = get_ocr_reader()
+            ocr_results = reader.readtext(output_path)
+            
+            # Extract the detected text
+            detected_texts = [result[1] for result in ocr_results]
+            
+            # Check if our drawn texts are detected by OCR
+            # We use partial matching because OCR might not be 100% accurate
+            assert any(text1 in detected_text for detected_text in detected_texts), \
+                f"Expected text '{text1}' not found in OCR results: {detected_texts}"
+            assert any(text2 in detected_text for detected_text in detected_texts), \
+                f"Expected text '{text2}' not found in OCR results: {detected_texts}"
 
     @pytest.mark.asyncio
     async def test_draw_texts_default_output_path(self, mcp_server: FastMCP, test_image_path):
         """Tests the draw_texts tool with default output path."""
+        # Define the text to draw
+        test_text = "Simple Text"
+        
         async with Client(mcp_server) as client:
             result = await client.call_tool(
                 "draw_texts",
@@ -162,9 +198,11 @@ class TestDrawTextsToolExecution:
                     "input_path": test_image_path,
                     "texts": [
                         {
-                            "text": "Simple Text",
+                            "text": test_text,
                             "x": 50,
-                            "y": 50
+                            "y": 50,
+                            "font_scale": 1.5,  # Larger scale for better OCR detection
+                            "thickness": 2
                         }
                     ]
                 },
@@ -177,12 +215,26 @@ class TestDrawTextsToolExecution:
 
             # Verify the file exists
             assert os.path.exists(expected_output)
+            
+            # Use OCR to verify the text was actually drawn
+            reader = get_ocr_reader()
+            ocr_results = reader.readtext(expected_output)
+            
+            # Extract the detected text
+            detected_texts = [result[1] for result in ocr_results]
+            
+            # Check if our drawn text is detected by OCR
+            assert any(test_text in detected_text for detected_text in detected_texts), \
+                f"Expected text '{test_text}' not found in OCR results: {detected_texts}"
 
     @pytest.mark.asyncio
     async def test_draw_texts_minimal_parameters(self, mcp_server: FastMCP, test_image_path, tmp_path):
         """Tests the draw_texts tool with minimal required parameters."""
         output_path = str(tmp_path / "minimal_output.png")
-
+        
+        # Define the text to draw
+        test_text = "Minimal Text"
+        
         async with Client(mcp_server) as client:
             result = await client.call_tool(
                 "draw_texts",
@@ -190,9 +242,11 @@ class TestDrawTextsToolExecution:
                     "input_path": test_image_path,
                     "texts": [
                         {
-                            "text": "Minimal Text",
+                            "text": test_text,
                             "x": 50,
-                            "y": 50
+                            "y": 50,
+                            "font_scale": 1.5,  # Larger scale for better OCR detection
+                            "thickness": 2
                         }
                     ],
                     "output_path": output_path
@@ -204,4 +258,16 @@ class TestDrawTextsToolExecution:
             assert result[0].text == output_path
 
             # Verify the file exists
+            assert os.path.exists(output_path)
+            
+            # Use OCR to verify the text was actually drawn
+            reader = get_ocr_reader()
+            ocr_results = reader.readtext(output_path)
+            
+            # Extract the detected text
+            detected_texts = [result[1] for result in ocr_results]
+            
+            # Check if our drawn text is detected by OCR
+            assert any(test_text in detected_text for detected_text in detected_texts), \
+                f"Expected text '{test_text}' not found in OCR results: {detected_texts}"
             assert os.path.exists(output_path)
