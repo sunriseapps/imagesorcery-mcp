@@ -83,7 +83,7 @@ class TestDetectToolDefinition:
                 )
 
             # Check optional parameters
-            optional_params = ["confidence", "model_size"]
+            optional_params = ["confidence", "model_name"]
             for param in optional_params:
                 assert param in detect_tool.inputSchema["properties"], (
                     f"detect tool should have a '{param}' property in its inputSchema"
@@ -99,9 +99,9 @@ class TestDetectToolDefinition:
                 == "number"
             ), "confidence should be of type number"
             assert (
-                detect_tool.inputSchema["properties"]["model_size"].get("type")
+                detect_tool.inputSchema["properties"]["model_name"].get("type")
                 == "string"
-            ), "model_size should be of type string"
+            ), "model_name should be of type string"
 
 
 class TestDetectToolExecution:
@@ -125,7 +125,7 @@ class TestDetectToolExecution:
                 {
                     "input_path": test_image_path,
                     "confidence": 0.25,
-                    "model_size": "n",
+                    "model_name": "yoloe-11s-seg-pf.pt",
                 },
             )
 
@@ -169,7 +169,7 @@ class TestDetectToolExecution:
                 f"None of the expected classes {expected_classes} were detected. "
                 f"Detected classes: {detected_classes}"
             )
-
+    
     @pytest.mark.asyncio
     @pytest.mark.skipif(
         os.environ.get("SKIP_YOLO_TESTS") == "1",
@@ -192,7 +192,7 @@ class TestDetectToolExecution:
                 {
                     "input_path": test_image_negative_path,
                     "confidence": 0.25,
-                    "model_size": "n",
+                    "model_name": "yoloe-11s-seg-pf.pt",
                 },
             )
 

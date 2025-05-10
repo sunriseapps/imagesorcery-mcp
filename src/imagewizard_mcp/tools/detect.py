@@ -26,17 +26,17 @@ def register_tool(mcp: FastMCP):
                 le=1.0,
             ),
         ] = 0.75,
-        model_size: Annotated[
+        model_name: Annotated[
             str,
             Field(
-                description="YOLOv8 model size: 'n', 's', 'm', 'l', or 'x'",
+                description="Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt')",
             ),
-        ] = "m",
+        ] = "yoloe-11l-seg.pt",  # Default model
     ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, List[float]]]]]]:
         """
-        Detect objects in an image using YOLOv8 from Ultralytics.
+        Detect objects in an image using models from Ultralytics.
 
-        This tool requires pre-downloaded YOLOv8 models. Use the download-yolo-models
+        This tool requires pre-downloaded models. Use the download-yolo-models
         command to download models before using this tool.
 
         Returns:
@@ -47,15 +47,9 @@ def register_tool(mcp: FastMCP):
         if not os.path.exists(input_path):
             raise FileNotFoundError(f"Input file not found: {input_path}")
 
-        # Validate model size
-        valid_sizes = ["n", "s", "m", "l", "x"]
-        if model_size not in valid_sizes:
-            raise ValueError(
-                f"Invalid model size. Must be one of: {', '.join(valid_sizes)}"
-            )
-
-        # Construct model name
-        model_name = f"yolov8{model_size}.pt"
+        # Add .pt extension if it doesn't exist
+        if not model_name.endswith(".pt"):
+            model_name = f"{model_name}.pt"
 
         # Try to find the model
         model_path = get_model_path(model_name)
@@ -64,19 +58,21 @@ def register_tool(mcp: FastMCP):
         if not model_path:
             # List available models
             available_models = []
-
-            # Try to find any YOLOv8 models
-            for size in valid_sizes:
-                found_model = get_model_path(f"yolov8{size}.pt")
-                if found_model:
-                    available_models.append(os.path.basename(found_model))
+            models_dir = Path("models")
+            
+            # Find all .pt files in the models directory and its subdirectories
+            if models_dir.exists():
+                for file in models_dir.glob("**/*.pt"):
+                    available_models.append(str(file.relative_to(models_dir)))
 
             error_msg = (
                 f"Model {model_name} not found. "
                 f"Available local models: "
                 f"{', '.join(available_models) if available_models else 'None'}\n"
                 "To use this tool, you need to download the model first using:\n"
-                "download-yolo-models --model-size m\n"
+                "download-yolo-models --ultralytics MODEL_NAME\n"
+                "or\n"
+                "download-yolo-models --huggingface REPO_ID[:FILENAME]\n"
                 "Models will be downloaded to the 'models' directory "
                 "in the project root."
             )
@@ -89,7 +85,7 @@ def register_tool(mcp: FastMCP):
             # Import here to avoid loading ultralytics if not needed
             from ultralytics import YOLO
 
-            # Load the YOLOv8 model from the found path
+            # Load the model from the found path
             model = YOLO(model_path)
 
             # Run inference on the image
@@ -122,7 +118,7 @@ def register_tool(mcp: FastMCP):
                 error_msg += (
                     "The model could not be found. "
                     "Please download it first using: "
-                    "download-yolo-models --model-size m"
+                    "download-yolo-models --ultralytics MODEL_NAME"
                 )
             elif "permission denied" in str(e).lower():
                 error_msg += (

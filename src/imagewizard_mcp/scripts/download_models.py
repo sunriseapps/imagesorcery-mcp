@@ -5,13 +5,14 @@ This script should be run during project setup to ensure models are available.
 """
 
 import argparse
+import json
 import os
 import shutil
 import sys
 from pathlib import Path
+
 import requests
 from tqdm import tqdm
-import json
 
 
 def get_models_dir():
@@ -132,7 +133,7 @@ def update_model_description(model_key, description):
             with open(descriptions_file, 'r') as f:
                 descriptions = json.load(f)
         except json.JSONDecodeError:
-            print(f"⚠️ Error reading model_descriptions.json, creating new file")
+            print("⚠️ Error reading model_descriptions.json, creating new file")
             descriptions = {}
     else:
         descriptions = {}

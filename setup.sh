@@ -24,7 +24,8 @@ echo "Creating model descriptions file..."
 create-model-descriptions
 
 # Download YOLOv8 model
-echo "Downloading YOLOv8 model..."
-download-yolo-models --ultralytics yoloe-11l-seg.pt
+echo "Downloading default models..."
+download-yolo-models --ultralytics yoloe-11l-seg-pf.pt
+download-yolo-models --ultralytics yoloe-11s-seg-pf.pt
 
 echo "✅ Setup complete!"
