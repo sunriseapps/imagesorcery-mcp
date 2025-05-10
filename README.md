@@ -78,18 +78,19 @@ An MCP server providing tools for image processing operations.
     - creation and modification timestamps
     - additional image-specific information
 
-- `detect` - Detects objects in an image using YOLOv8 from Ultralytics.
+- `detect` - Detects objects in an image using models from Ultralytics.
   - Required arguments:
     - `input_path` (string): Path to the input image
   - Optional arguments:
-    - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.25
-    - `model_size` (string): YOLOv8 model size: 'n', 's', 'm', 'l', or 'x'. Default is 'm'
+    - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.75
+    - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg.pt'
   - Returns: dictionary containing:
     - `image_path`: Path to the input image
     - `detections`: List of detected objects, each with:
       - `class`: Class name of the detected object
       - `confidence`: Confidence score (0.0 to 1.0)
       - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+```
 
 ```
 
@@ -113,26 +114,29 @@ source venv/bin/activate
 pip install -e ".[dev]"
 ```
 
-### Downloading YOLOv8 models for offline use
+### Downloading models for offline use
 
-The `detect` tool requires YOLOv8 models to be pre-downloaded to the `models` directory in the project root. The models are not downloaded automatically when the tool is used. You need to download them explicitly:
+The `detect` tool requires pre-downloaded models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tool is used. You need to download them explicitly:
 
 ```bash
 # After installing the package
-download-yolo-models --model-size m  # Downloads the medium-sized model (default)
+download-yolo-models --ultralytics yoloe-11l-seg  # Downloads the default model
 
-# Or download all available models
-download-yolo-models --all  # Downloads all model sizes (n, s, m, l, x)
+# Or download from Hugging Face
+download-yolo-models --huggingface ultralytics/yolov8:yolov8m.pt
 ```
 
 Models will be downloaded to the `models` directory in the project root. This directory is included in `.gitignore` to prevent large model files from being committed to the repository.
 
-Available model sizes:
-- `n` - nano (smallest, fastest, less accurate)
-- `s` - small
-- `m` - medium (default)
-- `l` - large
-- `x` - extra large (largest, slowest, most accurate)
+#### Model Descriptions
+
+When downloading models, the script automatically updates the `models/model_descriptions.json` file:
+
+- For Ultralytics models: Descriptions are predefined in `src/imagewizard_mcp/scripts/create_model_descriptions.py` and include detailed information about each model's purpose, size, and characteristics.
+
+- For Hugging Face models: Descriptions are automatically extracted from the model card on Hugging Face Hub. The script attempts to use the model name from the model index or the first line of the description.
+
+After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
 
 
 ### Quick setup
@@ -372,7 +376,7 @@ Call the detect tool:
   "arguments": {
     "input_path": "/path/to/input.png",
     "confidence": 0.3,
-    "model_size": "m"
+    "model_name": "yoloe-11l-seg.pt"
   }
 }
 ```
@@ -398,7 +402,7 @@ Response:
 }
 ```
 
-Note: If you try to use a model size that hasn't been downloaded, you'll get an error message indicating that you need to download the model first.
+Note: If you try to use a model that hasn't been downloaded, you'll get an error message indicating that you need to download the model first.
 
 
 ## Examples of Questions for Claude
