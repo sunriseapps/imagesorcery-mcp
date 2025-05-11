@@ -30,13 +30,18 @@ dependencies = [
 imagewizard-mcp = "imagewizard_mcp:main"
 download-yolo-models = "imagewizard_mcp.scripts.download_models:main"
 create-model-descriptions = "imagewizard_mcp.scripts.create_model_descriptions:main"
+download-clip-models = "imagewizard_mcp.scripts.download_clip:main"
 
 [project.optional-dependencies]
 dev = ["pytest", "ruff", "pytest-asyncio", "easyocr"]
+clip = []
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.ruff]
 # Same as Black.

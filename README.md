@@ -90,9 +90,24 @@ An MCP server providing tools for image processing operations.
       - `class`: Class name of the detected object
       - `confidence`: Confidence score (0.0 to 1.0)
       - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
-```
 
-```
+- `find` - Finds objects in an image based on a text description.
+  - Required arguments:
+    - `input_path` (string): Path to the input image
+    - `description` (string): Text description of the object to find
+  - Optional arguments:
+    - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.3
+    - `model_name` (string): Model name to use for finding objects (must support text prompts). Default is 'yoloe-11l-seg.pt'
+    - `return_all_matches` (boolean): If True, returns all matching objects; if False, returns only the best match. Default is False
+  - Returns: dictionary containing:
+    - `image_path`: Path to the input image
+    - `query`: The text description that was searched for
+    - `found_objects`: List of found objects, each with:
+      - `description`: The original search query
+      - `match`: The class name of the matched object
+      - `confidence`: Confidence score (0.0 to 1.0)
+      - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+    - `found`: Boolean indicating whether any objects were found
 
 - `get_models` - Lists all available models in the models directory.
   - Required arguments: None
@@ -114,16 +129,26 @@ source venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+### Quick setup
+
+For a quick setup that installs all dependencies and downloads the YOLOv8 model:
+
+```bash
+./setup.sh
+```
+
 ### Downloading models for offline use
 
-The `detect` tool requires pre-downloaded models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tool is used. You need to download them explicitly:
+Some tools, like `detect` and `find`, require pre-downloaded models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tools are used. You need to download them explicitly:
 
 ```bash
 # After installing the package
+# Download models for the detect tool
 download-yolo-models --ultralytics yoloe-11l-seg  # Downloads the default model
-
-# Or download from Hugging Face
 download-yolo-models --huggingface ultralytics/yolov8:yolov8m.pt
+
+# Download models for the find tool (CLIP dependencies)
+download-clip-models
 ```
 
 Models will be downloaded to the `models` directory in the project root. This directory is included in `.gitignore` to prevent large model files from being committed to the repository.
@@ -138,14 +163,6 @@ When downloading models, the script automatically updates the `models/model_desc
 
 After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
 
-
-### Quick setup
-
-For a quick setup that installs all dependencies and downloads the YOLOv8 model:
-
-```bash
-./setup.sh
-```
 
 ## Configuration
 
@@ -402,6 +419,45 @@ Response:
 }
 ```
 
+Call the find tool:
+```json
+{
+  "name": "find",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "description": "dog",
+    "confidence": 0.3,
+    "model_name": "yolov8s-worldv2.pt",
+    "return_all_matches": true
+  }
+}
+```
+
+Response:
+```json
+{
+  "result": {
+    "image_path": "/path/to/input.png",
+    "query": "dog",
+    "found_objects": [
+      {
+        "description": "dog",
+        "match": "dog",
+        "confidence": 0.92,
+        "bbox": [150.2, 30.5, 250.1, 120.7]
+      },
+      {
+        "description": "dog",
+        "match": "dog",
+        "confidence": 0.85,
+        "bbox": [300.5, 150.3, 400.2, 250.1]
+      }
+    ],
+    "found": true
+  }
+}
+```
+
 Note: If you try to use a model that hasn't been downloaded, you'll get an error message indicating that you need to download the model first.
 
 
@@ -415,6 +471,7 @@ Note: If you try to use a model that hasn't been downloaded, you'll get an error
 6. "List all available models in the models directory"
 7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
 8. "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'"
+9. "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4"
 
 
 ## Contributing

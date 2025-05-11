@@ -27,5 +27,11 @@ create-model-descriptions
 echo "Downloading default models..."
 download-yolo-models --ultralytics yoloe-11l-seg-pf.pt
 download-yolo-models --ultralytics yoloe-11s-seg-pf.pt
+download-yolo-models --ultralytics yoloe-11l-seg.pt
+download-yolo-models --ultralytics yoloe-11s-seg.pt
+
+# Download CLIP model
+echo "Downloading CLIP model for text prompts..."
+download-clip-models
 
 echo "✅ Setup complete!"

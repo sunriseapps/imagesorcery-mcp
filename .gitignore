@@ -15,3 +15,6 @@ htmlcov
 
 # Ultralytics settings
 models/settings.json
+
+# CLIP model file
+mobileclip_blt.ts

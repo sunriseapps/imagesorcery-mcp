@@ -8,6 +8,7 @@ from imagewizard_mcp.tools import (
     detect,
     draw_rectangle,
     draw_text,
+    find,
     metainfo,
     models,
     resize,
@@ -30,6 +31,7 @@ resize.register_tool(mcp)
 rotate.register_tool(mcp)
 metainfo.register_tool(mcp)
 detect.register_tool(mcp)
+find.register_tool(mcp)
 models.register_tool(mcp)
 draw_text.register_tool(mcp)
 draw_rectangle.register_tool(mcp)
