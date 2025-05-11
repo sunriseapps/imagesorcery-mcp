@@ -4,6 +4,8 @@ An MCP server providing tools for image processing operations.
 
 ## Available Tools
 
+**Important Note:** All file paths specified in tool arguments (e.g., `input_path`, `output_path`) must be **full paths**, not relative paths. For example, use `/home/user/images/my_image.jpg` instead of `my_image.jpg`.
+
 
 - `crop` - Crops an image using OpenCV's NumPy slicing approach.
   - Required arguments:

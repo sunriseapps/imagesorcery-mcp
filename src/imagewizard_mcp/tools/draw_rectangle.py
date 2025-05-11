@@ -9,7 +9,7 @@ from pydantic import Field
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def draw_rectangles(
-        input_path: Annotated[str, Field(description="Full path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
         rectangles: Annotated[
             List[Dict[str, Any]],
             Field(
@@ -25,7 +25,7 @@ def register_tool(mcp: FastMCP):
             Optional[str],
             Field(
                 description=(
-                    "Full path to save the output image. "
+                    "Full path to save the output image (must be a full path). "
                     "If not provided, will use input filename "
                     "with '_with_rectangles' suffix."
                 )
@@ -46,7 +46,7 @@ def register_tool(mcp: FastMCP):
         """
         # Check if input file exists
         if not os.path.exists(input_path):
-            raise FileNotFoundError(f"Input file not found: {input_path}")
+            raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Generate output path if not provided
         if not output_path:

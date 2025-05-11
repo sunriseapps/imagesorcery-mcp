@@ -17,7 +17,7 @@ def get_model_path(model_name):
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def detect(
-        input_path: Annotated[str, Field(description="Full path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
         confidence: Annotated[
             float,
             Field(
@@ -45,7 +45,7 @@ def register_tool(mcp: FastMCP):
         """
         # Check if input file exists
         if not os.path.exists(input_path):
-            raise FileNotFoundError(f"Input file not found: {input_path}")
+            raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Add .pt extension if it doesn't exist
         if not model_name.endswith(".pt"):
