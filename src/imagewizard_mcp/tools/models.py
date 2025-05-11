@@ -51,16 +51,18 @@ def register_tool(mcp: FastMCP):
         # Define model file extensions to include
         model_extensions = [".pt", ".pth", ".onnx", ".tflite", ".pb"]
 
-        # Scan for model files
-        for file_path in models_dir.glob("*"):
+        # Scan for model files recursively using rglob instead of glob
+        for file_path in models_dir.rglob("*"):
             if file_path.is_file() and file_path.suffix.lower() in model_extensions:
-                model_name = file_path.name
+                # Get relative path from models directory
+                rel_path = file_path.relative_to(models_dir)
+                model_name = str(rel_path)
 
                 available_models.append(
                     {
                         "name": model_name,
                         "description": get_model_description(model_name),
+                        "path": str(file_path),
                     }
                 )
-
         return {"models": available_models}

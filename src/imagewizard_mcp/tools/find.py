@@ -62,8 +62,7 @@ def register_tool(mcp: FastMCP):
         Find objects in an image based on a text description.
         
         This tool uses open-vocabulary detection models to find objects matching a text description.
-        It requires pre-downloaded models that support text prompts. Use the download-yolo-models
-        and download-clip-models commands to download required models before using this tool.
+        It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt).
         
         Returns:
             Dictionary containing the input image path and a list of found objects

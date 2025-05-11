@@ -39,6 +39,8 @@ def register_tool(mcp: FastMCP):
         This tool requires pre-downloaded models. Use the download-yolo-models
         command to download models before using this tool.
 
+        If objects aren't common, consider using a specialized model.
+
         Returns:
             Dictionary containing the input image path and a list of detected objects
             with their class names, confidence scores, and bounding box coordinates.
