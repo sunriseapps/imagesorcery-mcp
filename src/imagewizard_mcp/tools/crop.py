@@ -9,7 +9,7 @@ from pydantic import Field
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def crop(
-        input_path: Annotated[str, Field(description="Path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image")],
         y_start: Annotated[
             int,
             Field(description="Starting y-coordinate (row) for the crop region (top)"),
@@ -34,7 +34,7 @@ def register_tool(mcp: FastMCP):
             str,
             Field(
                 description=(
-                    "Path to save the output image. "
+                    "Full path to save the output image. "
                     "If not provided, will use input filename "
                     "with '_cropped' suffix."
                 )

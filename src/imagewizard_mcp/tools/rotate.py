@@ -10,7 +10,7 @@ from pydantic import Field
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def rotate(
-        input_path: Annotated[str, Field(description="Path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image")],
         angle: Annotated[
             float,
             Field(
@@ -23,7 +23,7 @@ def register_tool(mcp: FastMCP):
             str,
             Field(
                 description=(
-                    "Path to save the output image. "
+                    "Full path to save the output image. "
                     "If not provided, will use input filename "
                     "with '_rotated' suffix."
                 )

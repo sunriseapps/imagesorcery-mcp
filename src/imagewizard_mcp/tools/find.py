@@ -33,7 +33,7 @@ def check_clip_installed():
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def find(
-        input_path: Annotated[str, Field(description="Path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image")],
         description: Annotated[
             str, Field(description="Text description of the object to find")
         ],

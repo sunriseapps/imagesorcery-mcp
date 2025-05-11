@@ -7,37 +7,37 @@ An MCP server providing tools for image processing operations.
 
 - `crop` - Crops an image using OpenCV's NumPy slicing approach.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
     - `y_start` (integer): Starting y-coordinate (row) for the crop region (top)
     - `y_end` (integer): Ending y-coordinate (row) for the crop region (bottom)
     - `x_start` (integer): Starting x-coordinate (column) for the crop region (left)
     - `x_end` (integer): Ending x-coordinate (column) for the crop region (right)
   - Optional arguments:
-    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_cropped' suffix.
+    - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_cropped' suffix.
   - Returns: string (path to the cropped image)
 
 - `resize` - Resizes an image using OpenCV.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
   - Optional arguments:
     - `width` (integer): Target width in pixels. If None, will be calculated based on height and preserve aspect ratio
     - `height` (integer): Target height in pixels. If None, will be calculated based on width and preserve aspect ratio
     - `scale_factor` (float): Scale factor to resize the image (e.g., 0.5 for half size, 2.0 for double size). Overrides width and height if provided
     - `interpolation` (string): Interpolation method: 'nearest', 'linear', 'area', 'cubic', 'lanczos'. Default is 'linear'
-    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_resized' suffix
+    - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_resized' suffix
   - Returns: string (path to the resized image)
 
 - `rotate` - Rotates an image using imutils.rotate_bound function.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
     - `angle` (float): Angle of rotation in degrees (positive for counterclockwise)
   - Optional arguments:
-    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_rotated' suffix
+    - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_rotated' suffix
   - Returns: string (path to the rotated image)
 
 - `draw_texts` - Draws text on an image using OpenCV.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
     - `texts` (array): List of text items to draw. Each item should have:
       - `text` (string): The text to draw
       - `x` (integer): X-coordinate for the text position
@@ -47,12 +47,12 @@ An MCP server providing tools for image processing operations.
       - `thickness` (integer, optional): Line thickness. Default is 1
       - `font_face` (string, optional): Font face to use. Default is "FONT_HERSHEY_SIMPLEX"
   - Optional arguments:
-    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_with_text' suffix
+    - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_with_text' suffix
   - Returns: string (path to the image with drawn text)
 
 - `draw_rectangles` - Draws rectangles on an image using OpenCV.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
     - `rectangles` (array): List of rectangle items to draw. Each item should have:
       - `x1` (integer): X-coordinate of the top-left corner
       - `y1` (integer): Y-coordinate of the top-left corner
@@ -62,12 +62,12 @@ An MCP server providing tools for image processing operations.
       - `thickness` (integer, optional): Line thickness. Default is 1
       - `filled` (boolean, optional): Whether to fill the rectangle. Default is false
   - Optional arguments:
-    - `output_path` (string): Path to save the output image. If not provided, will use input filename with '_with_rectangles' suffix
+    - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_with_rectangles' suffix
   - Returns: string (path to the image with drawn rectangles)
 
 - `get_metainfo` - Gets metadata information about an image file.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
   - Returns: dictionary containing metadata about the image including:
     - filename
     - file path
@@ -80,7 +80,7 @@ An MCP server providing tools for image processing operations.
 
 - `detect` - Detects objects in an image using models from Ultralytics.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
   - Optional arguments:
     - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.75
     - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg.pt'
@@ -93,7 +93,7 @@ An MCP server providing tools for image processing operations.
 
 - `find` - Finds objects in an image based on a text description.
   - Required arguments:
-    - `input_path` (string): Path to the input image
+    - `input_path` (string): Full path to the input image
     - `description` (string): Text description of the object to find
   - Optional arguments:
     - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.3

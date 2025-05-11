@@ -9,7 +9,7 @@ from pydantic import Field
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def draw_texts(
-        input_path: Annotated[str, Field(description="Path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image")],
         texts: Annotated[
             List[Dict[str, Any]],
             Field(
@@ -25,7 +25,7 @@ def register_tool(mcp: FastMCP):
             Optional[str],
             Field(
                 description=(
-                    "Path to save the output image. "
+                    "Full path to save the output image. "
                     "If not provided, will use input filename "
                     "with '_with_text' suffix."
                 )

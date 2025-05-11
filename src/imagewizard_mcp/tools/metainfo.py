@@ -10,7 +10,7 @@ from pydantic import Field
 def register_tool(mcp: FastMCP):
     @mcp.tool()
     def get_metainfo(
-        input_path: Annotated[str, Field(description="Path to the input image")],
+        input_path: Annotated[str, Field(description="Full path to the input image")],
     ) -> Dict[str, Any]:
         """
         Get metadata information about an image file.
