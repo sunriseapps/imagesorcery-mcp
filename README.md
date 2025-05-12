@@ -166,27 +166,60 @@ When downloading models, the script automatically updates the `models/model_desc
 After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
 
 
-## Configuration
+## Configuration MCP client
 
-### Configure for Claude.app
+Add to your Claude.app or Cline or other MCP client these settings:
 
-Add to your Claude settings:
-
-<details>
-<summary>Using repo installation</summary>
+### Linux configuration
 
 ```json
 "mcpServers": {
-    "basic": {
-      "command": "/path/to/imagewizard-mcp/venv/bin/python",
-      "args": ["/path/to/imagewizard-mcp/src/imagewizard_mcp/server.py"],
+    "imagewizard-mcp": {
+      "command": "/path/to/imagewizard-mcp/venv/bin/imagewizard-mcp",
+      "args": [],
       "env": {},
       "disabled": false,
-      "autoApprove": []
+      "autoApprove": [
+        "detect",
+        "crop",
+        "get_models",
+        "draw_texts",
+        "get_metainfo",
+        "rotate",
+        "resize",
+        "classify",
+        "draw_rectangles",
+        "find"
+      ],
+      "timeout": 60,
+      "transportType": "stdio"
     }
 }
 ```
-</details>
+
+### Windows configuration
+
+```json
+"mcpServers": {
+    "imagewizard-mcp": {
+      "command": "C:\\path\\to\\imagewizard-mcp\\venv\\Scripts\\imagewizard-mcp.exe",
+      "args": [],
+      "disabled": false,
+      "autoApprove": [
+        "crop",
+        "resize",
+        "rotate",
+        "get_metainfo",
+        "detect",
+        "find",
+        "get_models",
+        "draw_texts",
+        "draw_rectangles"
+      ],
+      "timeout": 60
+    }
+}
+```
 
 
 ## Example Interactions
