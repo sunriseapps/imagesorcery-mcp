@@ -15,7 +15,7 @@ def get_model_description(model_name: str) -> str:
     
     # Check if descriptions file exists
     if not descriptions_file.exists():
-        return default_description
+        return "model_descriptions.json not found"
     
     try:
         # Load descriptions from JSON file
@@ -34,11 +34,11 @@ def get_model_description(model_name: str) -> str:
             if key.lower() == normalized_model_name.lower():
                 return descriptions[key]
         
-        return default_description
+        return f"Model '{model_name}' not found in model_descriptions.json (total descriptions: {len(descriptions)})"
     except Exception as e:
         # Return default description if any error occurs
         print(f"Error in get_model_description: {str(e)}")
-        return default_description
+        return "Error in get_model_description"
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
