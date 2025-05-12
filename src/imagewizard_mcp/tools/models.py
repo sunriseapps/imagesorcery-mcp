@@ -19,16 +19,25 @@ def get_model_description(model_name: str) -> str:
     
     try:
         # Load descriptions from JSON file
-        with open(descriptions_file, "r") as f:
+        with open(descriptions_file, "r", encoding="utf-8") as f:
             descriptions = json.load(f)
         
         # Normalize model name to use forward slashes for consistent lookup
         normalized_model_name = model_name.replace('\\', '/')
         
-        # Return description for the model or default
-        return descriptions.get(normalized_model_name, default_description)
-    except Exception:
+        # Try direct lookup and also case-insensitive lookup
+        if normalized_model_name in descriptions:
+            return descriptions[normalized_model_name]
+        
+        # Try case-insensitive lookup as a fallback
+        for key in descriptions:
+            if key.lower() == normalized_model_name.lower():
+                return descriptions[key]
+        
+        return default_description
+    except Exception as e:
         # Return default description if any error occurs
+        print(f"Error in get_model_description: {str(e)}")
         return default_description
 
 def register_tool(mcp: FastMCP):
