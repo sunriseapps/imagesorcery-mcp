@@ -58,7 +58,8 @@ def register_tool(mcp: FastMCP):
             if file_path.is_file() and file_path.suffix.lower() in model_extensions:
                 # Get relative path from models directory
                 rel_path = file_path.relative_to(models_dir)
-                model_name = str(rel_path)
+                # Convert to string with forward slashes for consistent naming across platforms
+                model_name = str(rel_path).replace('\\', '/')
 
                 available_models.append(
                     {
