@@ -22,12 +22,14 @@ def get_model_description(model_name: str) -> str:
         with open(descriptions_file, "r") as f:
             descriptions = json.load(f)
         
+        # Normalize model name to use forward slashes for consistent lookup
+        normalized_model_name = model_name.replace('\\', '/')
+        
         # Return description for the model or default
-        return descriptions.get(model_name, default_description)
+        return descriptions.get(normalized_model_name, default_description)
     except Exception:
         # Return default description if any error occurs
         return default_description
-
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
