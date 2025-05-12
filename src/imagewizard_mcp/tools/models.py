@@ -10,9 +10,6 @@ def get_model_description(model_name: str) -> str:
     # Path to model descriptions JSON file
     descriptions_file = Path("models") / "model_descriptions.json"
     
-    # Default description if file doesn't exist or model not found
-    default_description = "Unknown model"
-    
     # Check if descriptions file exists
     if not descriptions_file.exists():
         return "model_descriptions.json not found"
@@ -38,7 +35,7 @@ def get_model_description(model_name: str) -> str:
     except Exception as e:
         # Return default description if any error occurs
         print(f"Error in get_model_description: {str(e)}")
-        return f"Error in get_model_description: {str(e)}"
+        return "model_descriptions.json parse issue"
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
