@@ -38,7 +38,7 @@ def get_model_description(model_name: str) -> str:
     except Exception as e:
         # Return default description if any error occurs
         print(f"Error in get_model_description: {str(e)}")
-        return "Error in get_model_description"
+        return f"Error in get_model_description: {str(e)}"
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
