@@ -29,9 +29,9 @@ def register_tool(mcp: FastMCP):
         model_name: Annotated[
             str,
             Field(
-                description="Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt')",
+                description="Model name to use for detection (e.g., 'yoloe-11l-seg-pf.pt', 'yolov8m.pt')",
             ),
-        ] = "yoloe-11l-seg.pt",  # Default model
+        ] = "yoloe-11l-seg-pf.pt",  # Default model
     ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, List[float]]]]]]:
         """
         Detect objects in an image using models from Ultralytics.

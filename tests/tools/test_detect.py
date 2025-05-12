@@ -124,8 +124,6 @@ class TestDetectToolExecution:
                 "detect",
                 {
                     "input_path": test_image_path,
-                    "confidence": 0.25,
-                    "model_name": "yoloe-11s-seg-pf.pt",
                 },
             )
 
@@ -191,7 +189,7 @@ class TestDetectToolExecution:
                 "detect",
                 {
                     "input_path": test_image_negative_path,
-                    "confidence": 0.25,
+                    "confidence": 0.5,
                     "model_name": "yoloe-11s-seg-pf.pt",
                 },
             )

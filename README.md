@@ -85,7 +85,7 @@ An MCP server providing tools for image processing operations.
     - `input_path` (string): Full path to the input image
   - Optional arguments:
     - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.75
-    - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg.pt'
+    - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg-pf.pt'
   - Returns: dictionary containing:
     - `image_path`: Path to the input image
     - `detections`: List of detected objects, each with:
