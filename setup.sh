@@ -9,12 +9,22 @@ if [ ! -d "venv" ]; then
     python -m venv venv
 fi
 
-# Activate virtual environment
-source venv/bin/activate
+# Detect OS and activate the appropriate virtual environment
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+    # Windows
+    source venv/Scripts/activate
+else
+    # Linux/macOS
+    source venv/bin/activate
+fi
 
-# Install package with development dependencies
+# Install package dependencies
 echo "Installing package dependencies..."
-pip install -e ".[dev]"
+pip install -e "."
+
+# Install development dependencies
+# echo "Installing development dependencies..."
+# pip install -e ".[dev]"
 
 # Create models directory
 mkdir -p models
