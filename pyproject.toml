@@ -24,6 +24,7 @@ dependencies = [
     "requests", # For HTTP requests to download models
     "tqdm", # For progress bars during downloads
     "huggingface_hub", # For accessing models from Hugging Face
+    "easyocr", # For OCR
 ]
 
 [project.scripts]
@@ -33,7 +34,7 @@ create-model-descriptions = "imagewizard_mcp.scripts.create_model_descriptions:m
 download-clip-models = "imagewizard_mcp.scripts.download_clip:main"
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "pytest-asyncio", "easyocr"]
+dev = ["pytest", "ruff", "pytest-asyncio"]
 clip = []
 
 [build-system]

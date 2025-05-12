@@ -11,6 +11,7 @@ from imagewizard_mcp.tools import (
     find,
     metainfo,
     models,
+    ocr,
     resize,
     rotate,
 )
@@ -35,6 +36,7 @@ find.register_tool(mcp)
 models.register_tool(mcp)
 draw_text.register_tool(mcp)
 draw_rectangle.register_tool(mcp)
+ocr.register_tool(mcp)
 
 if __name__ == "__main__":
     mcp.run()

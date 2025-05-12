@@ -118,6 +118,18 @@ An MCP server providing tools for image processing operations.
       - `name`: Name of the model file
       - `description`: Description of the model's purpose and characteristics
 
+- `ocr` - Performs Optical Character Recognition (OCR) on an image using EasyOCR.
+  - Required arguments:
+    - `input_path` (string): Full path to the input image
+  - Optional arguments:
+    - `language` (string): Language code for OCR (e.g., 'en', 'ru', 'fr', etc.). Default is 'en'
+  - Returns: dictionary containing:
+    - `image_path`: Path to the input image
+    - `text_segments`: List of detected text segments, each with:
+      - `text`: The extracted text content
+      - `confidence`: Confidence score (0.0 to 1.0)
+      - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+
 
 ## Installation
 
@@ -189,7 +201,8 @@ Add to your Claude.app or Cline or other MCP client these settings:
         "resize",
         "classify",
         "draw_rectangles",
-        "find"
+        "find",
+        "ocr"
       ],
       "timeout": 60,
       "transportType": "stdio"
@@ -214,7 +227,8 @@ Add to your Claude.app or Cline or other MCP client these settings:
         "find",
         "get_models",
         "draw_texts",
-        "draw_rectangles"
+        "draw_rectangles",
+        "ocr"
       ],
       "timeout": 60
     }
@@ -492,9 +506,38 @@ Response:
   }
 }
 ```
-
 Note: If you try to use a model that hasn't been downloaded, you'll get an error message indicating that you need to download the model first.
 
+Call the ocr tool:
+```json
+{
+  "name": "ocr",
+  "arguments": {
+    "input_path": "/path/to/input.png",
+    "language": "en"
+  }
+}
+```
+Response:
+```json
+{
+  "result": {
+    "image_path": "/path/to/input.png",
+    "text_segments": [
+      {
+        "text": "Hello World",
+        "confidence": 0.92,
+        "bbox": [10.5, 20.3, 100.2, 200.1]
+      },
+      {
+        "text": "Copyright 2023",
+        "confidence": 0.85,
+        "bbox": [150.2, 30.5, 250.1, 120.7]
+      }
+    ]
+  }
+}
+```
 
 ## Examples of Questions for Claude
 
@@ -507,6 +550,7 @@ Note: If you try to use a model that hasn't been downloaded, you'll get an error
 7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
 8. "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'"
 9. "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4"
+10. "Extract text from my image 'document.jpg' using OCR with English language"
 
 
 ## Contributing
