@@ -13,25 +13,21 @@ def register_tool(mcp: FastMCP):
     @mcp.tool()
     def crop(
         input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
-        y_start: Annotated[
+        x1: Annotated[
             int,
-            Field(description="Starting y-coordinate (row) for the crop region (top)"),
+            Field(description="X-coordinate of the top-left corner"),
         ],
-        y_end: Annotated[
+        y1: Annotated[
             int,
-            Field(description="Ending y-coordinate (row) for the crop region (bottom)"),
+            Field(description="Y-coordinate of the top-left corner"),
         ],
-        x_start: Annotated[
+        x2: Annotated[
             int,
-            Field(
-                description="Starting x-coordinate (column) for the crop region (left)"
-            ),
+            Field(description="X-coordinate of the bottom-right corner"),
         ],
-        x_end: Annotated[
+        y2: Annotated[
             int,
-            Field(
-                description="Ending x-coordinate (column) for the crop region (right)"
-            ),
+            Field(description="Y-coordinate of the bottom-right corner"),
         ],
         output_path: Annotated[
             str,
@@ -45,17 +41,13 @@ def register_tool(mcp: FastMCP):
         ] = None,
     ) -> str:
         """
-        Crop an image using OpenCV's NumPy slicing approach.
-        
-        The function uses the NumPy slicing syntax common in OpenCV:
-        - image[y_start:y_end, x_start:x_end] selects a rectangular region
-        - y coordinates represent rows (vertical axis, top to bottom)
-        - x coordinates represent columns (horizontal axis, left to right)
+        Crop an image using OpenCV's NumPy slicing approach
+        with OpenMCP's bounding box annotations.
 
         Returns:
             Path to the cropped image
         """
-        logger.info(f"Crop tool requested for image: {input_path} with region [{y_start}:{y_end}, {x_start}:{x_end}]")
+        logger.info(f"Crop tool requested for image: {input_path} with region [{x1}, {y1}, {x2}, {y2}]")
 
         # Check if input file exists
         if not os.path.exists(input_path):
@@ -77,8 +69,8 @@ def register_tool(mcp: FastMCP):
         logger.info(f"Image read successfully. Shape: {img.shape}")
 
         # Crop the image using NumPy slicing
-        logger.info(f"Cropping image with region [{y_start}:{y_end}, {x_start}:{x_end}]")
-        cropped_img = img[y_start:y_end, x_start:x_end]
+        logger.info(f"Cropping image with region [{x1}, {y1}, {x2}, {y2}]")
+        cropped_img = img[y1:y2, x1:x2]
         logger.info(f"Image cropped successfully. New shape: {cropped_img.shape}")
 
         # Create directory for output if it doesn't exist

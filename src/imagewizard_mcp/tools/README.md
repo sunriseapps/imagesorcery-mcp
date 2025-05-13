@@ -12,10 +12,10 @@ Crops an image using OpenCV's NumPy slicing approach.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
-  - `y_start` (integer): Starting y-coordinate (row) for the crop region (top)
-  - `y_end` (integer): Ending y-coordinate (row) for the crop region (bottom)
-  - `x_start` (integer): Starting x-coordinate (column) for the crop region (left)
-  - `x_end` (integer): Ending x-coordinate (column) for the crop region (right)
+  - `x1` (integer): X-coordinate of the top-left corner
+  - `y1` (integer): Y-coordinate of the top-left corner
+  - `x2` (integer): X-coordinate of the bottom-right corner
+  - `y2` (integer): Y-coordinate of the bottom-right corner
 - **Optional arguments:**
   - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_cropped' suffix.
 - **Returns:** string (path to the cropped image)
@@ -23,7 +23,7 @@ Crops an image using OpenCV's NumPy slicing approach.
 **Example Claude Request:**
 
 ```
-Crop my image '/home/user/images/input.png' from coordinates (10,10) to (200,200) and save it as '/home/user/images/cropped.png'
+Crop my image '/home/user/images/input.png' using bounding box [10, 10, 200, 200] and save it as '/home/user/images/cropped.png'
 ```
 
 **Example Tool Call (JSON):**
@@ -33,10 +33,10 @@ Crop my image '/home/user/images/input.png' from coordinates (10,10) to (200,200
   "name": "crop",
   "arguments": {
     "input_path": "/home/user/images/input.png",
-    "y_start": 10,
-    "y_end": 200,
-    "x_start": 10,
-    "x_end": 200,
+    "x1": 10,
+    "y1": 10,
+    "x2": 200,
+    "y2": 200,
     "output_path": "/home/user/images/cropped.png"
   }
 }

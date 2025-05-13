@@ -78,7 +78,7 @@ class TestCropToolDefinition:
             )
 
             # Check required parameters
-            required_params = ["input_path", "x_start", "y_start", "x_end", "y_end"]
+            required_params = ["input_path", "x1", "y1", "x2", "y2"]
             for param in required_params:
                 assert param in crop_tool.inputSchema["properties"], (
                     f"crop tool should have a '{param}' property in its inputSchema"
@@ -95,17 +95,17 @@ class TestCropToolDefinition:
                 == "string"
             ), "input_path should be of type string"
             assert (
-                crop_tool.inputSchema["properties"]["x_start"].get("type") == "integer"
-            ), "x_start should be of type integer"
+                crop_tool.inputSchema["properties"]["x1"].get("type") == "integer"
+            ), "x1 should be of type integer"
             assert (
-                crop_tool.inputSchema["properties"]["y_start"].get("type") == "integer"
-            ), "y_start should be of type integer"
+                crop_tool.inputSchema["properties"]["y1"].get("type") == "integer"
+            ), "y1 should be of type integer"
             assert (
-                crop_tool.inputSchema["properties"]["x_end"].get("type") == "integer"
-            ), "x_end should be of type integer"
+                crop_tool.inputSchema["properties"]["x2"].get("type") == "integer"
+            ), "x2 should be of type integer"
             assert (
-                crop_tool.inputSchema["properties"]["y_end"].get("type") == "integer"
-            ), "y_end should be of type integer"
+                crop_tool.inputSchema["properties"]["y2"].get("type") == "integer"
+            ), "y2 should be of type integer"
             assert (
                 crop_tool.inputSchema["properties"]["output_path"].get("type")
                 == "string"
@@ -127,10 +127,10 @@ class TestCropToolExecution:
                 "crop",
                 {
                     "input_path": test_image_path,
-                    "x_start": 50,
-                    "y_start": 50,
-                    "x_end": 100,
-                    "y_end": 100,
+                    "x1": 50,
+                    "y1": 50,
+                    "x2": 100,
+                    "y2": 100,
                     "output_path": output_path,
                 },
             )
@@ -156,10 +156,10 @@ class TestCropToolExecution:
                 "crop",
                 {
                     "input_path": test_image_path,
-                    "x_start": 50,
-                    "y_start": 50,
-                    "x_end": 100,
-                    "y_end": 100,
+                    "x1": 50,
+                    "y1": 50,
+                    "x2": 100,
+                    "y2": 100,
                 },
             )
 
