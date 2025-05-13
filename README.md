@@ -145,7 +145,8 @@ This repository is organized as follows:
 ├── setup.sh                   # A shell script for quick setup.
 ├── models/                    # This directory stores pre-trained models used by tools like `detect` and `find`. It is typically ignored by Git due to the large file sizes.
 │   ├── model_descriptions.json  # Contains descriptions of the available models.
-│   └── settings.json            # Contains settings related to model management and training runs.
+│   ├── settings.json            # Contains settings related to model management and training runs.
+│   └── *.pt                     # Pre-trained model.
 ├── src/                       # Contains the source code for the ImageWizard MCP server.
 │   └── imagewizard_mcp/       # The main package directory for the server.
 │       ├── __init__.py          # Makes `imagewizard_mcp` a Python package.
