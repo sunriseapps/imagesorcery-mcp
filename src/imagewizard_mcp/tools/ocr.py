@@ -43,25 +43,20 @@ def register_tool(mcp: FastMCP):
             
             logger.info("EasyOCR imported successfully")
 
-            # Read the image and convert to grayscale
+            # Read the image
             logger.info(f"Reading image from: {input_path}")
             img = cv2.imread(input_path)
             if img is None:
                 logger.error(f"Failed to read image: {input_path}")
                 raise ValueError(f"Failed to read image: {input_path}. The file may be corrupted or not an image.")
             
-            # Check image dimensions and convert to grayscale if needed
+            # Check image dimensions and convert to grayscale
             logger.info(f"Image shape: {img.shape}")
             if len(img.shape) == 3:
                 img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 logger.info(f"Converted image to grayscale: {img_gray.shape}")
-                
-                # Save grayscale image to a temporary file
-                temp_path = input_path + "_gray_temp.jpg"
-                cv2.imwrite(temp_path, img_gray)
-                logger.info(f"Saved grayscale image to: {temp_path}")
             else:
-                temp_path = input_path
+                img_gray = img
                 logger.info("Image is already grayscale")
 
             # Create reader with specified language
@@ -69,9 +64,9 @@ def register_tool(mcp: FastMCP):
             reader = easyocr.Reader([language])
             logger.info("EasyOCR reader created successfully")
 
-            # Perform OCR on the image
-            logger.info(f"Starting OCR processing on: {temp_path}")
-            results = reader.readtext(temp_path)
+            # Perform OCR directly on the numpy array
+            logger.info("Starting OCR processing on image array")
+            results = reader.readtext(img_gray)  # Pass the numpy array directly
             logger.info(f"OCR processing completed with {len(results)} text segments found")
 
             # Process results
