@@ -11,7 +11,6 @@ from pathlib import Path
 # Import the central logger
 from imagewizard_mcp.logging_config import logger
 
-
 def create_model_descriptions():
     """Create a JSON file with model descriptions in the models directory."""
     logger.info("Creating model descriptions JSON file")
@@ -121,15 +120,39 @@ def create_model_descriptions():
     os.makedirs(models_dir, exist_ok=True)
     logger.info(f"Ensured models directory exists: {models_dir}")
 
-    # Write descriptions to JSON file
     descriptions_file = models_dir / "model_descriptions.json"
-    logger.info(f"Writing model descriptions to: {descriptions_file}")
-    with open(descriptions_file, "w") as f:
-        json.dump(model_descriptions, f, indent=2)
+    existing_descriptions = {}
 
-    logger.info(f"Model descriptions created successfully at: {descriptions_file}")
-    print(f"✅ Model descriptions created at: {descriptions_file}")
-    return str(descriptions_file)
+    # Read existing descriptions if the file exists
+    if descriptions_file.exists():
+        try:
+            with open(descriptions_file, "r") as f:
+                existing_descriptions = json.load(f)
+            logger.info(f"Loaded existing model descriptions from: {descriptions_file}")
+        except json.JSONDecodeError:
+            logger.warning(f"Error decoding JSON from {descriptions_file}, starting with empty descriptions.")
+            existing_descriptions = {}
+        except Exception as e:
+            logger.error(f"Error reading existing model descriptions from {descriptions_file}: {e}")
+            existing_descriptions = {}
+
+    # Merge new descriptions with existing ones
+    # Existing descriptions take precedence to avoid overwriting custom ones
+    merged_descriptions = model_descriptions.copy()
+    merged_descriptions.update(existing_descriptions)
+
+    # Write merged descriptions to JSON file
+    logger.info(f"Writing merged model descriptions to: {descriptions_file}")
+    try:
+        with open(descriptions_file, "w") as f:
+            json.dump(merged_descriptions, f, indent=2)
+        logger.info(f"Model descriptions updated successfully at: {descriptions_file}")
+        print(f"✅ Model descriptions updated at: {descriptions_file}")
+        return str(descriptions_file)
+    except Exception as e:
+        logger.error(f"Error writing merged model descriptions to {descriptions_file}: {e}")
+        print(f"❌ Failed to update model descriptions at: {descriptions_file}")
+        return None
 
 
 def main():
