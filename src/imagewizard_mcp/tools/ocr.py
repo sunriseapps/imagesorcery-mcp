@@ -1,8 +1,25 @@
 import os
+import logging
+from logging.handlers import RotatingFileHandler
 from typing import Annotated, Dict, List, Union
 
 from fastmcp import FastMCP
 from pydantic import Field
+
+# Setup logging
+log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+os.makedirs(log_dir, exist_ok=True)
+log_file = os.path.join(log_dir, "ocr.log")
+
+# Create logger
+logger = logging.getLogger("ocr_tool")
+logger.setLevel(logging.INFO)
+
+# Create rotating file handler
+handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 def register_tool(mcp: FastMCP):
@@ -26,23 +43,31 @@ def register_tool(mcp: FastMCP):
             Dictionary containing the input image path and a list of detected text segments
             with their text content, confidence scores, and bounding box coordinates.
         """
+        logger.info(f"OCR requested for image: {input_path} with language: {language}")
+        
         # Check if input file exists
         if not os.path.exists(input_path):
+            logger.error(f"Input file not found: {input_path}")
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         try:
             # Import here to avoid loading easyocr if not needed
             import easyocr
+            logger.info("EasyOCR imported successfully")
 
             # Create reader with specified language
+            logger.info(f"Creating EasyOCR reader for language: {language}")
             reader = easyocr.Reader([language])
+            logger.info("EasyOCR reader created successfully")
 
             # Perform OCR on the image
+            logger.info(f"Starting OCR processing on: {input_path}")
             results = reader.readtext(input_path)
+            logger.info(f"OCR processing completed with {len(results)} text segments found")
 
             # Process results
             text_segments = []
-            for result in results:
+            for i, result in enumerate(results):
                 # EasyOCR can return results in different formats depending on the version
                 # Handle both possible formats
                 if len(result) == 3:
@@ -53,6 +78,7 @@ def register_tool(mcp: FastMCP):
                     bbox, text, confidence, _ = result
                 else:
                     # Unknown format, try to extract what we can
+                    logger.warning(f"Unexpected result format for segment {i}: {result}")
                     bbox = result[0] if len(result) > 0 else [[0, 0], [0, 0], [0, 0], [0, 0]]
                     text = result[1] if len(result) > 1 else ""
                     confidence = result[2] if len(result) > 2 else 0.0
@@ -71,7 +97,9 @@ def register_tool(mcp: FastMCP):
                         "bbox": [float(x1), float(y1), float(x2), float(y2)]
                     }
                 )
+                logger.debug(f"Processed segment {i}: text='{text[:30]}...' confidence={confidence:.2f}")
 
+            logger.info(f"OCR completed successfully for {input_path}")
             return {"image_path": input_path, "text_segments": text_segments}
 
         except ImportError:
@@ -80,6 +108,7 @@ def register_tool(mcp: FastMCP):
                 "Please install it first using: "
                 "pip install easyocr"
             )
+            logger.error("EasyOCR import failed: not installed")
             raise RuntimeError(error_msg) from None
         except Exception as e:
             # Provide more helpful error message
@@ -90,10 +119,14 @@ def register_tool(mcp: FastMCP):
                     f"The language '{language}' is not supported or the language model "
                     f"could not be found. Please check available languages in EasyOCR documentation."
                 )
+                logger.error(f"Language not supported: {language}")
             elif "permission denied" in str(e).lower():
                 error_msg += (
                     "Permission denied when trying to access the image file.\n"
                     "Try running the command with appropriate permissions."
                 )
+                logger.error(f"Permission denied accessing file: {input_path}")
+            else:
+                logger.error(f"OCR processing error: {str(e)}", exc_info=True)
 
             raise RuntimeError(error_msg) from e
