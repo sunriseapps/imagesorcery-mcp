@@ -259,7 +259,6 @@ git push origin feature-name
 - Follow PEP 8 style guidelines (enforced by Ruff)
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
-- Register tools by defining a `register_tool` function in each tool's module. This function should accept a `FastMCP` instance and use the `@mcp.tool()` decorator to register the tool function with the server. See `src/imagewizard_mcp/server.py` for how tools are imported and registered, and individual tool files like `src/imagewizard_mcp/tools/crop.py` for examples of the `register_tool` function implementation.
 
 ### Reporting Issues
 

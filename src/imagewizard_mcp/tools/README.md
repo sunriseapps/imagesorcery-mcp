@@ -4,6 +4,12 @@ This document provides detailed information about each tool available in the Ima
 
 **Important Note:** All file paths specified in tool arguments (e.g., `input_path`, `output_path`) must be **full paths**, not relative paths. For example, use `/home/user/images/my_image.jpg` instead of `my_image.jpg`.
 
+## Rules
+
+- Register tools by defining a `register_tool` function in each tool's module. This function should accept a `FastMCP` instance and use the `@mcp.tool()` decorator to register the tool function with the server. See `src/imagewizard_mcp/server.py` for how tools are imported and registered, and individual tool files like `src/imagewizard_mcp/tools/crop.py` for examples of the `register_tool` function implementation.
+- All tools should use Bounding Box format for image coordinates, e.g. `[x1, y1, x2, y2]` where `(x1, y1)` is the top-left corner and `(x2, y2)` is the bottom-right corner.
+
+
 ## Available Tools
 
 ### `crop`
