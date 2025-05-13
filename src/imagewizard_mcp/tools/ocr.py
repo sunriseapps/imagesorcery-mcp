@@ -42,7 +42,21 @@ def register_tool(mcp: FastMCP):
 
             # Process results
             text_segments = []
-            for bbox, text, confidence in results:
+            for result in results:
+                # EasyOCR can return results in different formats depending on the version
+                # Handle both possible formats
+                if len(result) == 3:
+                    # Format: (bbox, text, confidence)
+                    bbox, text, confidence = result
+                elif len(result) == 4:
+                    # Format: (bbox, text, confidence, _)
+                    bbox, text, confidence, _ = result
+                else:
+                    # Unknown format, try to extract what we can
+                    bbox = result[0] if len(result) > 0 else [[0, 0], [0, 0], [0, 0], [0, 0]]
+                    text = result[1] if len(result) > 1 else ""
+                    confidence = result[2] if len(result) > 2 else 0.0
+
                 # EasyOCR returns bounding box as 4 points (top-left, top-right, bottom-right, bottom-left)
                 # Convert to [x1, y1, x2, y2] format (top-left and bottom-right corners)
                 x_coords = [point[0] for point in bbox]

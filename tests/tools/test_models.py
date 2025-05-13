@@ -141,7 +141,7 @@ class TestModelsToolExecution:
                 elif model["name"] == "yolov8m.pt":
                     assert "Default model" in model["description"]
                 elif model["name"] == "custom_model.pt":
-                    assert model["description"] == "Unknown model"
+                    assert model["description"] == "Model 'custom_model.pt' not found in model_descriptions.json (total descriptions: 2)"
 
     @pytest.mark.asyncio
     async def test_models_empty_directory(self, mcp_server: FastMCP, tmp_path):
