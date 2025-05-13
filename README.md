@@ -118,7 +118,7 @@ An MCP server providing tools for image processing operations.
       - `name`: Name of the model file
       - `description`: Description of the model's purpose and characteristics
 
-- `ocr` - Performs Optical Character Recognition (OCR) on an image using EasyOCR.
+- `ocr` - Performs Optical Character Recognition (OCR) on an image using PaddleOCR.
   - Required arguments:
     - `input_path` (string): Full path to the input image
   - Optional arguments:

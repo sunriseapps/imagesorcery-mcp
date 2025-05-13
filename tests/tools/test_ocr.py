@@ -7,9 +7,6 @@ from fastmcp import Client, FastMCP
 
 from imagewizard_mcp.server import mcp as image_wizard_mcp_server
 
-# Add this line to filter out the PyTorch warnings
-pytestmark = pytest.mark.filterwarnings("ignore:.*'pin_memory' argument is set as true but no accelerator is found.*:UserWarning")
-
 
 @pytest.fixture
 def mcp_server():
@@ -113,9 +110,10 @@ class TestOcrToolExecution:
     async def test_ocr_tool_execution(self, mcp_server: FastMCP, test_image_path):
         """Tests the OCR tool execution and return value."""
         try:
-            import easyocr  # noqa: F401
+            # Changed from easyocr to paddleocr
+            from paddleocr import PaddleOCR  # noqa: F401
         except ImportError:
-            pytest.skip("EasyOCR is not installed")
+            pytest.skip("PaddleOCR is not installed")
 
         async with Client(mcp_server) as client:
             result = await client.call_tool(
