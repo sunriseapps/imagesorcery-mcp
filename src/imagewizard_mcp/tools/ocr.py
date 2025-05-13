@@ -37,9 +37,32 @@ def register_tool(mcp: FastMCP):
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         try:
-            # Import here to avoid loading easyocr if not needed
+            # Import here to avoid loading dependencies if not needed
+            import cv2
             import easyocr
+            
             logger.info("EasyOCR imported successfully")
+
+            # Read the image and convert to grayscale
+            logger.info(f"Reading image from: {input_path}")
+            img = cv2.imread(input_path)
+            if img is None:
+                logger.error(f"Failed to read image: {input_path}")
+                raise ValueError(f"Failed to read image: {input_path}. The file may be corrupted or not an image.")
+            
+            # Check image dimensions and convert to grayscale if needed
+            logger.info(f"Image shape: {img.shape}")
+            if len(img.shape) == 3:
+                img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                logger.info(f"Converted image to grayscale: {img_gray.shape}")
+                
+                # Save grayscale image to a temporary file
+                temp_path = input_path + "_gray_temp.jpg"
+                cv2.imwrite(temp_path, img_gray)
+                logger.info(f"Saved grayscale image to: {temp_path}")
+            else:
+                temp_path = input_path
+                logger.info("Image is already grayscale")
 
             # Create reader with specified language
             logger.info(f"Creating EasyOCR reader for language: {language}")
@@ -47,8 +70,8 @@ def register_tool(mcp: FastMCP):
             logger.info("EasyOCR reader created successfully")
 
             # Perform OCR on the image
-            logger.info(f"Starting OCR processing on: {input_path}")
-            results = reader.readtext(input_path)
+            logger.info(f"Starting OCR processing on: {temp_path}")
+            results = reader.readtext(temp_path)
             logger.info(f"OCR processing completed with {len(results)} text segments found")
 
             # Process results
@@ -88,13 +111,23 @@ def register_tool(mcp: FastMCP):
             logger.info(f"OCR completed successfully for {input_path}")
             return {"image_path": input_path, "text_segments": text_segments}
 
-        except ImportError:
-            error_msg = (
-                "EasyOCR is not installed. "
-                "Please install it first using: "
-                "pip install easyocr"
-            )
-            logger.error("EasyOCR import failed: not installed")
+        except ImportError as e:
+            if "easyocr" in str(e).lower():
+                error_msg = (
+                    "EasyOCR is not installed. "
+                    "Please install it first using: "
+                    "pip install easyocr"
+                )
+            elif "cv2" in str(e).lower():
+                error_msg = (
+                    "OpenCV (cv2) is not installed. "
+                    "Please install it first using: "
+                    "pip install opencv-python"
+                )
+            else:
+                error_msg = f"Required dependency not installed: {str(e)}"
+            
+            logger.error(f"Import error: {error_msg}")
             raise RuntimeError(error_msg) from None
         except Exception as e:
             # Provide more helpful error message
