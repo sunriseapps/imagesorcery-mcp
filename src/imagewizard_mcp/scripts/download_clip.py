@@ -10,16 +10,21 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def get_models_dir():
     """Get the models directory in the project root."""
     models_dir = Path("models")
     os.makedirs(models_dir, exist_ok=True)
+    logger.info(f"Ensured models directory exists: {models_dir}")
     return models_dir
 
 
 def download_file(url, output_path):
     """Download a file from a URL with progress bar."""
+    logger.info(f"Attempting to download file from {url} to {output_path}")
     try:
         response = requests.get(url, stream=True)
         response.raise_for_status()
@@ -38,24 +43,28 @@ def download_file(url, output_path):
                 size = file.write(data)
                 bar.update(size)
         
+        logger.info(f"Successfully downloaded file to {output_path}")
         return True
     except Exception as e:
-        print(f"❌ Error downloading from {url}: {str(e)}")
+        logger.error(f"Error downloading from {url}: {str(e)}")
         return False
 
 
 def check_clip_installed():
     """Check if CLIP is installed."""
+    logger.info("Checking if CLIP is installed")
     try:
         import clip  # noqa: F401
+        logger.info("CLIP is installed")
         return True
     except ImportError:
+        logger.warning("CLIP is not installed")
         return False
 
 
 def install_clip():
     """Install CLIP from the Ultralytics GitHub repository."""
-    print("⚠️ CLIP is not installed. Attempting to install...")
+    logger.info("Attempting to install CLIP")
     
     try:
         import subprocess
@@ -65,25 +74,27 @@ def install_clip():
             capture_output=True,
             text=True
         )
-        print(result.stdout)
-        print("✅ CLIP installed successfully")
+        logger.info(f"CLIP installation stdout:\n{result.stdout}")
+        logger.info(f"CLIP installation stderr:\n{result.stderr}")
+        logger.info("CLIP installed successfully")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ Failed to install CLIP: {e}")
-        print(e.stdout)
-        print(e.stderr)
+        logger.error(f"Failed to install CLIP: {e}")
+        logger.error(f"CLIP installation stdout:\n{e.stdout}")
+        logger.error(f"CLIP installation stderr:\n{e.stderr}")
         return False
 
 
 def download_clip_model():
     """Download the MobileCLIP model required for YOLOe text prompts."""
+    logger.info("Attempting to download CLIP model")
     models_dir = get_models_dir()
     clip_model_path = models_dir / "mobileclip_blt.ts"
     root_clip_model_path = Path("mobileclip_blt.ts")
     
     # Check if model already exists in either location
     if clip_model_path.exists() and root_clip_model_path.exists():
-        print(f"✅ CLIP model already exists at: {clip_model_path} and {root_clip_model_path}")
+        logger.info(f"CLIP model already exists at: {clip_model_path} and {root_clip_model_path}")
         return True
     
     # URL for the MobileCLIP model
@@ -91,12 +102,12 @@ def download_clip_model():
     
     # Download to models directory
     if not clip_model_path.exists():
-        print(f"Downloading CLIP model to models directory from: {url}")
+        logger.info(f"Downloading CLIP model to models directory from: {url}")
         success_models = download_file(url, clip_model_path)
         if success_models:
-            print(f"✅ CLIP model successfully downloaded to: {clip_model_path}")
+            logger.info(f"CLIP model successfully downloaded to: {clip_model_path}")
         else:
-            print(f"❌ Failed to download CLIP model to: {clip_model_path}")
+            logger.error(f"Failed to download CLIP model to: {clip_model_path}")
             return False
     
     # Download or copy to root directory
@@ -104,38 +115,38 @@ def download_clip_model():
         if clip_model_path.exists():
             # Copy from models directory to root
             import shutil
-            print(f"Copying CLIP model from {clip_model_path} to {root_clip_model_path}")
+            logger.info(f"Copying CLIP model from {clip_model_path} to {root_clip_model_path}")
             shutil.copy(clip_model_path, root_clip_model_path)
-            print(f"✅ CLIP model successfully copied to: {root_clip_model_path}")
+            logger.info(f"CLIP model successfully copied to: {root_clip_model_path}")
         else:
             # Download directly to root
-            print(f"Downloading CLIP model to root directory from: {url}")
+            logger.info(f"Downloading CLIP model to root directory from: {url}")
             success_root = download_file(url, root_clip_model_path)
             if success_root:
-                print(f"✅ CLIP model successfully downloaded to: {root_clip_model_path}")
+                logger.info(f"CLIP model successfully downloaded to: {root_clip_model_path}")
             else:
-                print(f"❌ Failed to download CLIP model to: {root_clip_model_path}")
+                logger.error(f"Failed to download CLIP model to: {root_clip_model_path}")
                 return False
     
     return True
 
 def main():
     """Main function to download CLIP models."""
-    print("Downloading CLIP models required for YOLOe text prompts...")
+    logger.info("Running download_clip_models script")
     
     # First, check if CLIP is installed
     if not check_clip_installed():
         if not install_clip():
-            print("❌ Failed to install CLIP. Please install it manually with:")
-            print("pip install git+https://github.com/ultralytics/CLIP.git")
+            logger.error("Failed to install CLIP. Please install it manually.")
             sys.exit(1)
     
     # Then download the MobileCLIP model
     if download_clip_model():
-        print("✅ All CLIP models downloaded successfully")
+        logger.info("All CLIP models downloaded successfully")
     else:
-        print("❌ Failed to download all required CLIP models")
+        logger.error("Failed to download all required CLIP models")
         sys.exit(1)
+    logger.info("download_clip_models script finished")
 
 
 if __name__ == "__main__":

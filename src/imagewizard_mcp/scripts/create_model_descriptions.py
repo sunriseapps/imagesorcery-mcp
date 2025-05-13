@@ -8,9 +8,13 @@ import json
 import os
 from pathlib import Path
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def create_model_descriptions():
     """Create a JSON file with model descriptions in the models directory."""
+    logger.info("Creating model descriptions JSON file")
     # YOLOv8 model descriptions
     model_descriptions = {
         "yolo11n.pt": "Ultralytics YOLO11 model for Object Detection. Provides state-of-the-art performance, suitable for tasks requiring a balance of speed and accuracy (smallest of YOLO11).",
@@ -115,18 +119,23 @@ def create_model_descriptions():
     # Create models directory if it doesn't exist
     models_dir = Path("models")
     os.makedirs(models_dir, exist_ok=True)
+    logger.info(f"Ensured models directory exists: {models_dir}")
 
     # Write descriptions to JSON file
     descriptions_file = models_dir / "model_descriptions.json"
+    logger.info(f"Writing model descriptions to: {descriptions_file}")
     with open(descriptions_file, "w") as f:
         json.dump(model_descriptions, f, indent=2)
 
+    logger.info(f"Model descriptions created successfully at: {descriptions_file}")
     print(f"✅ Model descriptions created at: {descriptions_file}")
     return str(descriptions_file)
 
 
 def main():
+    logger.info("Running create_model_descriptions script")
     create_model_descriptions()
+    logger.info("create_model_descriptions script finished")
 
 
 if __name__ == "__main__":

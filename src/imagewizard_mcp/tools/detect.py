@@ -5,12 +5,18 @@ from typing import Annotated, Dict, List, Union
 from fastmcp import FastMCP
 from pydantic import Field
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def get_model_path(model_name):
     """Get the path to a model in the models directory."""
+    logger.info(f"Attempting to get path for model: {model_name}")
     model_path = Path("models") / model_name
     if model_path.exists():
+        logger.info(f"Model found at: {model_path}")
         return str(model_path)
+    logger.warning(f"Model not found in models directory: {model_name}")
     return None
 
 
@@ -45,19 +51,25 @@ def register_tool(mcp: FastMCP):
             Dictionary containing the input image path and a list of detected objects
             with their class names, confidence scores, and bounding box coordinates.
         """
+        logger.info(f"Detect tool requested for image: {input_path} with model: {model_name} and confidence: {confidence}")
+
         # Check if input file exists
         if not os.path.exists(input_path):
+            logger.error(f"Input file not found: {input_path}")
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Add .pt extension if it doesn't exist
         if not model_name.endswith(".pt"):
+            original_model_name = model_name
             model_name = f"{model_name}.pt"
+            logger.info(f"Added .pt extension to model name: {original_model_name} -> {model_name}")
 
         # Try to find the model
         model_path = get_model_path(model_name)
 
         # If model not found, raise an error with helpful message
         if not model_path:
+            logger.error(f"Model {model_name} not found.")
             # List available models
             available_models = []
             models_dir = Path("models")
@@ -83,15 +95,22 @@ def register_tool(mcp: FastMCP):
         try:
             # Set environment variable to use the models directory
             os.environ["YOLO_CONFIG_DIR"] = str(Path("models").absolute())
+            logger.info(f"Set YOLO_CONFIG_DIR environment variable to: {os.environ['YOLO_CONFIG_DIR']}")
 
             # Import here to avoid loading ultralytics if not needed
+            logger.info("Importing Ultralytics")
             from ultralytics import YOLO
+            logger.info("Ultralytics imported successfully")
 
             # Load the model from the found path
+            logger.info(f"Loading model from: {model_path}")
             model = YOLO(model_path)
+            logger.info("Model loaded successfully")
 
             # Run inference on the image
+            logger.info(f"Running inference on {input_path} with confidence {confidence}")
             results = model(input_path, conf=confidence)[0]
+            logger.info(f"Inference completed. Found {len(results.boxes)} detections.")
 
             # Process results
             detections = []
@@ -109,12 +128,15 @@ def register_tool(mcp: FastMCP):
                 detections.append(
                     {"class": class_name, "confidence": conf, "bbox": [x1, y1, x2, y2]}
                 )
+                logger.debug(f"Detected: class={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
 
+            logger.info(f"Detection completed successfully for {input_path}")
             return {"image_path": input_path, "detections": detections}
 
         except Exception as e:
             # Provide more helpful error message
             error_msg = f"Error running object detection: {str(e)}\n"
+            logger.error(f"Error during object detection: {str(e)}", exc_info=True)
 
             if "not found" in str(e).lower():
                 error_msg += (

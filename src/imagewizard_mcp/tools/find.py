@@ -1,32 +1,42 @@
 import os
-import sys
 from pathlib import Path
 from typing import Annotated, Dict, List, Union
 
 from fastmcp import FastMCP
 from pydantic import Field
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def get_model_path(model_name):
     """Get the path to a model in the models directory."""
+    logger.info(f"Attempting to get path for model: {model_name}")
     model_path = Path("models") / model_name
     if model_path.exists():
+        logger.info(f"Model found at: {model_path}")
         return str(model_path)
+    logger.warning(f"Model not found in models directory: {model_name}")
     return None
 
 
 def check_clip_installed():
     """Check if CLIP is installed and the model is available."""
+    logger.info("Checking if CLIP is installed and MobileCLIP model is available")
     try:
         import clip  # noqa: F401
+        logger.info("CLIP is installed")
         
         # Check if the MobileCLIP model is available in the root directory
         clip_model_path = Path("mobileclip_blt.ts")
         if clip_model_path.exists():
+            logger.info(f"MobileCLIP model found at: {clip_model_path}")
             return True, None
         
+        logger.warning(f"MobileCLIP model not found at: {clip_model_path}")
         return False, "MobileCLIP model not found. Please run 'download-clip-models' to download it."
     except ImportError:
+        logger.warning("CLIP is not installed")
         return False, "CLIP is not installed. Please install it with 'pip install git+https://github.com/ultralytics/CLIP.git'"
 
 
@@ -68,24 +78,26 @@ def register_tool(mcp: FastMCP):
             Dictionary containing the input image path and a list of found objects
             with their confidence scores and bounding box coordinates.
         """
-        print(f"Starting find tool with model: {model_name}, description: {description}")
-        sys.stdout.flush()  # Ensure output is visible immediately
+        logger.info(f"Find tool requested for image: {input_path}, description: '{description}', model: {model_name}, confidence: {confidence}, return_all_matches: {return_all_matches}")
         
         # Check if input file exists
         if not os.path.exists(input_path):
+            logger.error(f"Input file not found: {input_path}")
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Add .pt extension if it doesn't exist
         if not model_name.endswith(".pt"):
+            original_model_name = model_name
             model_name = f"{model_name}.pt"
+            logger.info(f"Added .pt extension to model name: {original_model_name} -> {model_name}")
 
         # Try to find the model
         model_path = get_model_path(model_name)
-        print(f"Model path: {model_path}")
-        sys.stdout.flush()
+        logger.info(f"Resolved model path: {model_path}")
 
         # If model not found, raise an error with helpful message
         if not model_path:
+            logger.error(f"Model {model_name} not found.")
             # List available models
             available_models = []
             models_dir = Path("models")
@@ -115,6 +127,7 @@ def register_tool(mcp: FastMCP):
 
         # Check if the model supports text prompts
         if not ("yoloe" in model_name.lower() and not model_name.lower().endswith("-pf.pt")):
+            logger.error(f"Model {model_name} does not support text prompts.")
             raise ValueError(
                 f"The model {model_name} does not support text prompts. "
                 f"Please use a model that supports text prompts, such as "
@@ -124,6 +137,7 @@ def register_tool(mcp: FastMCP):
         # Check if CLIP is installed and the model is available
         clip_installed, clip_error = check_clip_installed()
         if not clip_installed:
+            logger.error(f"CLIP not installed or MobileCLIP model missing: {clip_error}")
             raise RuntimeError(
                 f"Cannot use text prompts: {clip_error}\n"
                 "Text prompts require CLIP and the MobileCLIP model.\n"
@@ -133,50 +147,46 @@ def register_tool(mcp: FastMCP):
         try:
             # Set environment variable to use the models directory
             os.environ["YOLO_CONFIG_DIR"] = str(Path("models").absolute())
+            logger.info(f"Set YOLO_CONFIG_DIR environment variable to: {os.environ['YOLO_CONFIG_DIR']}")
             
-            # Set environment variable to use the models directory for CLIP
+            # Set environment variable for CLIP model path
             clip_model_path = Path("mobileclip_blt.ts").absolute()
             if not clip_model_path.exists():
-                raise RuntimeError(
+                 logger.error(f"CLIP model not found at expected path: {clip_model_path}")
+                 raise RuntimeError(
                     f"CLIP model not found at {clip_model_path}. "
                     "Please run 'download-clip-models' to download it."
                 )
             os.environ["CLIP_MODEL_PATH"] = str(clip_model_path)
+            logger.info(f"Set CLIP_MODEL_PATH environment variable to: {os.environ['CLIP_MODEL_PATH']}")
             
-            print("Loading ultralytics...")
-            sys.stdout.flush()
-
+            logger.info("Importing Ultralytics")
             # Import here to avoid loading ultralytics if not needed
             from ultralytics import YOLO
+            logger.info("Ultralytics imported successfully")
 
-            print("Loading model...")
-            sys.stdout.flush()
+            logger.info("Loading model...")
             
             # Load the model from the found path
             model = YOLO(model_path)
-            print("Model loaded successfully")
-            sys.stdout.flush()
+            logger.info("Model loaded successfully")
             
             # For YOLOe models, we need to set the classes using the text description
-            print("Setting up text prompts...")
-            sys.stdout.flush()
+            logger.info("Setting up text prompts...")
             
             # Convert the description to a list (YOLOe expects a list of class names)
             class_names = [description]
+            logger.debug(f"Class names for text prompts: {class_names}")
             
             try:
                 # Set the classes for the model
-                print("Getting text embeddings...")
-                sys.stdout.flush()
+                logger.info("Getting text embeddings...")
                 text_embeddings = model.get_text_pe(class_names)
-                print("Setting classes...")
-                sys.stdout.flush()
+                logger.info("Setting classes...")
                 model.set_classes(class_names, text_embeddings)
-                print("Classes set successfully")
-                sys.stdout.flush()
+                logger.info("Classes set successfully")
             except Exception as e:
-                print(f"Error setting classes: {str(e)}")
-                sys.stdout.flush()
+                logger.error(f"Error setting classes: {str(e)}", exc_info=True)
                 raise RuntimeError(
                     f"Error setting up text prompts: {str(e)}\n"
                     "This may be due to missing CLIP dependencies.\n"
@@ -184,22 +194,18 @@ def register_tool(mcp: FastMCP):
                 ) from e
             
             # Run inference on the image
-            print(f"Running inference on {input_path}...")
-            sys.stdout.flush()
+            logger.info(f"Running inference on {input_path} with confidence {confidence}")
             results = model.predict(input_path, conf=confidence, verbose=True)
-            print("Inference completed")
-            sys.stdout.flush()
+            logger.info("Inference completed")
             
             found_objects = []
             
             # Process results
             if results and len(results) > 0:
-                print(f"Processing {len(results)} results")
-                sys.stdout.flush()
+                logger.info(f"Processing {len(results)} results")
                 
                 if hasattr(results[0], 'boxes') and len(results[0].boxes) > 0:
-                    print(f"Found {len(results[0].boxes)} boxes")
-                    sys.stdout.flush()
+                    logger.info(f"Found {len(results[0].boxes)} boxes")
                     
                     for box in results[0].boxes:
                         # Get class name
@@ -218,22 +224,21 @@ def register_tool(mcp: FastMCP):
                             "confidence": conf,
                             "bbox": [x1, y1, x2, y2]
                         })
+                        logger.debug(f"Found object: match={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
                 else:
-                    print("No boxes found in results")
-                    sys.stdout.flush()
+                    logger.info("No boxes found in results")
             else:
-                print("No results returned from model")
-                sys.stdout.flush()
+                logger.info("No results returned from model")
             
             # Sort by confidence (highest first)
             found_objects.sort(key=lambda x: x["confidence"], reverse=True)
             
             # Return only the best match if return_all_matches is False and we have matches
             if not return_all_matches and found_objects:
+                logger.info("Returning only the best match")
                 found_objects = [found_objects[0]]
             
-            print(f"Returning {len(found_objects)} found objects")
-            sys.stdout.flush()
+            logger.info(f"Returning {len(found_objects)} found objects")
             
             return {
                 "image_path": input_path,
@@ -243,8 +248,7 @@ def register_tool(mcp: FastMCP):
             }
 
         except Exception as e:
-            print(f"Error in find tool: {str(e)}")
-            sys.stdout.flush()
+            logger.error(f"Error in find tool: {str(e)}", exc_info=True)
             
             # Provide more helpful error message
             error_msg = f"Error finding objects: {str(e)}\n"

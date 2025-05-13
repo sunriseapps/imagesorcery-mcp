@@ -5,6 +5,9 @@ import cv2
 from fastmcp import FastMCP
 from pydantic import Field
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
@@ -44,22 +47,29 @@ def register_tool(mcp: FastMCP):
         Returns:
             Path to the image with drawn rectangles
         """
+        logger.info(f"Draw rectangles tool requested for image: {input_path} with {len(rectangles)} rectangles")
+
         # Check if input file exists
         if not os.path.exists(input_path):
+            logger.error(f"Input file not found: {input_path}")
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Generate output path if not provided
         if not output_path:
             file_name, file_ext = os.path.splitext(input_path)
             output_path = f"{file_name}_with_rectangles{file_ext}"
+            logger.info(f"Output path not provided, generated: {output_path}")
 
         # Read the image using OpenCV
+        logger.info(f"Reading image: {input_path}")
         img = cv2.imread(input_path)
         if img is None:
+            logger.error(f"Failed to read image: {input_path}")
             raise ValueError(f"Failed to read image: {input_path}")
+        logger.info(f"Image read successfully. Shape: {img.shape}")
 
         # Draw each rectangle on the image
-        for rect_item in rectangles:
+        for i, rect_item in enumerate(rectangles):
             # Extract rectangle coordinates (required)
             x1 = rect_item["x1"]
             y1 = rect_item["y1"]
@@ -71,6 +81,8 @@ def register_tool(mcp: FastMCP):
             thickness = rect_item.get("thickness", 1)
             filled = rect_item.get("filled", False)
             
+            logger.debug(f"Drawing rectangle {i+1}: x1={x1}, y1={y1}, x2={x2}, y2={y2}, color={color}, thickness={thickness}, filled={filled}")
+
             # If filled is True, set thickness to -1 (OpenCV's way of filling shapes)
             if filled:
                 thickness = -1
@@ -83,13 +95,18 @@ def register_tool(mcp: FastMCP):
                 color, 
                 thickness
             )
+            logger.debug(f"Rectangle {i+1} drawn")
 
         # Create directory for output if it doesn't exist
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):
+            logger.info(f"Output directory does not exist, creating: {output_dir}")
             os.makedirs(output_dir)
+            logger.info(f"Output directory created: {output_dir}")
 
         # Save the image with rectangles
+        logger.info(f"Saving image with rectangles to: {output_path}")
         cv2.imwrite(output_path, img)
+        logger.info(f"Image with rectangles saved successfully to: {output_path}")
 
         return output_path

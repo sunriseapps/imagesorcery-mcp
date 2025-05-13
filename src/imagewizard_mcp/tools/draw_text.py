@@ -5,6 +5,9 @@ import cv2
 from fastmcp import FastMCP
 from pydantic import Field
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
+
 
 def register_tool(mcp: FastMCP):
     @mcp.tool()
@@ -51,19 +54,26 @@ def register_tool(mcp: FastMCP):
         Returns:
             Path to the image with drawn text
         """
+        logger.info(f"Draw texts tool requested for image: {input_path} with {len(texts)} text items")
+
         # Check if input file exists
         if not os.path.exists(input_path):
+            logger.error(f"Input file not found: {input_path}")
             raise FileNotFoundError(f"Input file not found: {input_path}. Please provide a full path to the file.")
 
         # Generate output path if not provided
         if not output_path:
             file_name, file_ext = os.path.splitext(input_path)
             output_path = f"{file_name}_with_text{file_ext}"
+            logger.info(f"Output path not provided, generated: {output_path}")
 
         # Read the image using OpenCV
+        logger.info(f"Reading image: {input_path}")
         img = cv2.imread(input_path)
         if img is None:
+            logger.error(f"Failed to read image: {input_path}")
             raise ValueError(f"Failed to read image: {input_path}")
+        logger.info(f"Image read successfully. Shape: {img.shape}")
 
         # Font face mapping
         font_faces = {
@@ -76,9 +86,10 @@ def register_tool(mcp: FastMCP):
             "FONT_HERSHEY_SCRIPT_SIMPLEX": cv2.FONT_HERSHEY_SCRIPT_SIMPLEX,
             "FONT_HERSHEY_SCRIPT_COMPLEX": cv2.FONT_HERSHEY_SCRIPT_COMPLEX,
         }
+        logger.debug("OpenCV font face mapping created")
 
         # Draw each text item on the image
-        for text_item in texts:
+        for i, text_item in enumerate(texts):
             # Extract text and position (required)
             text = text_item["text"]
             x = text_item["x"]
@@ -93,6 +104,8 @@ def register_tool(mcp: FastMCP):
             font_face_name = text_item.get("font_face", "FONT_HERSHEY_SIMPLEX")
             font_face = font_faces.get(font_face_name, cv2.FONT_HERSHEY_SIMPLEX)
             
+            logger.debug(f"Drawing text {i+1}: '{text}' at ({x}, {y}) with font_scale={font_scale}, color={color}, thickness={thickness}, font_face={font_face_name}")
+
             # Draw the text on the image
             cv2.putText(
                 img, 
@@ -103,13 +116,18 @@ def register_tool(mcp: FastMCP):
                 color, 
                 thickness
             )
+            logger.debug(f"Text {i+1} drawn")
 
         # Create directory for output if it doesn't exist
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):
+            logger.info(f"Output directory does not exist, creating: {output_dir}")
             os.makedirs(output_dir)
+            logger.info(f"Output directory created: {output_dir}")
 
         # Save the image with text
+        logger.info(f"Saving image with text to: {output_path}")
         cv2.imwrite(output_path, img)
+        logger.info(f"Image with text saved successfully to: {output_path}")
 
         return output_path

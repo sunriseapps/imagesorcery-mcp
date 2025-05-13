@@ -3,6 +3,8 @@ from pathlib import Path
 
 from fastmcp import FastMCP
 
+# Import the central logger
+from imagewizard_mcp.logging_config import logger
 from imagewizard_mcp.tools import (
     crop,
     detect,
@@ -16,8 +18,12 @@ from imagewizard_mcp.tools import (
     rotate,
 )
 
+logger.info("Starting ImageWizard MCP server setup")
+
 # Change to project root directory
-os.chdir(Path(__file__).parent.parent.parent)
+project_root = Path(__file__).parent.parent.parent
+os.chdir(project_root)
+logger.info(f"Changed current working directory to: {project_root}")
 
 mcp = FastMCP(
     name="imagewizard-mcp",
@@ -26,6 +32,7 @@ mcp = FastMCP(
         "Input images must be specified with full paths."
     ),
 )
+logger.info("FastMCP instance created")
 
 crop.register_tool(mcp)
 resize.register_tool(mcp)
