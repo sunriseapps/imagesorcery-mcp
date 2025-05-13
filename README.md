@@ -161,6 +161,7 @@ This repository is organized as follows:
 │       │   └── download_models.py # Script to download other models (e.g., YOLO).
 │       └── tools/               # Contains the implementation of individual MCP tools.
 │           ├── __init__.py      # Makes `tools` a Python package and imports/registers the individual tools.
+│           ├── README.md        # Documentation for the tools.
 │           └── *.py           # Implements the tool.
 └── tests/                     # Contains test files for the project.
     ├── test_server.py         # Tests for the main server functionality.
