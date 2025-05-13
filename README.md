@@ -4,7 +4,7 @@ An MCP server providing tools for image processing operations.
 
 ## Available Tools
 
-_**Note:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagewizard-mcp/tools/README.md`._
+_**Note:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagewizard_mcp/tools/README.md`._
 
 - `crop`: Crops an image using OpenCV's NumPy slicing approach.
 - `resize`: Resizes an image using OpenCV.
