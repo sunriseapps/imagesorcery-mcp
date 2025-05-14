@@ -45,6 +45,7 @@ build-backend = "hatchling.build"
 allow-direct-references = true
 
 [tool.ruff]
+# PEP 8 style guidelines
 # Same as Black.
 line-length = 88
 indent-width = 4

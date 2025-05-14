@@ -179,95 +179,55 @@ We welcome contributions to imagewizard-mcp! Here's how you can help:
 1. Clone the repository:
 ```bash
 git clone https://github.com/titulus/imagewizard-mcp.git
-```
-
-2. Create and activate a virtual environment:
-```bash
 cd imagewizard-mcp
-python -m venv venv
 ```
 
-On Windows:
+2. Perform Client's install described above.
 ```bash
-venv\Scripts\activate
+./setup.sh
 ```
 
-On macOS/Linux:
+3. Activate a virtual environment:
 ```bash
-source venv/bin/activate
+venv\Scripts\activate # win
+source venv/bin/activate # mac/linux
 ```
 
-3. Install development dependencies:
+4. Install development dependencies:
 ```bash
 pip install -e ".[dev]"
 ```
 
-### Code Quality
 
-#### Linting with Ruff
+### Rules
 
-We use Ruff for linting our codebase. To run the linter:
+These rules apply to all contributors: humans and AI.
 
-```bash
-ruff check .
-```
+0. Read all the `README.md` files in the project. Understand the project structure and purpose. Understand the guidelines for contributing. Think through how it's relate to you task, and how to make changes accordingly.
+1. Read `pyproject.toml`.
+Make attention to sections: `[tool.ruff]`, `[tool.ruff.lint]`, `[project.optional-dependencies]` and `[project]dependencies`.
+Strictly follow code style defined in `pyproject.toml`.
+Stick to the stack defined in `pyproject.toml` dependencies and do not add any new dependencies without a good reason.
+2. Write your code in new and existing files.
+If new dependencies needed, update `pyproject.toml` and install them via `pip install -e .` or `pip install -e ".[dev]"`. Do not install them diirectly via `pip install`.
+Check out exixisting source codes for examples (e.g. `src/imagewizard_mcp/server.py`, `src/imagewizard_mcp/tools/crop.py`). Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing code.
+3. Update related `README.md` files with your changes.
+Stick to the format and structure of the existing `README.md` files.
+4. Write tests for your code.
+Check out existing tests for examples (e.g. `tests/test_server.py`, `tests/tools/test_crop.py`).
+Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing tests.
 
-To automatically fix issues that can be fixed:
-
-```bash
-ruff check --fix .
-```
-
-To format your code with Ruff:
-
-```bash
-ruff format .
-```
-
-### Making Changes
-
-1. Create a new branch for your feature:
-```bash
-git checkout -b feature-name
-```
-
-2. Make your changes.
-  - Read `pyproject.toml`.
-    Make attention to sections: `[tool.ruff]`, `[tool.ruff.lint]`, `[project.optional-dependencies]` and `[project]dependencies`.
-  - Write your code in new and existing files.
-    If new dependencies needed, update `pyproject.toml` and install them.
-  - Update related `README.md` files with your changes.
-  - Write tests for your code.
-    See existing tests for examples (e.g. `tests/tools/test_crop.py`).
-
-3. Run tests and linter to ensure everything works:
+5. Run tests and linter to ensure everything works:
 ```bash
 pytest
 ruff check .
 ```
-If it fails - fix the code and tests. It is strictly required to have all new code to comply with the code style and pass all tests.
+In case of fails - fix the code and tests. It is **strictly required** to have all new code to comply with the linter rules and pass all tests.
 
-### Submitting Changes
 
-1. Push your changes to your fork:
-```bash
-git push origin feature-name
-```
-
-2. Create a pull request with a description of your changes
-
-### Code Style
-
-- Follow PEP 8 style guidelines (enforced by Ruff)
+### Codingng hints
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
-
-### Reporting Issues
-
-If you find a bug or have a feature request:
-
-1. Check existing issues first
-2. Create a new issue with a detailed description and steps to reproduce
 
 
 ## License
