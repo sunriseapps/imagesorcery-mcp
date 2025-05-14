@@ -11,6 +11,7 @@ from pathlib import Path
 # Import the central logger
 from imagewizard_mcp.logging_config import logger
 
+
 def create_model_descriptions():
     """Create a JSON file with model descriptions in the models directory."""
     logger.info("Creating model descriptions JSON file")
