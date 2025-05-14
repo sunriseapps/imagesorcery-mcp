@@ -225,11 +225,21 @@ ruff check .
 In case of fails - fix the code and tests. It is **strictly required** to have all new code to comply with the linter rules and pass all tests.
 
 
-### Codingng hints
+### Coding hints
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
 
 
+## Questions?
+
+If you have any questions, issues, or suggestions regarding this project, feel free to reach out to:
+
+- Project Author: [titulus](https://www.linkedin.com/in/titulus/) via LinkedIn
+- Sunrise Apps CEO: [Vlad Karmakov](https://www.linkedin.com/in/vladkarm/) via LinkedIn
+
+You can also open an issue in the repository for bug reports or feature requests.
+
+
 ## License
 
-This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
+This project is licensed under the AGPL License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the AGPL License.
