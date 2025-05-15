@@ -213,4 +213,4 @@ You can also open an issue in the repository for bug reports or feature requests
 
 ## License
 
-This project is licensed under the AGPL License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the AGPL License.
+This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
