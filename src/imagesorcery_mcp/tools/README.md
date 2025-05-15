@@ -30,7 +30,7 @@ Crops an image using OpenCV's NumPy slicing approach.
 **Example Claude Request:**
 
 ```
-Crop my image '/home/user/images/input.png' using bounding box [10, 10, 200, 200] and save it as '/home/user/images/cropped.png'
+Crop my image 'input.png' using bounding box [10, 10, 200, 200] and save it as 'cropped.png'
 ```
 
 **Example Tool Call (JSON):**
@@ -75,7 +75,7 @@ Resizes an image using OpenCV. The function can resize an image in three ways: b
 **Example Claude Request:**
 
 ```
-Resize my image '/home/user/images/photo.jpg' to 800x600 pixels and save it as '/home/user/images/resized_photo.jpg'
+Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'
 ```
 
 **Example Tool Call (JSON):**
@@ -115,7 +115,7 @@ Rotates an image using imutils.rotate_bound function. The function rotates the i
 **Example Claude Request:**
 
 ```
-Rotate my image '/home/user/images/photo.jpg' by 45 degrees and save it as '/home/user/images/rotated_photo.jpg'
+Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'
 ```
 
 **Example Tool Call (JSON):**
@@ -161,7 +161,7 @@ Draws text on an image using OpenCV. This tool allows adding multiple text eleme
 **Example Claude Request:**
 
 ```
-Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image '/home/user/images/photo.jpg'
+Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'
 ```
 
 **Example Tool Call (JSON):**
@@ -225,7 +225,7 @@ Draws rectangles on an image using OpenCV. This tool allows adding multiple rect
 **Example Claude Request:**
 
 ```
-Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image '/home/user/images/photo.jpg'
+Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'
 ```
 
 **Example Tool Call (JSON):**
@@ -286,7 +286,7 @@ Gets metadata information about an image file.
 **Example Claude Request:**
 
 ```
-Get metadata information about my image '/home/user/images/photo.jpg'
+Get metadata information about my image 'photo.jpg'
 ```
 
 **Example Tool Call (JSON):**
@@ -343,7 +343,7 @@ Detects objects in an image using models from Ultralytics. This tool requires pr
 **Example Claude Request:**
 
 ```
-Detect objects in my image '/home/user/images/photo.jpg' with a confidence threshold of 0.4
+Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
 ```
 
 **Example Tool Call (JSON):**
@@ -404,7 +404,7 @@ Finds objects in an image based on a text description. This tool uses open-vocab
 **Example Claude Request:**
 
 ```
-Find all dogs in my image '/home/user/images/photo.jpg' with a confidence threshold of 0.4
+Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4
 ```
 
 **Example Tool Call (JSON):**
@@ -509,7 +509,7 @@ Performs Optical Character Recognition (OCR) on an image using EasyOCR. This too
 **Example Claude Request:**
 
 ```
-Extract text from my image '/home/user/images/document.jpg' using OCR with English language
+Extract text from my image 'document.jpg' using OCR with English language
 ```
 
 **Example Tool Call (JSON):**
