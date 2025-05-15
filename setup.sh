@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Setting up imagewizard-mcp..."
+echo "Setting up imagesorcery-mcp..."
 
 # Create virtual environment if it doesn't exist
 if [ ! -d "venv" ]; then

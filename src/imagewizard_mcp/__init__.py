@@ -3,7 +3,7 @@ from .server import mcp
 
 
 def main():
-    logger.info("ImageWizard MCP server main function started")
+    logger.info("🪄 ImageSorcery MCP server main function started")
     mcp.run()
 
 

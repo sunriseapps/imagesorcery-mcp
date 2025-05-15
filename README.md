@@ -1,10 +1,10 @@
-# ImageWizard MCP Server
+# 🪄 ImageSorcery MCP Server
 
 An MCP server providing tools for image processing operations.
 
 ## Available Tools
 
-_**Note:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagewizard_mcp/tools/README.md`._
+_**Note:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagesorcery_mcp/tools/README.md`._
 
 - `crop`: Crops an image using OpenCV's NumPy slicing approach.
 - `resize`: Resizes an image using OpenCV.
@@ -34,8 +34,8 @@ _**Note:** detailed information and usage instructions for each tool can be foun
 ## Installation
 
 ```bash
-git clone https://github.com/titulus/imagewizard-mcp.git
-cd imagewizard-mcp
+git clone https://github.com/titulus/imagesorcery-mcp.git
+cd imagesorcery-mcp
 ./setup.sh
 ```
 
@@ -58,8 +58,8 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 
 ```json
 "mcpServers": {
-    "imagewizard-mcp": {
-      "command": "/path/to/imagewizard-mcp/venv/bin/imagewizard-mcp",
+    "imagesorcery-mcp": {
+      "command": "/path/to/imagesorcery-mcp/venv/bin/imagesorcery-mcp",
       "transportType": "stdio",
       "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
       "timeout": 100
@@ -71,8 +71,8 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 
 ```json
 "mcpServers": {
-    "imagewizard-mcp": {
-      "command": "C:\\path\\to\\imagewizard-mcp\\venv\\Scripts\\imagewizard-mcp.exe",
+    "imagesorcery-mcp": {
+      "command": "C:\\path\\to\\imagesorcery-mcp\\venv\\Scripts\\imagesorcery-mcp.exe",
       "transportType": "stdio",
       "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
       "timeout": 100
@@ -97,7 +97,7 @@ Models will be downloaded to the `models` directory in the project root. This di
 
 When downloading models, the script automatically updates the `models/model_descriptions.json` file:
 
-- For Ultralytics models: Descriptions are predefined in `src/imagewizard_mcp/scripts/create_model_descriptions.py` and include detailed information about each model's purpose, size, and characteristics.
+- For Ultralytics models: Descriptions are predefined in `src/imagesorcery_mcp/scripts/create_model_descriptions.py` and include detailed information about each model's purpose, size, and characteristics.
 
 - For Hugging Face models: Descriptions are automatically extracted from the model card on Hugging Face Hub. The script attempts to use the model name from the model index or the first line of the description.
 
@@ -123,9 +123,9 @@ This repository is organized as follows:
 │   ├── model_descriptions.json  # Contains descriptions of the available models.
 │   ├── settings.json            # Contains settings related to model management and training runs.
 │   └── *.pt                     # Pre-trained model.
-├── src/                       # Contains the source code for the ImageWizard MCP server.
-│   └── imagewizard_mcp/       # The main package directory for the server.
-│       ├── __init__.py          # Makes `imagewizard_mcp` a Python package.
+├── src/                       # Contains the source code for the 🪄 ImageSorcery MCP server.
+│   └── imagesorcery_mcp/       # The main package directory for the server.
+│       ├── __init__.py          # Makes `imagesorcery_mcp` a Python package.
 │       ├── __main__.py          # Entry point for running the package as a script.
 │       ├── logging_config.py    # Configures the logging for the server.
 │       ├── server.py            # The main server file, responsible for initializing FastMCP and registering tools.
@@ -150,8 +150,8 @@ This repository is organized as follows:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/titulus/imagewizard-mcp.git
-cd imagewizard-mcp
+git clone https://github.com/titulus/imagesorcery-mcp.git
+cd imagesorcery-mcp
 ```
 
 2. Perform Client's install described above.
@@ -181,7 +181,7 @@ Strictly follow code style defined in `pyproject.toml`.
 Stick to the stack defined in `pyproject.toml` dependencies and do not add any new dependencies without a good reason.
 2. Write your code in new and existing files.
 If new dependencies needed, update `pyproject.toml` and install them via `pip install -e .` or `pip install -e ".[dev]"`. Do not install them diirectly via `pip install`.
-Check out exixisting source codes for examples (e.g. `src/imagewizard_mcp/server.py`, `src/imagewizard_mcp/tools/crop.py`). Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing code.
+Check out exixisting source codes for examples (e.g. `src/imagesorcery_mcp/server.py`, `src/imagesorcery_mcp/tools/crop.py`). Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing code.
 3. Update related `README.md` files with your changes.
 Stick to the format and structure of the existing `README.md` files.
 4. Write tests for your code.

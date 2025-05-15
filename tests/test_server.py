@@ -1,7 +1,7 @@
 import pytest
 from fastmcp import Client, FastMCP
 
-from imagewizard_mcp.server import mcp as image_wizard_mcp_server
+from imagesorcery_mcp.server import mcp as image_wizard_mcp_server
 
 
 @pytest.fixture

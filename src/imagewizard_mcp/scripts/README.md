@@ -1,10 +1,10 @@
-# ImageWizard MCP Server Scripts Documentation
+# 🪄 ImageSorcery MCP Server Scripts Documentation
 
-This document provides detailed information about each script available in the ImageWizard MCP Server, including their purpose, arguments, and examples of how to use them.
+This document provides detailed information about each script available in the 🪄 ImageSorcery MCP Server, including their purpose, arguments, and examples of how to use them.
 
 ## Overview
 
-The scripts directory contains utility scripts for model management and setup within the ImageWizard MCP Server. These scripts handle tasks such as:
+The scripts directory contains utility scripts for model management and setup within the 🪄 ImageSorcery MCP Server. These scripts handle tasks such as:
 
 - `download-models`: Downloading YOLO models from various sources
 - `create-model-descriptions`: Creating model descriptions (used in `setup.sh`)
@@ -16,7 +16,7 @@ These scripts are typically run during project setup or when adding new models t
 
 These scripts share some common functions and patterns:
 
-- All scripts use a central logger from `imagewizard_mcp.logging_config`
+- All scripts use a central logger from `imagesorcery_mcp.logging_config`
 - They typically create the `models` directory if it doesn't exist
 - They handle existing files to avoid unnecessary downloads
 - Progress bars are provided for downloads using `tqdm`
@@ -48,7 +48,7 @@ download-yolo-models --huggingface ultralytics/yolov8:yolov8m.pt
 
 **Python Import Usage:**
 ```python
-from imagewizard_mcp.scripts.download_models import download_ultralytics_model, download_from_huggingface
+from imagesorcery_mcp.scripts.download_models import download_ultralytics_model, download_from_huggingface
 
 # Download from Ultralytics
 success = download_ultralytics_model('yolov8m.pt')
@@ -80,7 +80,7 @@ create-model-descriptions
 
 **Python Import Usage:**
 ```python
-from imagewizard_mcp.scripts.create_model_descriptions import create_model_descriptions
+from imagesorcery_mcp.scripts.create_model_descriptions import create_model_descriptions
 
 # Create the model descriptions file
 result_path = create_model_descriptions()
@@ -104,7 +104,7 @@ download-clip-models
 
 **Python Import Usage:**
 ```python
-from imagewizard_mcp.scripts.download_clip import download_clip_model, install_clip
+from imagesorcery_mcp.scripts.download_clip import download_clip_model, install_clip
 
 # Install CLIP if not already installed
 if not check_clip_installed():
@@ -117,7 +117,7 @@ success = download_clip_model()
 
 ## Example Workflow
 
-A typical workflow for setting up the ImageWizard MCP server with all required models:
+A typical workflow for setting up the 🪄 ImageSorcery MCP server with all required models:
 
 ```bash
 # 1. Create model descriptions

@@ -2,17 +2,17 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 
-LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "imagewizard.log")
+LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logs", "imagesorcery.log")
 LOG_LEVEL = logging.INFO
 
 def setup_logging():
-    """Sets up the central logger for the ImageWizard MCP server."""
+    """Sets up the central logger for the 🪄 ImageSorcery MCP server."""
     # Ensure the logs directory exists
     log_dir = os.path.dirname(LOG_FILE)
     os.makedirs(log_dir, exist_ok=True)
 
     # Create logger
-    logger = logging.getLogger("imagewizard")
+    logger = logging.getLogger("imagesorcery")
     logger.setLevel(LOG_LEVEL)
 
     # Prevent adding multiple handlers if setup is called more than once
@@ -35,4 +35,4 @@ def setup_logging():
 setup_logging()
 
 # Get the logger instance to be used in other modules
-logger = logging.getLogger("imagewizard")
+logger = logging.getLogger("imagesorcery")

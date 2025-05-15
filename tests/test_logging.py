@@ -24,23 +24,23 @@ def test_log_structure_and_components(temp_log_file):
     """
     # Import the logging configuration first to ensure it's initialized
     
-    # Get the actual imagewizard logger
-    imagewizard_logger = logging.getLogger("imagewizard")
+    # Get the actual imagesorcery logger
+    imagesorcery_logger = logging.getLogger("imagesorcery")
     
     # Create a temporary handler to capture logs
     handler = logging.FileHandler(temp_log_file)
     # Use the same formatter as the original logger
-    original_formatter = imagewizard_logger.handlers[0].formatter
+    original_formatter = imagesorcery_logger.handlers[0].formatter
     handler.setFormatter(original_formatter)
-    imagewizard_logger.addHandler(handler)
+    imagesorcery_logger.addHandler(handler)
     
     # Generate a test log with a unique message
     test_message = f"Test message generated at {time.time()}"
     line_num = inspect.currentframe().f_lineno + 1
-    imagewizard_logger.info(test_message)
+    imagesorcery_logger.info(test_message)
     
     # Remove the temporary handler
-    imagewizard_logger.removeHandler(handler)
+    imagesorcery_logger.removeHandler(handler)
     
     # Read the log file
     with open(temp_log_file, 'r') as f:
@@ -66,7 +66,7 @@ def test_log_structure_and_components(temp_log_file):
         pytest.fail(f"Invalid timestamp format: {timestamp}")
     
     # 2. Logger name should match what we set
-    assert logger_name == "imagewizard", f"Expected logger name 'imagewizard', got '{logger_name}'"
+    assert logger_name == "imagesorcery", f"Expected logger name 'imagesorcery', got '{logger_name}'"
     
     # 3. Module name should be this test module
     assert module_name == "test_logging", f"Expected module name 'test_logging', got '{module_name}'"
@@ -84,30 +84,30 @@ def test_different_modules_log_correctly(temp_log_file):
     """Test that logs from different modules include correct module names."""
     # Import the logging configuration first
     
-    # Get the actual imagewizard logger
-    imagewizard_logger = logging.getLogger("imagewizard")
+    # Get the actual imagesorcery logger
+    imagesorcery_logger = logging.getLogger("imagesorcery")
     
     # Setup a new handler for our test log file using the same formatter
     handler = logging.FileHandler(temp_log_file)
-    original_formatter = imagewizard_logger.handlers[0].formatter
+    original_formatter = imagesorcery_logger.handlers[0].formatter
     handler.setFormatter(original_formatter)
     
     # Add our handler to the logger
-    imagewizard_logger.addHandler(handler)
+    imagesorcery_logger.addHandler(handler)
     
     # Log a message and get the current line number
     line_num = inspect.currentframe().f_lineno + 1
-    imagewizard_logger.info("Test message from test function")
+    imagesorcery_logger.info("Test message from test function")
     
     # Remove our handler
-    imagewizard_logger.removeHandler(handler)
+    imagesorcery_logger.removeHandler(handler)
     
     # Check the log file content
     with open(temp_log_file, 'r') as f:
         log_content = f.read()
     
     # Verify the module name and line number are in the log
-    assert f'imagewizard.test_logging:{line_num}' in log_content, "Log doesn't contain module info"
+    assert f'imagesorcery.test_logging:{line_num}' in log_content, "Log doesn't contain module info"
     assert 'Test message from test function' in log_content, "Log message not written correctly"
 
 def test_different_log_levels(temp_log_file):
@@ -117,23 +117,23 @@ def test_different_log_levels(temp_log_file):
     """
     # Import the logging configuration first
     
-    # Get the actual imagewizard logger
-    imagewizard_logger = logging.getLogger("imagewizard")
+    # Get the actual imagesorcery logger
+    imagesorcery_logger = logging.getLogger("imagesorcery")
     
     # Store the original level to restore it later
-    original_level = imagewizard_logger.level
+    original_level = imagesorcery_logger.level
     
     # Create a temporary handler to capture logs
     handler = logging.FileHandler(temp_log_file)
-    original_formatter = imagewizard_logger.handlers[0].formatter
+    original_formatter = imagesorcery_logger.handlers[0].formatter
     handler.setFormatter(original_formatter)
-    imagewizard_logger.addHandler(handler)
+    imagesorcery_logger.addHandler(handler)
     
     try:
         # Test with different log levels
         
         # 1. First test with DEBUG level (lower than default INFO)
-        imagewizard_logger.setLevel(logging.DEBUG)
+        imagesorcery_logger.setLevel(logging.DEBUG)
         
         # Log messages at different levels
         debug_msg = "This is a DEBUG message"
@@ -142,11 +142,11 @@ def test_different_log_levels(temp_log_file):
         error_msg = "This is an ERROR message"
         critical_msg = "This is a CRITICAL message"
         
-        imagewizard_logger.debug(debug_msg)
-        imagewizard_logger.info(info_msg)
-        imagewizard_logger.warning(warning_msg)
-        imagewizard_logger.error(error_msg)
-        imagewizard_logger.critical(critical_msg)
+        imagesorcery_logger.debug(debug_msg)
+        imagesorcery_logger.info(info_msg)
+        imagesorcery_logger.warning(warning_msg)
+        imagesorcery_logger.error(error_msg)
+        imagesorcery_logger.critical(critical_msg)
         
         # Read the log file
         with open(temp_log_file, 'r') as f:
@@ -173,14 +173,14 @@ def test_different_log_levels(temp_log_file):
         # Clear the log file first
         open(temp_log_file, 'w').close()
         
-        imagewizard_logger.setLevel(logging.INFO)
+        imagesorcery_logger.setLevel(logging.INFO)
         
         # Log messages at different levels again
-        imagewizard_logger.debug("This shouldn't appear in the log")
-        imagewizard_logger.info(info_msg)
-        imagewizard_logger.warning(warning_msg)
-        imagewizard_logger.error(error_msg)
-        imagewizard_logger.critical(critical_msg)
+        imagesorcery_logger.debug("This shouldn't appear in the log")
+        imagesorcery_logger.info(info_msg)
+        imagesorcery_logger.warning(warning_msg)
+        imagesorcery_logger.error(error_msg)
+        imagesorcery_logger.critical(critical_msg)
         
         # Read the log file again
         with open(temp_log_file, 'r') as f:
@@ -199,14 +199,14 @@ def test_different_log_levels(temp_log_file):
         # Clear the log file first
         open(temp_log_file, 'w').close()
         
-        imagewizard_logger.setLevel(logging.WARNING)
+        imagesorcery_logger.setLevel(logging.WARNING)
         
         # Log messages at different levels again
-        imagewizard_logger.debug("This shouldn't appear in the log")
-        imagewizard_logger.info("This shouldn't appear in the log either")
-        imagewizard_logger.warning(warning_msg)
-        imagewizard_logger.error(error_msg)
-        imagewizard_logger.critical(critical_msg)
+        imagesorcery_logger.debug("This shouldn't appear in the log")
+        imagesorcery_logger.info("This shouldn't appear in the log either")
+        imagesorcery_logger.warning(warning_msg)
+        imagesorcery_logger.error(error_msg)
+        imagesorcery_logger.critical(critical_msg)
         
         # Read the log file again
         with open(temp_log_file, 'r') as f:
@@ -224,14 +224,14 @@ def test_different_log_levels(temp_log_file):
         # Clear the log file first
         open(temp_log_file, 'w').close()
         
-        imagewizard_logger.setLevel(logging.ERROR)
+        imagesorcery_logger.setLevel(logging.ERROR)
         
         # Log messages at different levels again
-        imagewizard_logger.debug("This shouldn't appear in the log")
-        imagewizard_logger.info("This shouldn't appear in the log either")
-        imagewizard_logger.warning("This shouldn't appear in the log either")
-        imagewizard_logger.error(error_msg)
-        imagewizard_logger.critical(critical_msg)
+        imagesorcery_logger.debug("This shouldn't appear in the log")
+        imagesorcery_logger.info("This shouldn't appear in the log either")
+        imagesorcery_logger.warning("This shouldn't appear in the log either")
+        imagesorcery_logger.error(error_msg)
+        imagesorcery_logger.critical(critical_msg)
         
         # Read the log file again
         with open(temp_log_file, 'r') as f:
@@ -248,14 +248,14 @@ def test_different_log_levels(temp_log_file):
         # Clear the log file first
         open(temp_log_file, 'w').close()
         
-        imagewizard_logger.setLevel(logging.CRITICAL)
+        imagesorcery_logger.setLevel(logging.CRITICAL)
         
         # Log messages at different levels again
-        imagewizard_logger.debug("This shouldn't appear in the log")
-        imagewizard_logger.info("This shouldn't appear in the log either")
-        imagewizard_logger.warning("This shouldn't appear in the log either")
-        imagewizard_logger.error("This shouldn't appear in the log either")
-        imagewizard_logger.critical(critical_msg)
+        imagesorcery_logger.debug("This shouldn't appear in the log")
+        imagesorcery_logger.info("This shouldn't appear in the log either")
+        imagesorcery_logger.warning("This shouldn't appear in the log either")
+        imagesorcery_logger.error("This shouldn't appear in the log either")
+        imagesorcery_logger.critical(critical_msg)
         
         # Read the log file again
         with open(temp_log_file, 'r') as f:
@@ -271,9 +271,9 @@ def test_different_log_levels(temp_log_file):
         # Verify that the log format is still correct for each level
         for log_line in debug_level_logs:
             # Check that the log format includes module and line number
-            assert re.match(r'.*imagewizard\.test_logging:\d+ - \w+ -.*', log_line), f"Log format incorrect: {log_line}"
+            assert re.match(r'.*imagesorcery\.test_logging:\d+ - \w+ -.*', log_line), f"Log format incorrect: {log_line}"
     
     finally:
         # Restore the original logger level and remove our handler
-        imagewizard_logger.setLevel(original_level)
-        imagewizard_logger.removeHandler(handler)
+        imagesorcery_logger.setLevel(original_level)
+        imagesorcery_logger.removeHandler(handler)

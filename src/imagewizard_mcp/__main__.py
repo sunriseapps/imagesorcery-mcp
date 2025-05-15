@@ -5,7 +5,7 @@ import sys
 # Import the central logger
 from .logging_config import logger
 
-logger.info("ImageWizard MCP server __main__ executed")
+logger.info("🪄 ImageSorcery MCP server __main__ executed")
 
 # Get the directory of the current script (__main__.py)
 script_dir = os.path.dirname(os.path.abspath(__file__))

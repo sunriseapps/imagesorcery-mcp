@@ -11,7 +11,7 @@ import requests
 from tqdm import tqdm
 
 # Import the central logger
-from imagewizard_mcp.logging_config import logger
+from imagesorcery_mcp.logging_config import logger
 
 
 def get_models_dir():

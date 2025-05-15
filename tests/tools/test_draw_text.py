@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 from fastmcp import Client, FastMCP
 
-from imagewizard_mcp.server import mcp as image_wizard_mcp_server
+from imagesorcery_mcp.server import mcp as image_wizard_mcp_server
 
 # Add this line to filter out the PyTorch warnings
 pytestmark = pytest.mark.filterwarnings("ignore:.*'pin_memory' argument is set as true but no accelerator is found.*:UserWarning")

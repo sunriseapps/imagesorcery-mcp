@@ -4,8 +4,8 @@ from pathlib import Path
 from fastmcp import FastMCP
 
 # Import the central logger
-from imagewizard_mcp.logging_config import logger
-from imagewizard_mcp.tools import (
+from imagesorcery_mcp.logging_config import logger
+from imagesorcery_mcp.tools import (
     crop,
     detect,
     draw_rectangle,
@@ -18,7 +18,7 @@ from imagewizard_mcp.tools import (
     rotate,
 )
 
-logger.info("Starting ImageWizard MCP server setup")
+logger.info("Starting 🪄 ImageSorcery MCP server setup")
 
 # Change to project root directory
 project_root = Path(__file__).parent.parent.parent
@@ -26,7 +26,7 @@ os.chdir(project_root)
 logger.info(f"Changed current working directory to: {project_root}")
 
 mcp = FastMCP(
-    name="imagewizard-mcp",
+    name="imagesorcery-mcp",
     instructions=(
         "An MCP server providing tools for image processing operations. "
         "Input images must be specified with full paths."

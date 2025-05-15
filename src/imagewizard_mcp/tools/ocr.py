@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from pydantic import Field
 
 # Import the central logger
-from imagewizard_mcp.logging_config import logger
+from imagesorcery_mcp.logging_config import logger
 
 
 def register_tool(mcp: FastMCP):

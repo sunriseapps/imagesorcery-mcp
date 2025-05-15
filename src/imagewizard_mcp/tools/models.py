@@ -5,7 +5,7 @@ from typing import Dict, List
 from fastmcp import FastMCP
 
 # Import the central logger
-from imagewizard_mcp.logging_config import logger
+from imagesorcery_mcp.logging_config import logger
 
 
 def get_model_description(model_name: str) -> str:

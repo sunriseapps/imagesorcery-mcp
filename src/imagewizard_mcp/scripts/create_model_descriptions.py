@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 
 # Import the central logger
-from imagewizard_mcp.logging_config import logger
+from imagesorcery_mcp.logging_config import logger
 
 
 def create_model_descriptions():
