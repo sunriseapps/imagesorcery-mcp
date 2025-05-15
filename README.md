@@ -60,24 +60,9 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 "mcpServers": {
     "imagewizard-mcp": {
       "command": "/path/to/imagewizard-mcp/venv/bin/imagewizard-mcp",
-      "args": [],
-      "env": {},
-      "disabled": false,
-      "autoApprove": [
-        "detect",
-        "crop",
-        "get_models",
-        "draw_texts",
-        "get_metainfo",
-        "rotate",
-        "resize",
-        "classify",
-        "draw_rectangles",
-        "find",
-        "ocr"
-      ],
-      "timeout": 60,
-      "transportType": "stdio"
+      "transportType": "stdio",
+      "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
+      "timeout": 100
     }
 }
 ```
@@ -88,22 +73,9 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 "mcpServers": {
     "imagewizard-mcp": {
       "command": "C:\\path\\to\\imagewizard-mcp\\venv\\Scripts\\imagewizard-mcp.exe",
-      "args": [],
-      "disabled": false,
-      "autoApprove": [
-        "detect",
-        "crop",
-        "get_models",
-        "draw_texts",
-        "get_metainfo",
-        "rotate",
-        "resize",
-        "classify",
-        "draw_rectangles",
-        "find",
-        "ocr"
-      ],
-      "timeout": 60
+      "transportType": "stdio",
+      "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
+      "timeout": 100
     }
 }
 ```
@@ -131,8 +103,12 @@ When downloading models, the script automatically updates the `models/model_desc
 
 After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
 
+<details>
+<summary>Contributing</summary>
 
-## Directory Structure
+## Contributing
+
+### Directory Structure
 
 This repository is organized as follows:
 
@@ -155,24 +131,20 @@ This repository is organized as follows:
 │       ├── server.py            # The main server file, responsible for initializing FastMCP and registering tools.
 │       ├── logs/                # Directory for storing server logs.
 │       ├── scripts/             # Contains utility scripts for model management.
+│       │   ├── README.md        # Documentation for the scripts.
 │       │   ├── __init__.py      # Makes `scripts` a Python package.
 │       │   ├── create_model_descriptions.py # Script to generate model descriptions.
 │       │   ├── download_clip.py # Script to download CLIP models.
 │       │   └── download_models.py # Script to download other models (e.g., YOLO).
 │       └── tools/               # Contains the implementation of individual MCP tools.
-│           ├── __init__.py      # Import the central logger
 │           ├── README.md        # Documentation for the tools.
+│           ├── __init__.py      # Import the central logger
 │           └── *.py           # Implements the tool.
 └── tests/                     # Contains test files for the project.
     ├── test_server.py         # Tests for the main server functionality.
     ├── data/                  # Contains test data, likely image files used in tests.
     └── tools/                 # Contains tests for individual tools.
-
 ```
-
-## Contributing
-
-We welcome contributions to imagewizard-mcp! Here's how you can help:
 
 ### Development Setup
 
@@ -197,7 +169,6 @@ source venv/bin/activate # mac/linux
 ```bash
 pip install -e ".[dev]"
 ```
-
 
 ### Rules
 
@@ -228,7 +199,7 @@ In case of fails - fix the code and tests. It is **strictly required** to have a
 ### Coding hints
 - Use type hints where appropriate
 - Use pydantic for data validation and serialization
-
+</details>
 
 ## Questions?
 
