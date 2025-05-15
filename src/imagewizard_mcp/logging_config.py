@@ -19,7 +19,8 @@ def setup_logging():
     if not logger.handlers:
         # Create rotating file handler
         handler = RotatingFileHandler(LOG_FILE, maxBytes=10*1024*1024, backupCount=5)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        # Change formatter to include module name and line number
+        formatter = logging.Formatter('%(asctime)s - %(name)s.%(module)s:%(lineno)d - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
         logger.addHandler(handler)
 
