@@ -18,7 +18,7 @@ def setup_logging():
     # Prevent adding multiple handlers if setup is called more than once
     if not logger.handlers:
         # Create rotating file handler
-        handler = RotatingFileHandler(LOG_FILE, maxBytes=10*1024*1024, backupCount=5)
+        handler = RotatingFileHandler(LOG_FILE, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8')
         # Change formatter to include module name and line number
         formatter = logging.Formatter('%(asctime)s - %(name)s.%(module)s:%(lineno)d - %(levelname)s - %(message)s')
         handler.setFormatter(formatter)
