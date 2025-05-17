@@ -34,12 +34,15 @@ _**Note:** detailed information and usage instructions for each tool can be foun
 ## Installation
 
 ```bash
-git clone https://github.com/titulus/imagesorcery-mcp.git
+git clone https://github.com/sunriseapps/imagesorcery-mcp.git
 cd imagesorcery-mcp
 ./setup.sh
 ```
 
+<details>
+<summary>setup.sh</summary>
 The `setup.sh` script performs the following actions:
+
 - Creates a Python virtual environment named `venv` if it doesn't already exist.
 - Activates the virtual environment.
 - Installs the project's core dependencies using `pip install -e .`.
@@ -47,6 +50,7 @@ The `setup.sh` script performs the following actions:
 - Runs the `create-model-descriptions` script to generate the initial `models/model_descriptions.json` file.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
 - Downloads CLIP models required by the `find` tool for text prompts.
+</details>
 
 After running `setup.sh`, you will have a virtual environment set up, project dependencies installed, and necessary default models downloaded.
 
@@ -83,7 +87,7 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 
 ## Downloading extra models
 
-Some tools, like `detect` and `find`, for specific cases require pre-downloaded models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tools are used. You need to download them explicitly:
+Some tools, like `detect` and `find`, for specific cases require pre-downloaded specific models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tools are used. You need to download them explicitly:
 
 ```bash
 # Download models for the detect tool
