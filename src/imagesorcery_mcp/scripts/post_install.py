@@ -6,8 +6,8 @@ and downloads default models.
 """
 
 import os
-import subprocess
-import sys
+import subprocess # Ensure subprocess is imported
+import sys # Ensure sys is imported
 from pathlib import Path
 
 # Import the central logger
@@ -15,6 +15,29 @@ from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.scripts.create_model_descriptions import create_model_descriptions
 from imagesorcery_mcp.scripts.download_clip import download_clip_model
 from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
+
+def install_clip():
+    """Install CLIP from the Ultralytics GitHub repository."""
+    logger.info("Installing CLIP package from GitHub...")
+    
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "git+https://github.com/ultralytics/CLIP.git"],
+            check=True,
+            stdout=sys.stdout, # Can be replaced with subprocess.PIPE if console output is not needed
+            stderr=sys.stderr  # Can be replaced with subprocess.PIPE
+        )
+        logger.info("CLIP package installed successfully")
+        print("✅ CLIP package installed successfully")
+        return True
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Failed to install CLIP: {e}")
+        print(f"❌ Failed to install CLIP package: {e}")
+        return False
+    except FileNotFoundError: # Handle case where pip or python executable is not found
+        logger.error("Failed to install CLIP: Python executable or pip not found.")
+        print("❌ Failed to install CLIP package: Python executable or pip not found.")
+        return False
 
 
 def run_post_install():
@@ -51,6 +74,12 @@ def run_post_install():
             logger.error(f"Failed to download model: {model}")
             return False
     print("✅ Ultralytics YOLO models download completed successfully")
+
+    # Install CLIP package
+    logger.info("Installing CLIP package for text prompts...")
+    if not install_clip():
+        logger.error("Failed to install CLIP package. Text prompt functionality for 'find' tool might be limited.")
+        return False
     
     # Download CLIP model
     logger.info("Downloading CLIP model for text prompts...")

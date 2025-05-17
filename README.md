@@ -85,7 +85,8 @@ The `imagesorcery-mcp --post-install` script performs the following actions:
 - Creates a `models` directory to store pre-trained models.
 - Generates the initial `models/model_descriptions.json` file.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
-- Downloads the CLIP model required by the `find` tool for text prompts (the CLIP Python package is installed as a dependency).
+- Installs the `clip` Python package from Ultralytics' GitHub repository (required for text prompts with the `find` tool).
+- Downloads the CLIP model file required by the `find` tool.
 
 You can run this process anytime to restore the default models.
 </details>
