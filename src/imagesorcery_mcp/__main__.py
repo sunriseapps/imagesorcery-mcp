@@ -1,5 +1,6 @@
-from .logging_config import logger
 from imagesorcery_mcp.server import main
+
+from .logging_config import logger
 
 logger.info("🪄 ImageSorcery MCP server __main__ executed")
 

@@ -6,16 +6,15 @@ and downloads default models.
 """
 
 import os
-import sys
 import subprocess
+import sys
 from pathlib import Path
 
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.scripts.create_model_descriptions import create_model_descriptions
-from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
 from imagesorcery_mcp.scripts.download_clip import download_clip_model
-from importlib.util import find_spec
+from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
 
 
 def install_clip():
