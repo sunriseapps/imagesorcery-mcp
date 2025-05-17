@@ -74,10 +74,19 @@ The `setup.sh` script performs the following actions:
 - Creates a Python virtual environment named `venv` if it doesn't already exist.
 - Activates the virtual environment.
 - Installs the project's core dependencies using `pip install -e .`.
+- Runs the post-installation process to set up models and requirements using `imagesorcery-mcp --post-install`.
+
+#### The post-installation process:
+
 - Creates a `models` directory to store pre-trained models.
-- Runs the `create-model-descriptions` script to generate the initial `models/model_descriptions.json` file.
+- Generates the initial `models/model_descriptions.json` file.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
 - Downloads CLIP models required by the `find` tool for text prompts.
+
+You can run this process anytime to restore the default models using:
+```bash
+imagesorcery-mcp --post-install
+```
 </details>
 
 ## ⚙️ Configuration MCP client
@@ -163,6 +172,7 @@ This repository is organized as follows:
 │       │   ├── __init__.py      # Makes `scripts` a Python package.
 │       │   ├── create_model_descriptions.py # Script to generate model descriptions.
 │       │   ├── download_clip.py # Script to download CLIP models.
+│       │   ├── post_install.py  # Script to run post-installation tasks.
 │       │   └── download_models.py # Script to download other models (e.g., YOLO).
 │       └── tools/               # Contains the implementation of individual MCP tools.
 │           ├── README.md        # Documentation for the tools.
@@ -241,4 +251,3 @@ You can also open an issue in the repository for bug reports or feature requests
 ## 📜 License
 
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
-</file_content>

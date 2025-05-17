@@ -50,41 +50,6 @@ def download_file(url, output_path):
         return False
 
 
-def check_clip_installed():
-    """Check if CLIP is installed."""
-    logger.info("Checking if CLIP is installed")
-    try:
-        import clip  # noqa: F401
-        logger.info("CLIP is installed")
-        return True
-    except ImportError:
-        logger.warning("CLIP is not installed")
-        return False
-
-
-def install_clip():
-    """Install CLIP from the Ultralytics GitHub repository."""
-    logger.info("Attempting to install CLIP")
-    
-    try:
-        import subprocess
-        result = subprocess.run(
-            [sys.executable, "-m", "pip", "install", "git+https://github.com/ultralytics/CLIP.git"],
-            check=True,
-            capture_output=True,
-            text=True
-        )
-        logger.info(f"CLIP installation stdout:\n{result.stdout}")
-        logger.info(f"CLIP installation stderr:\n{result.stderr}")
-        logger.info("CLIP installed successfully")
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to install CLIP: {e}")
-        logger.error(f"CLIP installation stdout:\n{e.stdout}")
-        logger.error(f"CLIP installation stderr:\n{e.stderr}")
-        return False
-
-
 def download_clip_model():
     """Download the MobileCLIP model required for YOLOe text prompts."""
     logger.info("Attempting to download CLIP model")
@@ -130,22 +95,20 @@ def download_clip_model():
     
     return True
 
+
 def main():
     """Main function to download CLIP models."""
     logger.info("Running download_clip_models script")
     
-    # First, check if CLIP is installed
-    if not check_clip_installed():
-        if not install_clip():
-            logger.error("Failed to install CLIP. Please install it manually.")
-            sys.exit(1)
-    
-    # Then download the MobileCLIP model
+    # Download the MobileCLIP model
     if download_clip_model():
-        logger.info("All CLIP models downloaded successfully")
+        logger.info("CLIP model downloaded successfully")
+        print("✅ CLIP model download completed successfully")
     else:
-        logger.error("Failed to download all required CLIP models")
+        logger.error("Failed to download CLIP model")
+        print("❌ Failed to download CLIP model")
         sys.exit(1)
+    
     logger.info("download_clip_models script finished")
 
 

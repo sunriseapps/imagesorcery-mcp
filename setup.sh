@@ -22,26 +22,8 @@ fi
 echo "Installing package dependencies..."
 pip install -e "."
 
-# Install development dependencies
-# echo "Installing development dependencies..."
-# pip install -e ".[dev]"
-
-# Create models directory
-mkdir -p models
-
-# Create model descriptions file
-echo "Creating model descriptions file..."
-create-model-descriptions
-
-# Download YOLOv8 model
-echo "Downloading default models..."
-download-yolo-models --ultralytics yoloe-11l-seg-pf.pt
-download-yolo-models --ultralytics yoloe-11s-seg-pf.pt
-download-yolo-models --ultralytics yoloe-11l-seg.pt
-download-yolo-models --ultralytics yoloe-11s-seg.pt
-
-# Download CLIP model
-echo "Downloading CLIP model for text prompts..."
-download-clip-models
+# Run post-installation process
+echo "Running post-installation process..."
+imagesorcery-mcp --post-install
 
 echo "✅ Setup complete!"

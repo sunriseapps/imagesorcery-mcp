@@ -1,11 +1,5 @@
-from .logging_config import logger
-from .server import mcp
+"""ImageSorcery MCP - Powerful Image Processing Tools for AI Assistants"""
 
+from .server import main, mcp
 
-def main():
-    logger.info("🪄 ImageSorcery MCP server main function started")
-    mcp.run()
-
-
-if __name__ == "__main__":
-    main()
+__all__ = ["main", "mcp"]

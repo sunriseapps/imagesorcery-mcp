@@ -1,4 +1,6 @@
 import os
+import sys
+import argparse
 from pathlib import Path
 
 from fastmcp import FastMCP
@@ -18,13 +20,7 @@ from imagesorcery_mcp.tools import (
     rotate,
 )
 
-logger.info("Starting 🪄 ImageSorcery MCP server setup")
-
-# Change to project root directory
-project_root = Path(__file__).parent.parent.parent
-os.chdir(project_root)
-logger.info(f"Changed current working directory to: {project_root}")
-
+# Create a module-level mcp instance for backward compatibility with tests
 mcp = FastMCP(
     name="imagesorcery-mcp",
     instructions=(
@@ -32,8 +28,8 @@ mcp = FastMCP(
         "Input images must be specified with full paths."
     ),
 )
-logger.info("FastMCP instance created")
 
+# Register tools with the module-level mcp instance
 crop.register_tool(mcp)
 resize.register_tool(mcp)
 rotate.register_tool(mcp)
@@ -45,5 +41,45 @@ draw_text.register_tool(mcp)
 draw_rectangle.register_tool(mcp)
 ocr.register_tool(mcp)
 
-if __name__ == "__main__":
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(description="ImageSorcery MCP Server")
+    parser.add_argument(
+        "--post-install", 
+        action="store_true", 
+        help="Run post-installation tasks and exit"
+    )
+    return parser.parse_args()
+
+def main():
+    """Main entry point for the server."""
+    args = parse_arguments()
+    
+    logger.info("Starting 🪄 ImageSorcery MCP server setup")
+    
+    # Change to project root directory
+    project_root = Path(__file__).parent.parent.parent
+    os.chdir(project_root)
+    logger.info(f"Changed current working directory to: {project_root}")
+    
+    # If --post-install flag is provided, run post-installation tasks and exit
+    if args.post_install:
+        logger.info("Post-installation flag detected, running post-installation tasks")
+        try:
+            from imagesorcery_mcp.scripts.post_install import run_post_install
+            success = run_post_install()
+            if not success:
+                logger.error("Post-installation tasks failed")
+                sys.exit(1)
+            logger.info("Post-installation tasks completed successfully")
+            sys.exit(0)
+        except Exception as e:
+            logger.error(f"Error during post-installation: {str(e)}")
+            sys.exit(1)
+    
+    # For actual server execution, we'll use the global mcp instance
+    logger.info("Starting MCP server")
     mcp.run()
+
+if __name__ == "__main__":
+    main()

@@ -9,6 +9,7 @@ The scripts directory contains utility scripts for model management and setup wi
 - `download-models`: Downloading YOLO models from various sources
 - `create-model-descriptions`: Creating model descriptions (used in `setup.sh`)
 - `download-clip-models`: Downloading CLIP models required for text-based detection (YOLOe *-pf models) (used in `setup.sh`)
+- `post-install-imagesorcery`: Running all post-installation tasks in a single command
 
 These scripts are typically run during project setup or when adding new models to the system.
 
@@ -114,12 +115,48 @@ if not check_clip_installed():
 success = download_clip_model()
 ```
 
+### `post_install.py`
+
+Runs all post-installation tasks for the ImageSorcery MCP server in a single command.
+
+- **Purpose:** Automates the complete setup process after package installation.
+- **Functionality:**
+  - Creates the models directory
+  - Generates the model descriptions file with `create-model-descriptions`
+  - Downloads default YOLO models (yoloe-11l-seg-pf.pt, yoloe-11s-seg-pf.pt, yoloe-11l-seg.pt, yoloe-11s-seg.pt) with `download-yolo-models`
+  - Downloads required CLIP models for text prompts with `download-clip-models`
+- **Usage:** Run directly, through the server with the `--post-install` flag, or through the provided command-line entry point.
+
+**Command-line Usage:**
+```bash
+# Run post-installation as a standalone script
+post-install-imagesorcery
+
+# Or run it through the server with the --post-install flag
+imagesorcery-mcp --post-install
+```
+
+**Python Import Usage:**
+```python
+from imagesorcery_mcp.scripts.post_install import run_post_install
+
+# Run all post-installation tasks
+success = run_post_install()
+if success:
+    print("Post-installation completed successfully!")
+else:
+    print("Post-installation failed.")
+```
 
 ## Example Workflow
 
 A typical workflow for setting up the 🪄 ImageSorcery MCP server with all required models:
 
 ```bash
+# Option 1: Complete setup with a single command
+imagesorcery-mcp --post-install
+
+# Option 2: Manual step-by-step setup
 # 1. Create model descriptions
 create-model-descriptions
 
@@ -133,4 +170,4 @@ download-yolo-models --ultralytics yoloe-11s-seg.pt
 download-clip-models
 ```
 
-This workflow is automated in the `setup.sh` script provided with the project.
+The `--post-install` flag is designed to automate all these steps and is the recommended approach for initial setup.
