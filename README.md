@@ -81,7 +81,7 @@ The `setup.sh` script performs the following actions:
 - Creates a `models` directory to store pre-trained models.
 - Generates the initial `models/model_descriptions.json` file.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
-- Downloads CLIP models required by the `find` tool for text prompts.
+- Installs the CLIP package and downloads the required models for the `find` tool for text prompts.
 
 You can run this process anytime to restore the default models using:
 ```bash

@@ -89,13 +89,12 @@ result_path = create_model_descriptions()
 
 ### `download_clip.py`
 
-Downloads CLIP models required for YOLOe text prompts functionality.
+Downloads the MobileCLIP model required for YOLOe text prompts functionality.
 
-- **Purpose:** Ensures that required CLIP models are available for text-based detection in the `find` tool.
+- **Purpose:** Ensures that the required MobileCLIP model is available for text-based detection in the `find` tool.
 - **Functionality:**
-  - Checks if CLIP is installed, and installs it if necessary
   - Downloads the MobileCLIP model required for YOLOe text prompts
-  - Places models in both the models directory and root directory for compatibility
+  - Places the model in both the models directory and root directory for compatibility
 - **Usage:** Run directly or through the provided command-line entry point.
 
 **Command-line Usage:**
@@ -105,11 +104,7 @@ download-clip-models
 
 **Python Import Usage:**
 ```python
-from imagesorcery_mcp.scripts.download_clip import download_clip_model, install_clip
-
-# Install CLIP if not already installed
-if not check_clip_installed():
-    success = install_clip()
+from imagesorcery_mcp.scripts.download_clip import download_clip_model
 
 # Download CLIP model
 success = download_clip_model()
@@ -124,7 +119,7 @@ Runs all post-installation tasks for the ImageSorcery MCP server in a single com
   - Creates the models directory
   - Generates the model descriptions file with `create-model-descriptions`
   - Downloads default YOLO models (yoloe-11l-seg-pf.pt, yoloe-11s-seg-pf.pt, yoloe-11l-seg.pt, yoloe-11s-seg.pt) with `download-yolo-models`
-  - Downloads required CLIP models for text prompts with `download-clip-models`
+  - Installs the CLIP package and downloads the required CLIP models for text prompts with `download-clip-models`
 - **Usage:** Run directly, through the server with the `--post-install` flag, or through the provided command-line entry point.
 
 **Command-line Usage:**
