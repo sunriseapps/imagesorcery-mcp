@@ -162,6 +162,7 @@ download-yolo-models --ultralytics yoloe-11l-seg.pt
 download-yolo-models --ultralytics yoloe-11s-seg.pt
 
 # 3. Download CLIP models for text prompts
+# Don't forget to: pip install git+https://github.com/ultralytics/CLIP.git
 download-clip-models
 ```
 
