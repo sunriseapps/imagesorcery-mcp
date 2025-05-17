@@ -14,7 +14,7 @@ AI assistants are limited when working with images:
 
 ## ✅ With ImageSorcery MCP
 
-ImageSorcery empowers AI assistants with powerful image processing capabilities:
+`🪄 ImageSorcery` empowers AI assistants with powerful image processing capabilities:
 
 - ✅ Crop, resize, and rotate images with precision
 - ✅ Draw text and shapes on images
@@ -84,8 +84,6 @@ The `setup.sh` script performs the following actions:
 
 Add to your MCP client these settings:
 
-### Linux configuration
-
 ```json
 "mcpServers": {
     "imagesorcery-mcp": {
@@ -97,7 +95,8 @@ Add to your MCP client these settings:
 }
 ```
 
-### Windows configuration
+<details>
+<summary>For Windows</summary>
 
 ```json
 "mcpServers": {
@@ -109,6 +108,7 @@ Add to your MCP client these settings:
     }
 }
 ```
+</details>
 
 ## 📦 Additional Models
 
@@ -134,7 +134,7 @@ After downloading models, it's recommended to check the descriptions in `models/
 
 ## 🤝 Contributing
 <details>
-<summary>Whether you're a human or an AI agent, we welcome your contributions to this project!</summary>
+<summary>Whether you're a 👤 human or an 🤖 AI agent, we welcome your contributions to this project!</summary>
 
 ### Directory Structure
 
