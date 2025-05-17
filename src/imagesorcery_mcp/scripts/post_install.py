@@ -17,26 +17,6 @@ from imagesorcery_mcp.scripts.download_clip import download_clip_model
 from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
 
 
-def install_clip():
-    """Install CLIP from the Ultralytics GitHub repository."""
-    logger.info("Installing CLIP package from GitHub...")
-    
-    try:
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "git+https://github.com/ultralytics/CLIP.git"],
-            check=True,
-            stdout=sys.stdout,
-            stderr=sys.stderr
-        )
-        logger.info("CLIP package installed successfully")
-        print("✅ CLIP package installed successfully")
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Failed to install CLIP: {e}")
-        print("❌ Failed to install CLIP package")
-        return False
-
-
 def run_post_install():
     """Run all post-installation tasks."""
     logger.info("Running post-installation tasks...")
@@ -71,12 +51,6 @@ def run_post_install():
             logger.error(f"Failed to download model: {model}")
             return False
     print("✅ Ultralytics YOLO models download completed successfully")
-    
-    # Install CLIP package
-    logger.info("Installing CLIP package for text prompts...")
-    if not install_clip():
-        logger.error("Failed to install CLIP package")
-        return False
     
     # Download CLIP model
     logger.info("Downloading CLIP model for text prompts...")

@@ -61,42 +61,44 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 ### Installation
 
-```bash
-git clone https://github.com/sunriseapps/imagesorcery-mcp.git
-cd imagesorcery-mcp
-./setup.sh
-```
+1.  **Install the package using pip:**
+    It's recommended to use a virtual environment, but you can also install it globally.
+    ```bash
+    # Optional: Create and activate a virtual environment
+    # python -m venv venv
+    # source venv/bin/activate  # For Linux/macOS
+    # venv\Scripts\activate    # For Windows
+
+    pip install imagesorcery-mcp
+    ```
+
+2.  **Run the post-installation script:**
+    This step is crucial for downloading the models required by the tools.
+    ```bash
+    imagesorcery-mcp --post-install
+    ```
 
 <details>
-<summary>What does setup.sh do?</summary>
-The `setup.sh` script performs the following actions:
-
-- Creates a Python virtual environment named `venv` if it doesn't already exist.
-- Activates the virtual environment.
-- Installs the project's core dependencies using `pip install -e .`.
-- Runs the post-installation process to set up models and requirements using `imagesorcery-mcp --post-install`.
-
-#### The post-installation process:
+<summary>What does the post-installation script do?</summary>
+The `imagesorcery-mcp --post-install` script performs the following actions:
 
 - Creates a `models` directory to store pre-trained models.
 - Generates the initial `models/model_descriptions.json` file.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
-- Installs the CLIP package and downloads the required models for the `find` tool for text prompts.
+- Downloads the CLIP model required by the `find` tool for text prompts (the CLIP Python package is installed as a dependency).
 
-You can run this process anytime to restore the default models using:
-```bash
-imagesorcery-mcp --post-install
-```
+You can run this process anytime to restore the default models.
 </details>
 
 ## ⚙️ Configuration MCP client
 
-Add to your MCP client these settings:
+Add to your MCP client these settings.
+If `imagesorcery-mcp` is in your system's PATH after installation, you can use `imagesorcery-mcp` directly as the command. Otherwise, you'll need to provide the full path to the executable.
 
 ```json
 "mcpServers": {
     "imagesorcery-mcp": {
-      "command": "/path/to/imagesorcery-mcp/venv/bin/imagesorcery-mcp",
+      "command": "imagesorcery-mcp", // Or /full/path/to/venv/bin/imagesorcery-mcp if installed in a venv
       "transportType": "stdio",
       "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
       "timeout": 100
@@ -110,7 +112,7 @@ Add to your MCP client these settings:
 ```json
 "mcpServers": {
     "imagesorcery-mcp": {
-      "command": "C:\\path\\to\\imagesorcery-mcp\\venv\\Scripts\\imagesorcery-mcp.exe",
+      "command": "imagesorcery-mcp.exe", // Or C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe if installed in a venv
       "transportType": "stdio",
       "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
       "timeout": 100
@@ -155,7 +157,7 @@ This repository is organized as follows:
 ├── pyproject.toml             # Configuration file for Python projects, including build system, dependencies, and tool settings.
 ├── pytest.ini                 # Configuration file for the pytest testing framework.
 ├── README.md                  # The main documentation file for the project.
-├── setup.sh                   # A shell script for quick setup.
+├── setup.sh                   # A shell script for quick setup (legacy, for reference or local use).
 ├── models/                    # This directory stores pre-trained models used by tools like `detect` and `find`. It is typically ignored by Git due to the large file sizes.
 │   ├── model_descriptions.json  # Contains descriptions of the available models.
 │   ├── settings.json            # Contains settings related to model management and training runs.
@@ -188,25 +190,22 @@ This repository is organized as follows:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/titulus/imagesorcery-mcp.git
+git clone https://github.com/sunriseapps/imagesorcery-mcp.git # Or your fork
 cd imagesorcery-mcp
 ```
 
-2. Perform Client's install described above.
+2. (Recommended) Create and activate a virtual environment:
 ```bash
-./setup.sh
+python -m venv venv
+source venv/bin/activate # For Linux/macOS
+# venv\Scripts\activate    # For Windows
 ```
 
-3. Activate a virtual environment:
-```bash
-venv\Scripts\activate # win
-source venv/bin/activate # mac/linux
-```
-
-4. Install development dependencies:
+3. Install the package in editable mode along with development dependencies:
 ```bash
 pip install -e ".[dev]"
 ```
+This will install `imagesorcery-mcp` and all dependencies from `[project.dependencies]` and `[project.optional-dependencies].dev` (including `build` and `twine`).
 
 ### Rules
 

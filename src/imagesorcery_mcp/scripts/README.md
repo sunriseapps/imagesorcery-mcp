@@ -119,7 +119,7 @@ Runs all post-installation tasks for the ImageSorcery MCP server in a single com
   - Creates the models directory
   - Generates the model descriptions file with `create-model-descriptions`
   - Downloads default YOLO models (yoloe-11l-seg-pf.pt, yoloe-11s-seg-pf.pt, yoloe-11l-seg.pt, yoloe-11s-seg.pt) with `download-yolo-models`
-  - Installs the CLIP package and downloads the required CLIP models for text prompts with `download-clip-models`
+  - Downloads the required CLIP models for text prompts with `download-clip-models` (the CLIP Python package is installed as a project dependency)
 - **Usage:** Run directly, through the server with the `--post-install` flag, or through the provided command-line entry point.
 
 **Command-line Usage:**
@@ -162,7 +162,6 @@ download-yolo-models --ultralytics yoloe-11l-seg.pt
 download-yolo-models --ultralytics yoloe-11s-seg.pt
 
 # 3. Download CLIP models for text prompts
-# Don't forget to: pip install git+https://github.com/ultralytics/CLIP.git
 download-clip-models
 ```
 

@@ -2,6 +2,7 @@
 name = "imagesorcery-mcp"
 version = "0.1.0"
 description = "A Model Context Protocol server providing image manipulation tools for LLMs"
+readme = "README.md"
 requires-python = ">=3.10"
 authors = [
     { name = "titulus", email = "titulus.web@gmail.com" },
@@ -25,7 +26,12 @@ dependencies = [
     "tqdm", # For progress bars during downloads
     "huggingface_hub", # For accessing models from Hugging Face
     "easyocr", # For OCR
+    "clip @ git+https://github.com/ultralytics/CLIP.git", # For text-based detection with some YOLO models
 ]
+
+[project.urls]
+Homepage = "https://github.com/sunriseapps/imagesorcery-mcp"
+Repository = "https://github.com/sunriseapps/imagesorcery-mcp"
 [project.scripts]
 imagesorcery-mcp = "imagesorcery_mcp:main"
 download-yolo-models = "imagesorcery_mcp.scripts.download_models:main"
@@ -34,7 +40,7 @@ download-clip-models = "imagesorcery_mcp.scripts.download_clip:main"
 post-install-imagesorcery = "imagesorcery_mcp.scripts.post_install:main"
 
 [project.optional-dependencies]
-dev = ["pytest", "ruff", "pytest-asyncio"]
+dev = ["pytest", "ruff", "pytest-asyncio", "build", "twine"]
 clip = []
 
 [build-system]
