@@ -1,37 +1,65 @@
-# 🪄 ImageSorcery MCP Server
+# 🪄 ImageSorcery MCP - Powerful Image Processing Tools for AI Assistants
 
-An MCP server providing tools for image processing operations.
-
-## Available Tools
-
-_**Note:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagesorcery_mcp/tools/README.md`._
-
-- `crop`: Crops an image using OpenCV's NumPy slicing approach.
-- `resize`: Resizes an image using OpenCV.
-- `rotate`: Rotates an image using imutils.rotate_bound function.
-- `draw_texts`: Draws text on an image using OpenCV.
-- `draw_rectangles`: Draws rectangles on an image using OpenCV.
-- `get_metainfo`: Gets metadata information about an image file.
-- `detect`: Detects objects in an image using models from Ultralytics.
-- `find`: Finds objects in an image based on a text description.
-- `get_models`: Lists all available models in the models directory.
-- `ocr`: Performs Optical Character Recognition (OCR) on an image using EasyOCR. _(Might be slow on first use.)_
-
-## Examples of Questions for Claude
-
-1. "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'"
-2. "Get metadata information about my image 'photo.jpg'"
-3. "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'"
-4. "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'"
-5. "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4"
-6. "List all available models in the models directory"
-7. "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'"
-8. "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'"
-9. "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4"
-10. "Extract text from my image 'document.jpg' using OCR with English language"
+[![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) [![MCP](https://img.shields.io/badge/Protocol-MCP-lightgrey)](https://github.com/microsoft/mcp) [![Claude App](https://img.shields.io/badge/Works_with-Claude_App-purple)](https://claude.ai) [![Cline](https://img.shields.io/badge/Works_with-Cline-orange)](https://github.com/ClineLabs/cline) 
 
 
-## Installation
+## ❌ Without ImageSorcery MCP
+
+AI assistants are limited when working with images:
+
+- ❌ Can't modify or analyze images directly
+- ❌ No ability to crop, resize, or process images
+- ❌ Some LLMs can't detect objects or extract text from images
+- ❌ Limited to verbal descriptions with no visual manipulation
+
+## ✅ With ImageSorcery MCP
+
+ImageSorcery empowers AI assistants with powerful image processing capabilities:
+
+- ✅ Crop, resize, and rotate images with precision
+- ✅ Draw text and shapes on images
+- ✅ Detect objects using state-of-the-art models
+- ✅ Extract text from images with OCR
+- ✅ Get detailed image metadata
+- ✅ Use a wide range of pre-trained models for object detection, OCR, and more
+
+Just ask your AI to help with image tasks:
+
+> "Copy all the images with pets from ~/photos/ into ~/pets/."
+
+> "Numerate fields on this screenshot.png and prepare screenshot_description.md with a list of described fields."
+
+> "Crop the photo.jpg to make the person be centered."
+
+😉 _**Hint:** Add "use imagesorcery" to make sure it will uses propper tool"._
+
+Your tool will combine multiple tools listed below to achieve your goal.
+
+## 🛠️ Available Tools
+
+| Tool | Description | Example Prompt |
+|------|-------------|----------------|
+| `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
+| `resize` | Resizes an image using OpenCV | "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'" |
+| `rotate` | Rotates an image using imutils.rotate_bound function | "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'" |
+| `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
+| `draw_rectangles` | Draws rectangles on an image using OpenCV | "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'" |
+| `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
+| `detect` | Detects objects in an image using models from Ultralytics | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
+| `find` | Finds objects in an image based on a text description | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
+| `get_models` | Lists all available models in the models directory | "List all available models in the models directory" |
+| `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |
+
+😉 _**Hint:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagesorcery_mcp/tools/README.md`._
+
+## 🚀 Getting Started
+
+### Requirements
+
+- `Python 3.10` or higher
+- `Claude.app`, `Cline`, or another MCP client
+
+### Installation
 
 ```bash
 git clone https://github.com/sunriseapps/imagesorcery-mcp.git
@@ -40,7 +68,7 @@ cd imagesorcery-mcp
 ```
 
 <details>
-<summary>setup.sh</summary>
+<summary>What does setup.sh do?</summary>
 The `setup.sh` script performs the following actions:
 
 - Creates a Python virtual environment named `venv` if it doesn't already exist.
@@ -52,11 +80,9 @@ The `setup.sh` script performs the following actions:
 - Downloads CLIP models required by the `find` tool for text prompts.
 </details>
 
-After running `setup.sh`, you will have a virtual environment set up, project dependencies installed, and necessary default models downloaded.
+## ⚙️ Configuration MCP client
 
-## Configuration MCP client
-
-Add to your **Claude.app** or **Cline** or other MCP client these settings:
+Add to your MCP client these settings:
 
 ### Linux configuration
 
@@ -84,10 +110,9 @@ Add to your **Claude.app** or **Cline** or other MCP client these settings:
 }
 ```
 
+## 📦 Additional Models
 
-## Downloading extra models
-
-Some tools, like `detect` and `find`, for specific cases require pre-downloaded specific models to be available in the `models` directory in the project root. The models are not downloaded automatically when the tools are used. You need to download them explicitly:
+Some tools require specific models to be available in the `models` directory:
 
 ```bash
 # Download models for the detect tool
@@ -95,9 +120,8 @@ download-yolo-models --ultralytics yoloe-11l-seg
 download-yolo-models --huggingface ultralytics/yolov8:yolov8m.pt
 ```
 
-Models will be downloaded to the `models` directory in the project root. This directory is included in `.gitignore` to prevent large model files from being committed to the repository.
-
-### Model Descriptions
+<details>
+<summary>About Model Descriptions</summary>
 
 When downloading models, the script automatically updates the `models/model_descriptions.json` file:
 
@@ -106,11 +130,11 @@ When downloading models, the script automatically updates the `models/model_desc
 - For Hugging Face models: Descriptions are automatically extracted from the model card on Hugging Face Hub. The script attempts to use the model name from the model index or the first line of the description.
 
 After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
+</details>
 
+## 🤝 Contributing
 <details>
-<summary>Contributing</summary>
-
-## Contributing
+<summary>Whether you're a human or an AI agent, we welcome your contributions to this project!</summary>
 
 ### Directory Structure
 
@@ -205,7 +229,7 @@ In case of fails - fix the code and tests. It is **strictly required** to have a
 - Use pydantic for data validation and serialization
 </details>
 
-## Questions?
+## 📝 Questions?
 
 If you have any questions, issues, or suggestions regarding this project, feel free to reach out to:
 
@@ -214,7 +238,7 @@ If you have any questions, issues, or suggestions regarding this project, feel f
 
 You can also open an issue in the repository for bug reports or feature requests.
 
-
-## License
+## 📜 License
 
 This project is licensed under the MIT License. This means you are free to use, modify, and distribute the software, subject to the terms and conditions of the MIT License.
+</file_content>
