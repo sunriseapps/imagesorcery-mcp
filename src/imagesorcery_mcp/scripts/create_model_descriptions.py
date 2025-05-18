@@ -14,7 +14,7 @@ from imagesorcery_mcp.logging_config import logger
 
 def create_model_descriptions():
     """Create a JSON file with model descriptions in the models directory."""
-    logger.info("Creating model descriptions JSON file")
+    logger.info(f"Creating model descriptions JSON file at {Path('models') / 'model_descriptions.json'}")
     # YOLOv8 model descriptions
     model_descriptions = {
         "yolo11n.pt": "Ultralytics YOLO11 model for Object Detection. Provides state-of-the-art performance, suitable for tasks requiring a balance of speed and accuracy (smallest of YOLO11).",
@@ -117,7 +117,7 @@ def create_model_descriptions():
     }
 
     # Create models directory if it doesn't exist
-    models_dir = Path("models")
+    models_dir = Path("models").resolve()
     os.makedirs(models_dir, exist_ok=True)
     logger.info(f"Ensured models directory exists: {models_dir}")
 
@@ -157,7 +157,7 @@ def create_model_descriptions():
 
 
 def main():
-    logger.info("Running create_model_descriptions script")
+    logger.info(f"Running create_model_descriptions script from {Path(__file__).resolve()}")
     create_model_descriptions()
     logger.info("create_model_descriptions script finished")
 

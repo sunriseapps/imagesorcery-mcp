@@ -20,7 +20,7 @@ from imagesorcery_mcp.logging_config import logger
 
 def get_models_dir():
     """Get the models directory in the project root."""
-    models_dir = Path("models")
+    models_dir = Path("models").resolve()
     os.makedirs(models_dir, exist_ok=True)
     logger.info(f"Ensured models directory exists: {models_dir}")
     return str(models_dir)
@@ -202,15 +202,15 @@ def download_ultralytics_model(model_name):
         # Check if model was downloaded to current directory
         current_dir_model = Path(model_name)
         if current_dir_model.exists():
-            logger.info(f"Model found in current directory: {current_dir_model}")
+            logger.info(f"Model found in current directory: {current_dir_model.resolve()}")
             try:
                 # Move the model to the models directory
                 shutil.move(str(current_dir_model), output_path)
                 logger.info(f"Model moved to: {output_path}")
                 return True
             except Exception as e:
-                logger.warning(f"Could not move model from {current_dir_model} to {output_path}: {e}")
-                logger.info(f"You can still use the model from: {current_dir_model}")
+                logger.warning(f"Could not move model from {current_dir_model.resolve()} to {output_path}: {e}")
+                logger.info(f"You can still use the model from: {current_dir_model.resolve()}")
                 return True
 
         # If not found in expected locations,
@@ -232,15 +232,15 @@ def download_ultralytics_model(model_name):
         # Check each location
         for loc in possible_locations:
             if loc.exists():
-                logger.info(f"Model found at a different location: {loc}")
+                logger.info(f"Model found at a different location: {loc.resolve()}")
                 try:
                     shutil.copy(loc, output_path)
                     logger.info(f"Model copied to: {output_path}")
                     return True
                 except Exception as e:
-                    logger.warning(f"Could not copy model from {loc} to {output_path}: {e}")
+                    logger.warning(f"Could not copy model from {loc.resolve()} to {output_path}: {e}")
                     logger.error(
-                        f"Please manually copy the model from {loc} to {output_path}"
+                        f"Please manually copy the model from {loc.resolve()} to {output_path}"
                     )
                     return False
 
@@ -268,7 +268,7 @@ def download_model(model_name, source=None):
 
 
 def main():
-    logger.info("Running download_models script")
+    logger.info(f"Running download_models script from {Path(__file__).resolve()}")
     parser = argparse.ArgumentParser(
         description="Download YOLO compatible models for offline use"
     )

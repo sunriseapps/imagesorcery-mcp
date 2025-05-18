@@ -16,7 +16,7 @@ from imagesorcery_mcp.logging_config import logger
 
 def get_models_dir():
     """Get the models directory in the project root."""
-    models_dir = Path("models")
+    models_dir = Path("models").resolve()
     os.makedirs(models_dir, exist_ok=True)
     logger.info(f"Ensured models directory exists: {models_dir}")
     return models_dir
@@ -55,7 +55,7 @@ def download_clip_model():
     logger.info("Attempting to download CLIP model")
     models_dir = get_models_dir()
     clip_model_path = models_dir / "mobileclip_blt.ts"
-    root_clip_model_path = Path("mobileclip_blt.ts")
+    root_clip_model_path = Path("mobileclip_blt.ts").resolve()
     
     # Check if model already exists in either location
     if clip_model_path.exists() and root_clip_model_path.exists():
@@ -98,7 +98,7 @@ def download_clip_model():
 
 def main():
     """Main function to download CLIP models."""
-    logger.info("Running download_clip_models script")
+    logger.info(f"Running download_clip_models script from {Path(__file__).resolve()}")
     
     # Download the MobileCLIP model
     if download_clip_model():

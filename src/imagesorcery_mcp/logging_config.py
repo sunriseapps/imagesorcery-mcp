@@ -29,6 +29,7 @@ def setup_logging():
         # console_handler.setFormatter(formatter)
         # logger.addHandler(console_handler)
 
+    print(f"Log file: {LOG_FILE}")
     return logger
 
 # Setup logging when this module is imported

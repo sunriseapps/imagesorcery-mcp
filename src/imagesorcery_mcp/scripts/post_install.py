@@ -42,10 +42,10 @@ def install_clip():
 
 def run_post_install():
     """Run all post-installation tasks."""
-    logger.info("Running post-installation tasks...")
+    logger.info(f"Running post-installation tasks from {Path(__file__).resolve()}...")
 
     # Create models directory
-    models_dir = Path("models")
+    models_dir = Path("models").resolve()
     os.makedirs(models_dir, exist_ok=True)
     logger.info(f"Created models directory: {models_dir}")
 
@@ -101,7 +101,7 @@ def run_post_install():
 
 def main():
     """Main entry point for the post_install script."""
-    logger.info("Starting post-installation process")
+    logger.info(f"Starting post-installation process from {Path(__file__).resolve()}")
     success = run_post_install()
     if not success:
         logger.error("Post-installation process failed")
