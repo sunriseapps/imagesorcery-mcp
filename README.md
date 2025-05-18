@@ -61,6 +61,24 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 ### Installation
 
+<details>
+<summary>For Cline just copypaste this command</summary>
+
+```md
+1.  Load MCP documentation using the `load_mcp_documentation` tool. It will give you path to `cline_mcp_settings.json` and other needed instructions.
+2.  run command `python -m venv imagesorcery-mcp`
+3.  run command `source imagesorcery-mcp/bin/activate`
+    For windows bash run command `source imagesorcery-mcp/Scripts/activate`
+    For windows cmd run command `imagesorcery-mcp\Scripts\activate`
+4.  run command `pip install imagesorcery-mcp`
+5.  run command `imagesorcery-mcp --post-install`
+7.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the `cline_mcp_settings.json`
+    `"imagesorcery-mcp": {"command": "/full/path/to/venv/bin/imagesorcery-mcp","timeout": 100}`
+8.  Get available models using `get_models` tool from `imagesorcery-mcp`
+9.  Attempt completion, indicating that the installation and configuration are complete.
+```
+</details>
+
 1.  **Create and activate a virtual environment (Strongly Recommended):**
     For reliable installation of all components, especially the `clip` package (installed via the post-install script), it is **strongly recommended to use Python's built-in `venv` module instead of `uv venv`**.
     ```bash
