@@ -25,9 +25,11 @@ def setup_logging():
         logger.addHandler(handler)
 
         # Optional: Add a console handler for development/debugging
-        # console_handler = logging.StreamHandler()
-        # console_handler.setFormatter(formatter)
-        # logger.addHandler(console_handler)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        console_handler.setLevel(LOG_LEVEL) # Set level for console handler
+        console_handler.setEncoding('utf-8') # Set encoding to utf-8
+        logger.addHandler(console_handler)
 
     print(f"Log file: {LOG_FILE}")
     return logger
