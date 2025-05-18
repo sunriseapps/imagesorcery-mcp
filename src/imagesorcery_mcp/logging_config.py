@@ -28,7 +28,6 @@ def setup_logging():
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
         console_handler.setLevel(LOG_LEVEL) # Set level for console handler
-        console_handler.setEncoding('utf-8') # Set encoding to utf-8
         logger.addHandler(console_handler)
 
     print(f"Log file: {LOG_FILE}")
