@@ -281,7 +281,6 @@ Gets metadata information about an image file.
   - `image format`
   - `color mode`
   - `creation and modification timestamps`
-  - `additional image-specific information`
 
 **Example Claude Request:**
 
@@ -318,8 +317,7 @@ Get metadata information about my image 'photo.jpg'
     "format": "JPEG",
     "color_mode": "RGB",
     "created_at": "2023-06-15T10:30:45",
-    "modified_at": "2023-06-15T10:30:45",
-    "additional_info": {}
+    "modified_at": "2023-06-15T10:30:45"
   }
 }
 ```

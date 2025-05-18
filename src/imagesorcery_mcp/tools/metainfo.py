@@ -1,6 +1,6 @@
 import datetime
 import os
-from typing import Annotated, Any, Dict
+from typing import Annotated, Any
 
 from fastmcp import FastMCP
 from PIL import Image
@@ -14,7 +14,7 @@ def register_tool(mcp: FastMCP):
     @mcp.tool()
     def get_metainfo(
         input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
-    ) -> Dict[str, Any]:
+    ) -> Any:
         """
         Get metadata information about an image file.
 
@@ -46,12 +46,7 @@ def register_tool(mcp: FastMCP):
                 format = img.format
                 mode = img.mode
 
-                # Try to get additional info if available
-                info = {}
-                if hasattr(img, "info"):
-                    info = img.info
                 logger.info(f"Image opened successfully. Dimensions: {width}x{height}, Format: {format}, Mode: {mode}")
-                logger.debug(f"Additional image info: {info}")
         except Exception as e:
             logger.error(f"Failed to open image with PIL: {input_path} - {str(e)}")
             raise ValueError(f"Failed to read image: {input_path}") from e
@@ -73,7 +68,6 @@ def register_tool(mcp: FastMCP):
             "color_mode": mode,
             "created_at": creation_time.isoformat(),
             "modified_at": modification_time.isoformat(),
-            "additional_info": info,
         }
         logger.info("Metadata compiled successfully")
         logger.debug(f"Metadata: {metadata}")

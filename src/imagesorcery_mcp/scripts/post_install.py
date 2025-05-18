@@ -6,8 +6,8 @@ and downloads default models.
 """
 
 import os
-import subprocess # Ensure subprocess is imported
-import sys # Ensure sys is imported
+import subprocess  # Ensure subprocess is imported
+import sys  # Ensure sys is imported
 from pathlib import Path
 
 # Import the central logger
@@ -15,6 +15,7 @@ from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.scripts.create_model_descriptions import create_model_descriptions
 from imagesorcery_mcp.scripts.download_clip import download_clip_model
 from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
+
 
 def install_clip():
     """Install CLIP from the Ultralytics GitHub repository."""
