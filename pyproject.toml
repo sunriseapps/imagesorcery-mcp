@@ -1,6 +1,6 @@
 [project]
 name = "imagesorcery-mcp"
-version = "0.2.4"
+version = "0.3.1"
 description = "A Model Context Protocol server providing image manipulation tools for LLMs"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -26,6 +26,7 @@ dependencies = [
     "tqdm", # For progress bars during downloads
     "huggingface_hub", # For accessing models from Hugging Face
     "easyocr", # For OCR
+    "toml", # For reading pyproject.toml
 ]
 
 [project.urls]
