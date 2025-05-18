@@ -61,19 +61,24 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 ### Installation
 
-1.  **Install the package using pip:**
-    It's recommended to use a virtual environment, but you can also install it globally.
+1.  **Create and activate a virtual environment (Strongly Recommended):**
+    For reliable installation of all components, especially the `clip` package (installed via the post-install script), it is **strongly recommended to use Python's built-in `venv` module instead of `uv venv`**.
     ```bash
-    # Optional: Create and activate a virtual environment
-    # python -m venv venv
-    # source venv/bin/activate  # For Linux/macOS
-    # venv\Scripts\activate    # For Windows
-
-    pip install imagesorcery-mcp
+    python -m venv imagesorcery-mcp
+    source imagesorcery-mcp/bin/activate  # For Linux/macOS
+    # source imagesorcery-mcp\Scripts\activate    # For Windows
     ```
 
-2.  **Run the post-installation script:**
-    This step is crucial for downloading the models required by the tools.
+2.  **Install the package into the activated virtual environment:**
+    You can use `pip` or `uv pip`.
+    ```bash
+    pip install imagesorcery-mcp
+    # OR, if you prefer using uv for installation into the venv:
+    # uv pip install imagesorcery-mcp
+    ```
+
+3.  **Run the post-installation script:**
+    This step is crucial. It downloads the required models and attempts to install the `clip` Python package from GitHub into the active virtual environment.
     ```bash
     imagesorcery-mcp --post-install
     ```
@@ -82,13 +87,33 @@ Your tool will combine multiple tools listed below to achieve your goal.
 <summary>What does the post-installation script do?</summary>
 The `imagesorcery-mcp --post-install` script performs the following actions:
 
-- Creates a `models` directory to store pre-trained models.
-- Generates the initial `models/model_descriptions.json` file.
-- Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool.
-- Installs the `clip` Python package from Ultralytics' GitHub repository (required for text prompts with the `find` tool).
-- Downloads the CLIP model file required by the `find` tool.
+- Creates a `models` directory (usually within the site-packages directory of your virtual environment, or a user-specific location if installed globally) to store pre-trained models.
+- Generates an initial `models/model_descriptions.json` file there.
+- Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool into this `models` directory.
+- **Attempts to install the `clip` Python package** from Ultralytics' GitHub repository directly into the active Python environment. This is required for text prompt functionality in the `find` tool.
+- Downloads the CLIP model file required by the `find` tool into the `models` directory.
 
-You can run this process anytime to restore the default models.
+You can run this process anytime to restore the default models and attempt `clip` installation.
+</details>
+
+<details>
+<summary>Important Notes for `uv` users (<code>uv venv</code> and <code>uvx</code>)</summary>
+
+-   **Using `uv venv` to create virtual environments:**
+    Based on testing, virtual environments created with `uv venv` may not include `pip` in a way that allows the `imagesorcery-mcp --post-install` script to automatically install the `clip` package from GitHub (it might result in a "No module named pip" error during the `clip` installation step).
+    **If you choose to use `uv venv`:**
+    1.  Create and activate your `uv venv`.
+    2.  Install `imagesorcery-mcp`: `uv pip install imagesorcery-mcp`.
+    3.  Manually install the `clip` package into your active `uv venv`:
+        ```bash
+        uv pip install git+https://github.com/ultralytics/CLIP.git
+        ```
+    3.  Run `imagesorcery-mcp --post-install`. This will download models but may fail to install the `clip` Python package.
+    For a smoother automated `clip` installation via the post-install script, using `python -m venv` (as described in step 1 above) is the recommended method for creating the virtual environment.
+
+-   **Using `uvx imagesorcery-mcp --post-install`:**
+    Running the post-installation script directly with `uvx` (e.g., `uvx imagesorcery-mcp --post-install`) will likely fail to install the `clip` Python package. This is because the temporary environment created by `uvx` typically does not have `pip` available in a way the script can use. Models will be downloaded, but the `clip` package won't be installed by this command.
+    If you intend to use `uvx` to run the main `imagesorcery-mcp` server and require `clip` functionality, you'll need to ensure the `clip` package is installed in an accessible Python environment that `uvx` can find, or consider installing `imagesorcery-mcp` into a persistent environment created with `python -m venv`.
 </details>
 
 ## ⚙️ Configuration MCP client

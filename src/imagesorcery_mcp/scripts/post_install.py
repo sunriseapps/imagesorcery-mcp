@@ -25,18 +25,35 @@ def install_clip():
             [sys.executable, "-m", "pip", "install", "git+https://github.com/ultralytics/CLIP.git"],
             check=True,
             stdout=sys.stdout, # Can be replaced with subprocess.PIPE if console output is not needed
-            stderr=sys.stderr  # Can be replaced with subprocess.PIPE
+            stderr=subprocess.PIPE  # Capture stderr to analyze it
         )
         logger.info("CLIP package installed successfully")
         print("✅ CLIP package installed successfully")
         return True
     except subprocess.CalledProcessError as e:
         logger.error(f"Failed to install CLIP: {e}")
-        print(f"❌ Failed to install CLIP package: {e}")
+        error_message = f"❌ Failed to install CLIP package: {e}"
+        detailed_warning = ""
+        if e.stderr:
+            try:
+                stderr_output = e.stderr.decode(errors='ignore')
+                logger.debug(f"Captured stderr from CLIP installation attempt: {stderr_output}")
+                if "No module named pip" in stderr_output:
+                    detailed_warning = (
+                        "\n   Hint: The Python environment (potentially created by 'uvx' or a minimal 'uv venv') might be missing 'pip'."
+                        "\n   To ensure 'clip' package installation for full functionality (e.g., text prompts in 'find' tool):"
+                        "\n     1. Recommended: Use 'python -m venv' to create a virtual environment, then 'pip install imagesorcery-mcp' and 'imagesorcery-mcp --post-install'."
+                        "\n     2. Or, manually install 'clip' into your active environment: pip install git+https://github.com/ultralytics/CLIP.git"
+                        "\n        (If using 'uv venv', you might need: uv pip install git+https://github.com/ultralytics/CLIP.git)"
+                    )
+            except Exception as decode_exc:
+                logger.error(f"Error while decoding/processing stderr for CLIP install: {decode_exc}")
+        
+        print(error_message + detailed_warning)
         return False
     except FileNotFoundError: # Handle case where pip or python executable is not found
         logger.error("Failed to install CLIP: Python executable or pip not found.")
-        print("❌ Failed to install CLIP package: Python executable or pip not found.")
+        print("❌ Failed to install CLIP package: Python executable or pip not found. Ensure Python is in PATH and pip is installed.")
         return False
 
 
@@ -77,9 +94,13 @@ def run_post_install():
 
     # Install CLIP package
     logger.info("Installing CLIP package for text prompts...")
-    if not install_clip():
-        logger.error("Failed to install CLIP package. Text prompt functionality for 'find' tool might be limited.")
-        return False
+    clip_installed_successfully = install_clip()
+    if not clip_installed_successfully:
+        logger.warning("CLIP Python package installation failed. The 'find' tool's text prompt functionality might be limited or unavailable.")
+        print("⚠️ WARNING: CLIP Python package installation failed. Text prompt features of the 'find' tool may not work.")
+        print("   Models for CLIP will still be downloaded. If you need this functionality, please try installing the CLIP package manually:")
+        print("   pip install git+https://github.com/ultralytics/CLIP.git")
+        # We continue with the rest of the post-installation, especially downloading CLIP models.
     
     # Download CLIP model
     logger.info("Downloading CLIP model for text prompts...")
