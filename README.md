@@ -25,11 +25,16 @@ AI assistants are limited when working with images:
 
 Just ask your AI to help with image tasks:
 
-> "Copy all the images with pets from ~/photos/ into ~/pets/."
+> "copy photos with pets from frolder `photos` to folder `pets`"
+![Copying pets](https://i.imgur.com/wsaDWbf.gif)
 
-> "Numerate fields on this screenshot.png and prepare screenshot_description.md with a list of described fields."
+> "Find a cat at the photo.jpg and crop the image in a half in height and width to make the cat be centerized"
+![Centerizing cat](https://i.imgur.com/tD0O3l6.gif)
+😉 _**Hint:** Use full path to your files"._
 
-> "Crop the photo.jpg to make the person be centered."
+> "Numerate form fields on this `form.jpg` with `foduucom/web-form-ui-field-detection` model and fill the `form.md` with a list of described fields"
+![Numerate form fields](https://i.imgur.com/1SNGfaP.gif)
+😉 _**Hint:** Specify the model and the confidence"._
 
 😉 _**Hint:** Add "use imagesorcery" to make sure it will uses propper tool"._
 
@@ -61,8 +66,9 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 ### Installation
 
+![ImageSorcery Demo](https://i.imgur.com/pRfTlHV.gif)
 <details>
-<summary>For Cline just copypaste this command</summary>
+<summary>For Cline just copy-paste this command</summary>
 
 ```md
 1.  Load MCP documentation using the `load_mcp_documentation` tool. It will give you path to `cline_mcp_settings.json` and other needed instructions.
