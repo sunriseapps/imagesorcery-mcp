@@ -293,7 +293,7 @@ In case of fails - fix the code and tests. It is **strictly required** to have a
 If you have any questions, issues, or suggestions regarding this project, feel free to reach out to:
 
 - Project Author: [titulus](https://www.linkedin.com/in/titulus/) via LinkedIn
-- Sunrise Apps CEO: [Vlad Karmakov](https://www.linkedin.com/in/vladkarm/) via LinkedIn
+- Sunrise Apps CEO: [Vlad Karm](https://www.linkedin.com/in/vladkarm/) via LinkedIn
 
 You can also open an issue in the repository for bug reports or feature requests.
 
