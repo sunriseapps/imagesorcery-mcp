@@ -1,4 +1,5 @@
-# 🪄 ImageSorcery MCP - Powerful Image Processing Tools for AI Assistants
+# 🪄 ImageSorcery MCP
+**ComputerVision-based 🪄 sorcery of image recognition and editing tools for AI assistants**
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) [![MCP](https://img.shields.io/badge/Protocol-MCP-lightgrey)](https://github.com/microsoft/mcp) [![Claude App](https://img.shields.io/badge/Works_with-Claude_App-purple)](https://claude.ai) [![Cline](https://img.shields.io/badge/Works_with-Cline-orange)](https://github.com/ClineLabs/cline) 
 
@@ -68,17 +69,17 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 ![ImageSorcery Demo](https://i.imgur.com/pRfTlHV.gif)
 <details>
-<summary>For Cline just copy-paste this command</summary>
+<summary>For Cline just copy-paste LLM-INSTALL.md</summary>
 
 ```md
-1.  Load MCP documentation using the `load_mcp_documentation` tool. It will give you path to `cline_mcp_settings.json` and other needed instructions.
+1.  Load MCP documentation using the `load_mcp_documentation` tool. It will give you path to MCP-configuration file and other needed instructions.
 2.  run command `python -m venv imagesorcery-mcp`
 3.  run command `source imagesorcery-mcp/bin/activate`
     For windows bash run command `source imagesorcery-mcp/Scripts/activate`
     For windows cmd run command `imagesorcery-mcp\Scripts\activate`
 4.  run command `pip install imagesorcery-mcp`
 5.  run command `imagesorcery-mcp --post-install`
-7.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the `cline_mcp_settings.json`
+7.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the MCP-configuration file
     `"imagesorcery-mcp": {"command": "/full/path/to/venv/bin/imagesorcery-mcp","timeout": 100}`
 8.  Get available models using `get_models` tool from `imagesorcery-mcp`
 9.  Attempt completion, indicating that the installation and configuration are complete.
