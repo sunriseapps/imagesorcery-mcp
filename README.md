@@ -2,7 +2,9 @@
 **ComputerVision-based 🪄 sorcery of image recognition and editing tools for AI assistants**
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) [![MCP](https://img.shields.io/badge/Protocol-MCP-lightgrey)](https://github.com/microsoft/mcp) [![Claude App](https://img.shields.io/badge/Works_with-Claude_App-purple)](https://claude.ai) [![Cline](https://img.shields.io/badge/Works_with-Cline-orange)](https://github.com/ClineLabs/cline) 
-
+<a href="https://glama.ai/mcp/servers/@sunriseapps/imagesorcery-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@sunriseapps/imagesorcery-mcp/badge" />
+</a>
 
 ## ❌ Without ImageSorcery MCP
 
