@@ -5,13 +5,13 @@ from pathlib import Path
 import pytest
 from fastmcp import Client, FastMCP
 
-from imagesorcery_mcp.server import mcp as image_wizard_mcp_server
+from imagesorcery_mcp.server import mcp as image_sorcery_mcp_server
 
 
 @pytest.fixture
 def mcp_server():
     # Use the existing server instance
-    return image_wizard_mcp_server
+    return image_sorcery_mcp_server
 
 
 @pytest.fixture
