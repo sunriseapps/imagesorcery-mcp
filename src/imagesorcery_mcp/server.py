@@ -51,6 +51,31 @@ def parse_arguments():
         action="store_true", 
         help="Run post-installation tasks and exit"
     )
+    parser.add_argument(
+        "--transport",
+        type=str,
+        default="stdio",
+        choices=["stdio", "streamable-http", "sse"],
+        help="Transport protocol to use (default: stdio)"
+    )
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help="Host to bind to when using HTTP-based transports (default: 127.0.0.1)"
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to bind to when using HTTP-based transports (default: 8000)"
+    )
+    parser.add_argument(
+        "--path",
+        type=str,
+        default="/mcp",
+        help="Path for the MCP endpoint when using HTTP-based transports (default: /mcp)"
+    )
     return parser.parse_args()
 
 def main():
@@ -91,8 +116,19 @@ def main():
             sys.exit(1)
     
     # For actual server execution, we'll use the global mcp instance
-    logger.info("Starting MCP server")
-    mcp.run()
+    logger.info(f"Starting MCP server with transport: {args.transport}")
+    
+    # Configure transport with appropriate parameters
+    if args.transport in ["streamable-http", "sse"]:
+        mcp.run(
+            transport=args.transport,
+            host=args.host,
+            port=args.port,
+            path=args.path
+        )
+    else:
+        # Use default stdio transport
+        mcp.run()
 
 if __name__ == "__main__":
     main()

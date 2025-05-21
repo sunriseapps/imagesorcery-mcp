@@ -161,6 +161,20 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     }
 }
 ```
+<details>
+<summary>If you're using the server in HTTP mode, configure your client to connect to the HTTP endpoint:</summary>
+
+```json
+"mcpServers": {
+    "imagesorcery-mcp": {
+      "url": "http://127.0.0.1:8000/mcp", // Use your custom host, port, and path if specified
+      "transportType": "http",
+      "autoApprove": ["detect", "crop", "get_models", "draw_texts", "get_metainfo", "rotate", "resize", "classify", "draw_rectangles", "find", "ocr"],
+      "timeout": 100
+    }
+}
+```
+</details>
 
 <details>
 <summary>For Windows</summary>
@@ -197,6 +211,38 @@ When downloading models, the script automatically updates the `models/model_desc
 - For Hugging Face models: Descriptions are automatically extracted from the model card on Hugging Face Hub. The script attempts to use the model name from the model index or the first line of the description.
 
 After downloading models, it's recommended to check the descriptions in `models/model_descriptions.json` and adjust them if needed to provide more accurate or detailed information about the models' capabilities and use cases.
+</details>
+
+### Running the Server
+
+ImageSorcery MCP server can be run in different modes:
+- `STDIO` - default
+- `Streamable HTTP` - for web-based deployments
+- `Server-Sent Events (SSE)` - for web-based deployments that rely on SSE
+
+<details>
+<summary>About different modes:</summary>
+
+1. **STDIO Mode (Default)** - This is the standard mode for local MCP clients:
+   ```bash
+   imagesorcery-mcp
+   ```
+
+2. **Streamable HTTP Mode** - For web-based deployments:
+   ```bash
+   imagesorcery-mcp --transport=streamable-http
+   ```
+   
+   With custom host, port, and path:
+   ```bash
+   imagesorcery-mcp --transport=streamable-http --host=0.0.0.0 --port=4200 --path=/custom-path
+   ```
+
+Available transport options:
+- `--transport`: Choose between "stdio" (default), "streamable-http", or "sse"
+- `--host`: Specify host for HTTP-based transports (default: 127.0.0.1)
+- `--port`: Specify port for HTTP-based transports (default: 8000)
+- `--path`: Specify endpoint path for HTTP-based transports (default: /mcp)
 </details>
 
 ## 🤝 Contributing
