@@ -33,15 +33,15 @@ mcp = FastMCP(
 # Register tools with the module-level mcp instance
 blur.register_tool(mcp)
 crop.register_tool(mcp)
+detect.register_tool(mcp)
+draw_rectangle.register_tool(mcp)
+draw_text.register_tool(mcp)
+find.register_tool(mcp)
+metainfo.register_tool(mcp)
+models.register_tool(mcp)
+ocr.register_tool(mcp)
 resize.register_tool(mcp)
 rotate.register_tool(mcp)
-metainfo.register_tool(mcp)
-detect.register_tool(mcp)
-find.register_tool(mcp)
-models.register_tool(mcp)
-draw_text.register_tool(mcp)
-draw_rectangle.register_tool(mcp)
-ocr.register_tool(mcp)
 
 def parse_arguments():
     """Parse command line arguments."""
