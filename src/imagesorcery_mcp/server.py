@@ -8,6 +8,7 @@ from fastmcp import FastMCP
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.tools import (
+    blur,
     crop,
     detect,
     draw_rectangle,
@@ -30,6 +31,7 @@ mcp = FastMCP(
 )
 
 # Register tools with the module-level mcp instance
+blur.register_tool(mcp)
 crop.register_tool(mcp)
 resize.register_tool(mcp)
 rotate.register_tool(mcp)

@@ -13,6 +13,57 @@ These rules apply to all contributors: humans and AI.
 
 ## Available Tools
 
+### `blur`
+
+Blur specified areas of an image using OpenCV. This tool allows blurring multiple rectangular areas of an image with customizable blur strength. Each area is defined by a bounding box with coordinates [x1, y1, x2, y2] where (x1, y1) is the top-left corner and (x2, y2) is the bottom-right corner. The blur_strength parameter controls the intensity of the blur effect. Higher values result in stronger blur. It must be an odd number (default is 15).
+
+- **Required arguments:**
+  - `input_path` (string): Full path to the input image
+  - `areas` (array): List of areas to blur. Each item should have:
+    - `x1` (integer): X-coordinate of the top-left corner
+    - `y1` (integer): Y-coordinate of the top-left corner
+    - `x2` (integer): X-coordinate of the bottom-right corner
+    - `y2` (integer): Y-coordinate of the bottom-right corner
+    - `blur_strength` (integer, optional): The blur kernel size (odd number, default is 15)
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_blurred' suffix.
+- **Returns:** string (path to the image with blurred areas)
+
+**Example Claude Request:**
+
+```
+Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "blur",
+  "arguments": {
+    "input_path": "/home/user/images/test_image.png",
+    "areas": [
+      {
+        "x1": 150,
+        "y1": 100,
+        "x2": 250,
+        "y2": 200,
+        "blur_strength": 21
+      }
+    ],
+    "output_path": "/home/user/images/output.png"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/output.png"
+}
+```
+
 ### `crop`
 
 Crops an image using OpenCV's NumPy slicing approach.
