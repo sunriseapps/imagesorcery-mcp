@@ -165,6 +165,66 @@ Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
 }
 ```
 
+### `draw_circles`
+
+Draws circles on an image using OpenCV. This tool allows adding multiple circles to an image with customizable center, radius, color, thickness, and fill option. Each circle is defined by its center coordinates (center_x, center_y) and radius.
+
+- **Required arguments:**
+  - `input_path` (string): Full path to the input image
+  - `circles` (array): List of circle items to draw. Each item should have:
+    - `center_x` (integer): X-coordinate of the circle's center
+    - `center_y` (integer): Y-coordinate of the circle's center
+    - `radius` (integer): Radius of the circle
+    - `color` (array, optional): Color in BGR format [B,G,R]. Default is [0,0,0] (black)
+    - `thickness` (integer, optional): Line thickness. Default is 1. Use -1 for a filled circle.
+    - `filled` (boolean, optional): Whether to fill the circle. Default is false. If true, thickness is set to -1.
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_with_circles' suffix
+
+- **Returns:** string (path to the image with drawn circles)
+
+**Example Claude Request:**
+
+```
+Draw a red circle with center (100,100) and radius 50, and a filled blue circle with center (250,200) and radius 30 on my image 'photo.jpg'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "draw_circles",
+  "arguments": {
+    "input_path": "/home/user/images/photo.jpg",
+    "circles": [
+      {
+        "center_x": 100,
+        "center_y": 100,
+        "radius": 50,
+        "color": [0, 0, 255],
+        "thickness": 2
+      },
+      {
+        "center_x": 250,
+        "center_y": 200,
+        "radius": 30,
+        "color": [255, 0, 0],
+        "filled": true
+      }
+    ],
+    "output_path": "/home/user/images/photo_with_circles.jpg"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/photo_with_circles.jpg"
+}
+```
+
 ### `draw_rectangles`
 
 Draws rectangles on an image using OpenCV. This tool allows adding multiple rectangles to an image with customizable position, color, thickness, and fill option. Each rectangle is defined by two points: (x1, y1) for the top-left corner and (x2, y2) for the bottom-right corner.
