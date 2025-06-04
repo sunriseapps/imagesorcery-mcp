@@ -165,6 +165,70 @@ Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
 }
 ```
 
+### `draw_arrows`
+
+Draws arrows on an image using OpenCV. This tool allows adding multiple arrows to an image with customizable start and end points, color, thickness, and tip length.
+
+- **Required arguments:**
+  - `input_path` (string): Full path to the input image
+  - `arrows` (array): List of arrow items to draw. Each item should have:
+    - `x1` (integer): X-coordinate of the arrow's start point
+    - `y1` (integer): Y-coordinate of the arrow's start point
+    - `x2` (integer): X-coordinate of the arrow's end point
+    - `y2` (integer): Y-coordinate of the arrow's end point
+    - `color` (array, optional): Color in BGR format [B,G,R]. Default is [0,0,0] (black)
+    - `thickness` (integer, optional): Line thickness. Default is 1
+    - `tip_length` (float, optional): Length of the arrow tip relative to the arrow length. Default is 0.1
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_with_arrows' suffix
+
+- **Returns:** string (path to the image with drawn arrows)
+
+**Example Claude Request:**
+
+```
+Draw a red arrow from (50,50) to (150,100) and a blue arrow from (200,150) to (300,250) with a tip length of 0.15 on my image 'photo.jpg'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "draw_arrows",
+  "arguments": {
+    "input_path": "/home/user/images/photo.jpg",
+    "arrows": [
+      {
+        "x1": 50,
+        "y1": 50,
+        "x2": 150,
+        "y2": 100,
+        "color": [0, 0, 255],
+        "thickness": 2
+      },
+      {
+        "x1": 200,
+        "y1": 150,
+        "x2": 300,
+        "y2": 250,
+        "color": [255, 0, 0],
+        "thickness": 3,
+        "tip_length": 0.15
+      }
+    ],
+    "output_path": "/home/user/images/photo_with_arrows.jpg"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/photo_with_arrows.jpg"
+}
+```
+
 ### `draw_circles`
 
 Draws circles on an image using OpenCV. This tool allows adding multiple circles to an image with customizable center, radius, color, thickness, and fill option. Each circle is defined by its center coordinates (center_x, center_y) and radius.

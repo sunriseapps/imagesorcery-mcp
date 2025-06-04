@@ -11,6 +11,7 @@ from imagesorcery_mcp.tools import (
     blur,
     crop,
     detect,
+    draw_arrows,
     draw_circle,
     draw_rectangle,
     draw_text,
@@ -35,6 +36,7 @@ mcp = FastMCP(
 blur.register_tool(mcp)
 crop.register_tool(mcp)
 detect.register_tool(mcp)
+draw_arrows.register_tool(mcp)
 draw_circle.register_tool(mcp)
 draw_rectangle.register_tool(mcp)
 draw_text.register_tool(mcp)

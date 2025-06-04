@@ -51,6 +51,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `blur` | Blurs specified areas of an image using OpenCV | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
 | `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
 | `detect` | Detects objects in an image using models from Ultralytics | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
+| `draw_arrows` | Draws arrows on an image using OpenCV | "Draw a red arrow from (50,50) to (150,100) on my image 'photo.jpg'" |
 | `draw_circles` | Draws circles on an image using OpenCV | "Draw a red circle with center (100,100) and radius 50 on my image 'photo.jpg'" |
 | `draw_rectangles` | Draws rectangles on an image using OpenCV | "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'" |
 | `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
@@ -157,7 +158,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp", // Or /full/path/to/venv/bin/imagesorcery-mcp if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "classify", "crop", "detect", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "classify", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -170,7 +171,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "url": "http://127.0.0.1:8000/mcp", // Use your custom host, port, and path if specified
       "transportType": "http",
-      "autoApprove": ["blur", "classify", "crop", "detect", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "classify", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -185,7 +186,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp.exe", // Or C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "classify", "crop", "detect", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "classify", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
       "timeout": 100
     }
 }
