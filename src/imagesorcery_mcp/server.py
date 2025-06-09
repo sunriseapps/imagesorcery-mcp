@@ -9,6 +9,7 @@ from fastmcp import FastMCP
 from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.tools import (
     blur,
+    change_color,
     crop,
     detect,
     draw_arrows,
@@ -34,6 +35,7 @@ mcp = FastMCP(
 
 # Register tools with the module-level mcp instance
 blur.register_tool(mcp)
+change_color.register_tool(mcp)
 crop.register_tool(mcp)
 detect.register_tool(mcp)
 draw_arrows.register_tool(mcp)

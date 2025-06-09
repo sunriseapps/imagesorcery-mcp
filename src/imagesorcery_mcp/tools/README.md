@@ -65,6 +65,44 @@ Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my ima
 }
 ```
 
+### `change_color`
+
+Changes the color palette of an image. This tool applies a predefined color transformation to an image. Currently supported palettes are 'grayscale' and 'sepia'.
+
+- **Required arguments:**
+  - `input_path` (string): Full path to the input image
+  - `palette` (string): The color palette to apply. Currently supports 'grayscale' and 'sepia'.
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use input filename with a suffix based on the palette (e.g., '_grayscale').
+- **Returns:** string (path to the image with the new color palette)
+
+**Example Claude Request:**
+
+```
+Convert my image 'test_image.png' to sepia and save it as 'output.png'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "change_color",
+  "arguments": {
+    "input_path": "/home/user/images/test_image.png",
+    "palette": "sepia",
+    "output_path": "/home/user/images/output.png"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/output.png"
+}
+```
+
 ### `crop`
 
 Crops an image using OpenCV's NumPy slicing approach.
