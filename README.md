@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/sunriseapps-imagesorcery-mcp-badge.png)](https://mseep.ai/app/sunriseapps-imagesorcery-mcp)
+
 # 🪄 ImageSorcery MCP
 **ComputerVision-based 🪄 sorcery of image recognition and editing tools for AI assistants**
 
