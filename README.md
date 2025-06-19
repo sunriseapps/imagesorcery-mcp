@@ -70,7 +70,25 @@ Your tool will combine multiple tools listed below to achieve your goal.
 ### Requirements
 
 - `Python 3.10` or higher
+- `ffmpeg`, `libsm6`, `libxext6`, `libgl1-mesa-glx` - system libraries required by OpenCV
 - `Claude.app`, `Cline`, or another MCP client
+
+<details>
+<summary>Virtual environments (e.g. Docker)</summary>
+
+These dependencies are typically included with OpenCV installation and don't require separate installation. But they might be missing in some virtual environments like Docker.
+
+**For Ubuntu/Debian systems:**
+```bash
+sudo apt-get update && sudo apt-get install -y ffmpeg libsm6 libxext6 libgl1-mesa-glx
+```
+
+**For Docker containers:**
+Add this line to your Dockerfile:
+```dockerfile
+RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 libgl1-mesa-glx
+```
+</details>
 
 ### Installation
 
