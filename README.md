@@ -62,6 +62,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
 | `get_models` | Lists all available models in the models directory | "List all available models in the models directory" |
 | `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |
+| `overlay` | Overlays one image on top of another, handling transparency | "Overlay 'logo.png' on top of 'background.jpg' at position (10, 10)" |
 | `resize` | Resizes an image using OpenCV | "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'" |
 | `rotate` | Rotates an image using imutils.rotate_bound function | "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'" |
 
@@ -179,7 +180,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp", // Or /full/path/to/venv/bin/imagesorcery-mcp if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -192,7 +193,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "url": "http://127.0.0.1:8000/mcp", // Use your custom host, port, and path if specified
       "transportType": "http",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -207,7 +208,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp.exe", // Or C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }

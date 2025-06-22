@@ -675,3 +675,45 @@ Extract text from my image 'document.jpg' using OCR with English language
   }
 }
 ```
+
+### `overlay`
+
+Overlays one image on top of another, handling transparency. This tool places an overlay image onto a base image at a specified (x, y) coordinate. If the overlay image has an alpha channel (e.g., a transparent PNG), it will be blended correctly with the base image. If the overlay extends beyond the boundaries of the base image, it will be cropped.
+
+- **Required arguments:**
+  - `base_image_path` (string): Full path to the base image
+  - `overlay_image_path` (string): Full path to the overlay image. This image can have transparency.
+  - `x` (integer): X-coordinate of the top-left corner of the overlay image on the base image.
+  - `y` (integer): Y-coordinate of the top-left corner of the overlay image on the base image.
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use the base image filename with '_overlaid' suffix.
+- **Returns:** string (path to the resulting image)
+
+**Example Claude Request:**
+
+```
+Overlay 'logo.png' on top of 'background.jpg' at position (10, 10) and save it as 'final.jpg'
+```
+
+**Example Tool Call (JSON):
+
+```json
+{
+  "name": "overlay",
+  "arguments": {
+    "base_image_path": "/home/user/images/background.jpg",
+    "overlay_image_path": "/home/user/images/logo.png",
+    "x": 10,
+    "y": 10,
+    "output_path": "/home/user/images/final.jpg"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/final.jpg"
+}
+```

@@ -20,6 +20,7 @@ from imagesorcery_mcp.tools import (
     metainfo,
     models,
     ocr,
+    overlay,
     resize,
     rotate,
 )
@@ -46,6 +47,7 @@ find.register_tool(mcp)
 metainfo.register_tool(mcp)
 models.register_tool(mcp)
 ocr.register_tool(mcp)
+overlay.register_tool(mcp)
 resize.register_tool(mcp)
 rotate.register_tool(mcp)
 
