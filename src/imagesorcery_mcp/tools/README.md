@@ -577,49 +577,6 @@ Get metadata information about my image 'photo.jpg'
 }
 ```
 
-### `get_models`
-
-Lists all available models in the models directory. This tool scans the models directory and returns information about all available models, including their names and descriptions.
-
-- **Required arguments:** None
-- **Returns:** dictionary containing:
-  - `models`: List of available models, each with:
-    - `name`: Name of the model file
-    - `description`: Description of the model's purpose and characteristics
-
-**Example Claude Request:**
-
-```
-List all available models in the models directory
-```
-
-**Example Tool Call (JSON):**
-
-```json
-{
-  "name": "get_models",
-  "arguments": {}
-}
-```
-
-**Example Response (JSON):**
-
-```json
-{
-  "result": {
-    "models": [
-      {
-        "name": "yolov8m.pt",
-        "description": "YOLOv8 Medium - Default model with good balance between accuracy and speed."
-      },
-      {
-        "name": "yolov8n.pt",
-        "description": "YOLOv8 Nano - Smallest and fastest model, suitable for edge devices with limited resources."
-      }
-    ]
-  }
-}
-```
 
 ### `ocr`
 

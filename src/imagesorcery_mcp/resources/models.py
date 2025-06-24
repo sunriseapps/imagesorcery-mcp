@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from typing import Dict, List
 
 from fastmcp import FastMCP
 
@@ -48,26 +47,23 @@ def get_model_description(model_name: str) -> str:
         logger.error(f"Error in get_model_description for {model_name}: {str(e)}", exc_info=True)
         return "model_descriptions.json parse issue"
 
-def register_tool(mcp: FastMCP):
-    @mcp.tool()
-    def get_models() -> Dict[str, List[Dict[str, str]]]:
+def register_resource(mcp: FastMCP):
+    @mcp.resource("models://list")
+    async def list_models() -> str:
         """
         List all available models in the models directory.
 
-        This tool scans the models directory and returns information about
-        all available models, including their names and descriptions.
-
-        Returns:
-            Dictionary containing a list of available models with their descriptions.
+        This resource provides information about all available models,
+        including their names and descriptions.
         """
-        logger.info("Get models tool requested")
+        logger.info("Models resource requested")
         models_dir = Path("models")
         available_models = []
 
         # Check if models directory exists
         if not models_dir.exists():
             logger.warning(f"Models directory not found: {models_dir}")
-            return {"models": available_models}
+            return json.dumps({"models": available_models}, indent=2)
         logger.info(f"Scanning models directory: {models_dir}")
 
         # Define model file extensions to include
@@ -94,4 +90,4 @@ def register_tool(mcp: FastMCP):
                 logger.debug(f"Found model: {model_name} with description: {description}")
         
         logger.info(f"Found {len(available_models)} available models")
-        return {"models": available_models}
+        return json.dumps({"models": available_models}, indent=2)

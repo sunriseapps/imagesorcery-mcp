@@ -60,13 +60,20 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
 | `find` | Finds objects in an image based on a text description | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
-| `get_models` | Lists all available models in the models directory | "List all available models in the models directory" |
 | `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |
 | `overlay` | Overlays one image on top of another, handling transparency | "Overlay 'logo.png' on top of 'background.jpg' at position (10, 10)" |
 | `resize` | Resizes an image using OpenCV | "Resize my image 'photo.jpg' to 800x600 pixels and save it as 'resized_photo.jpg'" |
 | `rotate` | Rotates an image using imutils.rotate_bound function | "Rotate my image 'photo.jpg' by 45 degrees and save it as 'rotated_photo.jpg'" |
 
 😉 _**Hint:** detailed information and usage instructions for each tool can be found in the tool's `/src/imagesorcery_mcp/tools/README.md`._
+
+## 📚 Available Resources
+
+| Resource URI | Description | Example Prompt |
+|--------------|-------------|----------------|
+| `models://list` | Lists all available models in the models directory | "Which models are available in ImageSorcery?" |
+
+😉 _**Hint:** detailed information and usage instructions for each resource can be found in the resource's `/src/imagesorcery_mcp/resources/README.md`._
 
 ## 🚀 Getting Started
 
@@ -180,7 +187,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp", // Or /full/path/to/venv/bin/imagesorcery-mcp if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -193,7 +200,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "url": "http://127.0.0.1:8000/mcp", // Use your custom host, port, and path if specified
       "transportType": "http",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -208,7 +215,7 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp.exe", // Or C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe if installed in a venv
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "get_models", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_rectangles", "draw_texts", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -302,14 +309,19 @@ This repository is organized as follows:
 │       │   ├── download_clip.py # Script to download CLIP models.
 │       │   ├── post_install.py  # Script to run post-installation tasks.
 │       │   └── download_models.py # Script to download other models (e.g., YOLO).
-│       └── tools/               # Contains the implementation of individual MCP tools.
-│           ├── README.md        # Documentation for the tools.
-│           ├── __init__.py      # Import the central logger
-│           └── *.py           # Implements the tool.
+│       ├── tools/               # Contains the implementation of individual MCP tools.
+│       │   ├── README.md        # Documentation for the tools.
+│       │   ├── __init__.py      # Makes `tools` a Python package.
+│       │   └── *.py           # Implements the tool.
+│       └── resources/           # Contains the implementation of individual MCP resources.
+│           ├── README.md        # Documentation for the resources.
+│           ├── __init__.py      # Makes `resources` a Python package.
+│           └── *.py           # Implements the resource.
 └── tests/                     # Contains test files for the project.
     ├── test_server.py         # Tests for the main server functionality.
     ├── data/                  # Contains test data, likely image files used in tests.
-    └── tools/                 # Contains tests for individual tools.
+    ├── tools/                 # Contains tests for individual tools.
+    └── resources/             # Contains tests for individual resources.
 ```
 
 ### Development Setup
