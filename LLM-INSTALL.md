@@ -8,5 +8,5 @@
 6.  Create or modify *MCP-configuration file*.
 7.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the *MCP-configuration file*
     `"imagesorcery-mcp": {"command": "/full/path/to/venv/bin/imagesorcery-mcp","timeout": 100}`
-8.  Get available models using `get_models` tool from `imagesorcery-mcp`
+8.  Access available models using `models://list` resource from `imagesorcery-mcp`
 9.  Attempt completion, indicating that the installation and configuration are complete.
