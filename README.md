@@ -1,5 +1,5 @@
 # 🪄 ImageSorcery MCP
-**ComputerVision-based 🪄 sorcery of image recognition and editing tools for AI assistants**
+**ComputerVision-based 🪄 sorcery of local image recognition and editing tools for AI assistants**
 
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) [![MCP](https://img.shields.io/badge/Protocol-MCP-lightgrey)](https://github.com/microsoft/mcp)
 [![Claude](https://img.shields.io/badge/Works_with-Claude-orange)](https://claude.ai) [![Cursor](https://img.shields.io/badge/Works_with-Cursor-white)](https://cursor.so) [![Cline](https://img.shields.io/badge/Works_with-Cline-purple)](https://github.com/ClineLabs/cline)
@@ -9,14 +9,6 @@
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@sunriseapps/imagesorcery-mcp/badge" />
 </a>
 
-## ❌ Without ImageSorcery MCP
-
-AI assistants are limited when working with images:
-
-- ❌ Can't modify or analyze images directly
-- ❌ No ability to crop, resize, or process images
-- ❌ Some LLMs can't detect objects or extract text from images
-- ❌ Limited to verbal descriptions with no visual manipulation
 
 ## ✅ With ImageSorcery MCP
 
@@ -24,10 +16,11 @@ AI assistants are limited when working with images:
 
 - ✅ Crop, resize, and rotate images with precision
 - ✅ Draw text and shapes on images
+- ✅ Add logos and watermarks
 - ✅ Detect objects using state-of-the-art models
 - ✅ Extract text from images with OCR
-- ✅ Get detailed image metadata
 - ✅ Use a wide range of pre-trained models for object detection, OCR, and more
+- ✅ Do all of this **locally**, without sending your images to any servers
 
 Just ask your AI to help with image tasks:
 
