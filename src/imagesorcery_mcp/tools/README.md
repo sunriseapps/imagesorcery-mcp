@@ -336,6 +336,68 @@ Draw a red circle with center (100,100) and radius 50, and a filled blue circle 
 }
 ```
 
+### `draw_lines`
+
+Draws lines on an image using OpenCV. This tool allows adding multiple lines to an image with customizable start and end points, color, and thickness.
+
+- **Required arguments:**
+  - `input_path` (string): Full path to the input image
+  - `lines` (array): List of line items to draw. Each item should have:
+    - `x1` (integer): X-coordinate of the line's start point
+    - `y1` (integer): Y-coordinate of the line's start point
+    - `x2` (integer): X-coordinate of the line's end point
+    - `y2` (integer): Y-coordinate of the line's end point
+    - `color` (array, optional): Color in BGR format [B,G,R]. Default is [0,0,0] (black)
+    - `thickness` (integer, optional): Line thickness. Default is 1
+- **Optional arguments:**
+  - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_with_lines' suffix
+
+- **Returns:** string (path to the image with drawn lines)
+
+**Example Claude Request:**
+
+```
+Draw a red line from (50,50) to (150,100) and a blue line from (200,150) to (300,250) on my image 'photo.jpg'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "draw_lines",
+  "arguments": {
+    "input_path": "/home/user/images/photo.jpg",
+    "lines": [
+      {
+        "x1": 50,
+        "y1": 50,
+        "x2": 150,
+        "y2": 100,
+        "color": [0, 0, 255],
+        "thickness": 2
+      },
+      {
+        "x1": 200,
+        "y1": 150,
+        "x2": 300,
+        "y2": 250,
+        "color": [255, 0, 0],
+        "thickness": 3
+      }
+    ],
+    "output_path": "/home/user/images/photo_with_lines.jpg"
+  }
+}
+```
+
+**Example Response (JSON):**
+
+```json
+{
+  "result": "/home/user/images/photo_with_lines.jpg"
+}
+```
+
 ### `draw_rectangles`
 
 Draws rectangles on an image using OpenCV. This tool allows adding multiple rectangles to an image with customizable position, color, thickness, and fill option. Each rectangle is defined by two points: (x1, y1) for the top-left corner and (x2, y2) for the bottom-right corner.

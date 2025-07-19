@@ -15,6 +15,7 @@ from imagesorcery_mcp.tools import (
     detect,
     draw_arrows,
     draw_circle,
+    draw_lines,
     draw_rectangle,
     draw_text,
     find,
@@ -41,6 +42,7 @@ crop.register_tool(mcp)
 detect.register_tool(mcp)
 draw_arrows.register_tool(mcp)
 draw_circle.register_tool(mcp)
+draw_lines.register_tool(mcp)
 draw_rectangle.register_tool(mcp)
 draw_text.register_tool(mcp)
 find.register_tool(mcp)
