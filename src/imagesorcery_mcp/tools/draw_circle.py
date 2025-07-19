@@ -14,9 +14,9 @@ class CircleItem(BaseModel):
     center_x: Annotated[int, Field(description="X-coordinate of the circle's center")]
     center_y: Annotated[int, Field(description="Y-coordinate of the circle's center")]
     radius: Annotated[int, Field(description="Radius of the circle")]
-    color: Annotated[Optional[List[int]], Field(description="Color in BGR format [B,G,R]")] = [0, 0, 0]  # Default: black
-    thickness: Annotated[Optional[int], Field(description="Line thickness. Use -1 for a filled circle.")] = 1
-    filled: Annotated[Optional[bool], Field(description="Whether to fill the circle. If true, thickness is set to -1.")] = False
+    color: Annotated[List[int], Field(description="Color in BGR format [B,G,R]")] = [0, 0, 0]  # Default: black
+    thickness: Annotated[int, Field(description="Line thickness. Use -1 for a filled circle.")] = 1
+    filled: Annotated[bool, Field(description="Whether to fill the circle. If true, thickness is set to -1.")] = False
 
 
 def register_tool(mcp: FastMCP):

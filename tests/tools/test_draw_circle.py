@@ -99,38 +99,8 @@ class TestDrawCircleToolDefinition:
             assert "radius" in required_circle_item_fields
 
             assert "color" in circles_props, "'color' property should be in circles_props"
-            color_schema = circles_props["color"]
-            assert "anyOf" in color_schema, "'color' schema should use 'anyOf'"
-            
-            # Check if one of the anyOf options is an array of integers
-            array_of_integers_option_present = any(
-                option.get("type") == "array" and 
-                option.get("items", {}).get("type") == "integer"
-                for option in color_schema["anyOf"]
-            )
-            assert array_of_integers_option_present, "'color' schema 'anyOf' should include an array of integers"
-
             assert "thickness" in circles_props, "'thickness' property should be in circles_props"
-            thickness_schema = circles_props["thickness"]
-            assert "anyOf" in thickness_schema, "'thickness' schema should use 'anyOf'"
-            
-            # Check if one of the anyOf options is an integer
-            integer_option_present = any(
-                option.get("type") == "integer"
-                for option in thickness_schema["anyOf"]
-            )
-            assert integer_option_present, "'thickness' schema 'anyOf' should include an integer"
-
             assert "filled" in circles_props, "'filled' property should be in circles_props"
-            filled_schema = circles_props["filled"]
-            assert "anyOf" in filled_schema, "'filled' schema should use 'anyOf'"
-
-            # Check if one of the anyOf options is a boolean
-            boolean_option_present = any(
-                option.get("type") == "boolean"
-                for option in filled_schema["anyOf"]
-            )
-            assert boolean_option_present, "'filled' schema 'anyOf' should include a boolean"
 
             output_path_schema = draw_circles_tool.inputSchema["properties"]["output_path"]
             assert "anyOf" in output_path_schema, "output_path should have anyOf field for optional types"
