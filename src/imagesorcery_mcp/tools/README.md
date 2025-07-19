@@ -16,16 +16,14 @@ These rules apply to all contributors: humans and AI.
 
 ### `blur`
 
-Blur specified areas of an image using OpenCV. This tool allows blurring multiple rectangular areas of an image with customizable blur strength. Each area is defined by a bounding box with coordinates [x1, y1, x2, y2] where (x1, y1) is the top-left corner and (x2, y2) is the bottom-right corner. The blur_strength parameter controls the intensity of the blur effect. Higher values result in stronger blur. It must be an odd number (default is 15).
+Blurs specified rectangular or polygonal areas of an image using OpenCV. This tool allows blurring multiple areas of an image with customizable blur strength. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points (in the same format as returned by `detect` or `find`). The `blur_strength` parameter controls the intensity of the blur effect. Higher values result in stronger blur. It must be an odd number (default is 15).
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
-  - `areas` (array): List of areas to blur. Each item should have:
-    - `x1` (integer): X-coordinate of the top-left corner
-    - `y1` (integer): Y-coordinate of the top-left corner
-    - `x2` (integer): X-coordinate of the bottom-right corner
-    - `y2` (integer): Y-coordinate of the bottom-right corner
-    - `blur_strength` (integer, optional): The blur kernel size (odd number, default is 15)
+  - `areas` (array): List of areas to blur. Each item is a dictionary that must contain either:
+    - A rectangle: `x1`, `y1`, `x2`, `y2` (integers).
+    - A polygon: `polygon` (a list of points, e.g., `[[x1, y1], [x2, y2], ...]`).
+    - Optionally, each dictionary can also contain `blur_strength` (integer, default is 15).
 - **Optional arguments:**
   - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_blurred' suffix.
 - **Returns:** string (path to the image with blurred areas)
@@ -33,7 +31,7 @@ Blur specified areas of an image using OpenCV. This tool allows blurring multipl
 **Example Claude Request:**
 
 ```
-Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'
+Blur the rectangular area from (150, 100) to (250, 200) and a triangular area in my image 'test_image.png' and save it as 'output.png'
 ```
 
 **Example Tool Call (JSON):**
@@ -50,6 +48,10 @@ Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my ima
         "x2": 250,
         "y2": 200,
         "blur_strength": 21
+      },
+      {
+        "polygon": [[300, 50], [350, 50], [325, 150]],
+        "blur_strength": 31
       }
     ],
     "output_path": "/home/user/images/output.png"

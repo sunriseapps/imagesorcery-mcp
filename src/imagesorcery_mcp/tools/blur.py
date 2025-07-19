@@ -2,6 +2,7 @@ import os
 from typing import Annotated, Any, Dict, List, Optional
 
 import cv2
+import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
@@ -15,14 +16,14 @@ def register_tool(mcp: FastMCP):
         input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
         areas: Annotated[
             List[Dict[str, Any]],
-            Field(
-                description=(
-                    "List of areas to blur. Each area should have: "
-                    "'x1' (int), 'y1' (int), 'x2' (int), 'y2' (int) - coordinates of the bounding box, "
-                    "and optionally 'blur_strength' (int) - the blur kernel size (odd number, default is 15)"
-                )
-            ),
-        ],
+        Field(
+            description=(
+                "List of areas to blur. Each area should have: "
+                "a rectangle ({'x1', 'y1', 'x2', 'y2'}) or a polygon ({'polygon': [[x,y],...]}). "
+                "Optionally, include 'blur_strength' (int, odd number, default 15) for each area."
+            )
+        ),
+    ],
         output_path: Annotated[
             Optional[str],
             Field(
@@ -35,11 +36,11 @@ def register_tool(mcp: FastMCP):
         ] = None,
     ) -> str:
         """
-        Blur specified areas of an image using OpenCV.
+        Blur specified rectangular or polygonal areas of an image using OpenCV.
         
         This tool allows blurring multiple rectangular areas of an image with customizable
-        blur strength. Each area is defined by a bounding box with coordinates [x1, y1, x2, y2]
-        where (x1, y1) is the top-left corner and (x2, y2) is the bottom-right corner.
+        blur strength. Each area can be a rectangle defined by a bounding box 
+        [x1, y1, x2, y2] or a polygon defined by a list of points.
         
         The blur_strength parameter controls the intensity of the blur effect. Higher values
         result in stronger blur. It must be an odd number (default is 15).
@@ -70,32 +71,56 @@ def register_tool(mcp: FastMCP):
 
         # Process each area to blur
         for i, area in enumerate(areas):
-            # Extract coordinates (required)
-            x1 = area["x1"]
-            y1 = area["y1"]
-            x2 = area["x2"]
-            y2 = area["y2"]
-            
             # Extract optional parameters with defaults
             blur_strength = area.get("blur_strength", 15)
-            
+
             # Ensure blur_strength is odd (required for Gaussian blur)
             if blur_strength % 2 == 0:
                 blur_strength += 1
                 logger.warning(f"Adjusted blur_strength to odd number: {blur_strength}")
-            
-            logger.debug(f"Blurring area {i+1}: ({x1}, {y1}) to ({x2}, {y2}) with strength={blur_strength}")
 
-            # Extract the region to blur
-            region = img[y1:y2, x1:x2]
-            
-            # Apply Gaussian blur to the region
-            blurred_region = cv2.GaussianBlur(region, (blur_strength, blur_strength), 0)
-            
-            # Replace the original region with the blurred one
-            img[y1:y2, x1:x2] = blurred_region
-            
-            logger.debug(f"Area {i+1} blurred")
+            if "polygon" in area:
+                # It's a polygon
+                logger.debug(f"Blurring polygon area {i+1} with strength={blur_strength}")
+                polygon_points = np.array(area["polygon"], dtype=np.int32)
+
+                # Create a mask for the polygon
+                mask = np.zeros(img.shape[:2], dtype=np.uint8)
+                cv2.fillPoly(mask, [polygon_points], (255))
+
+                # Get the bounding box of the polygon to process only that region for efficiency
+                x, y, w, h = cv2.boundingRect(polygon_points)
+
+                # Extract the region of interest (ROI) from the original image
+                roi = img[y : y + h, x : x + w]
+
+                # Blur the ROI
+                blurred_roi = cv2.GaussianBlur(roi, (blur_strength, blur_strength), 0)
+
+                # Get the mask for the ROI
+                roi_mask = mask[y : y + h, x : x + w]
+
+                # Use the mask to combine the blurred ROI and original ROI
+                roi_mask_inv = cv2.bitwise_not(roi_mask)
+                img_bg = cv2.bitwise_and(roi, roi, mask=roi_mask_inv)
+                img_fg = cv2.bitwise_and(blurred_roi, blurred_roi, mask=roi_mask)
+                combined_roi = cv2.add(img_bg, img_fg)
+
+                # Place the combined ROI back into the image
+                img[y : y + h, x : x + w] = combined_roi
+                logger.debug(f"Polygon area {i+1} blurred")
+
+            elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
+                # It's a rectangle (existing logic)
+                x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                logger.debug(f"Blurring rectangle area {i+1}: ({x1}, {y1}) to ({x2}, {y2}) with strength={blur_strength}")
+                region = img[y1:y2, x1:x2]
+                blurred_region = cv2.GaussianBlur(region, (blur_strength, blur_strength), 0)
+                img[y1:y2, x1:x2] = blurred_region
+                logger.debug(f"Rectangle area {i+1} blurred")
+            else:
+                logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
+                continue
 
         # Create directory for output if it doesn't exist
         output_dir = os.path.dirname(output_path)

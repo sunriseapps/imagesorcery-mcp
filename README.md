@@ -43,7 +43,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 | Tool | Description | Example Prompt |
 |------|-------------|----------------|
-| `blur` | Blurs specified areas of an image using OpenCV | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
+| `blur` | Blurs specified rectangular or polygonal areas of an image using OpenCV | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
 | `change_color` | Changes the color palette of an image | "Convert my image 'test_image.png' to sepia and save it as 'output.png'" |
 | `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
 | `detect` | Detects objects in an image using models from Ultralytics. Can return segmentation masks/polygons. | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |

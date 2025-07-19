@@ -151,28 +151,99 @@ class TestBlurToolExecution:
             # Verify the file exists
             assert os.path.exists(output_path)
 
+    @pytest.mark.asyncio
+    async def test_blur_polygon_area(self, mcp_server: FastMCP, test_image_path, tmp_path):
+        """Tests the blur tool with a polygon area."""
+        output_path = str(tmp_path / "output_poly.png")
+
+        # Define a triangular polygon within the checkerboard area
+        polygon_area = {
+            "polygon": [[160, 110], [240, 110], [200, 190]],
+            "blur_strength": 21
+        }
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "blur",
+                {
+                    "input_path": test_image_path,
+                    "areas": [polygon_area],
+                    "output_path": output_path,
+                },
+            )
+
+            # Check that the tool returned a result
+            assert len(result) == 1
+            assert result[0].text == output_path
+
+            # Verify the file exists
+            assert os.path.exists(output_path)
+
             # Verify the image was created with correct dimensions
             img = cv2.imread(output_path)
             assert img.shape[:2] == (300, 400)  # height, width
-            
+
             # Verify that the blurred area has different pixel values than the original
-            # The checkerboard pattern should now be blurred, showing a gradient instead of sharp edges
             original_img = cv2.imread(test_image_path)
-            blurred_region = img[blur_area["y1"]:blur_area["y2"], blur_area["x1"]:blur_area["x2"]]
-            original_region = original_img[blur_area["y1"]:blur_area["y2"], blur_area["x1"]:blur_area["x2"]]
-            
-            # Check if the blurred region is different from the original
-            assert not np.array_equal(blurred_region, original_region), (
-                "Blurred region should be different from the original"
+
+            # Create a mask of the polygon to check pixels
+            mask = np.zeros(img.shape[:2], dtype=np.uint8)
+            cv2.fillPoly(mask, [np.array(polygon_area["polygon"], dtype=np.int32)], 255)
+
+            # Get pixels from original and blurred images using the mask
+            original_pixels = original_img[mask == 255]
+            blurred_pixels = img[mask == 255]
+
+            # The pixels should be different
+            assert not np.array_equal(original_pixels, blurred_pixels)
+
+            # The standard deviation of the blurred pixels should be lower
+            # because the checkerboard pattern is being smoothed
+            assert np.std(blurred_pixels) < np.std(original_pixels)
+
+    @pytest.mark.asyncio
+    async def test_blur_mixed_areas(self, mcp_server: FastMCP, test_image_path, tmp_path):
+        """Tests the blur tool with a mix of rectangle and polygon areas."""
+        output_path = str(tmp_path / "output_mixed.png")
+
+        # Define areas
+        rect_area = {"x1": 150, "y1": 100, "x2": 250, "y2": 200, "blur_strength": 11}
+        poly_area = {"polygon": [[160, 110], [240, 110], [200, 190]], "blur_strength": 21}
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "blur",
+                {
+                    "input_path": test_image_path,
+                    "areas": [rect_area, poly_area],
+                    "output_path": output_path,
+                },
             )
-            
-            # Additional check: in a checkerboard, blurring should reduce the standard deviation
-            # of pixel values as it smooths out the sharp black/white transitions
-            original_std = np.std(original_region)
-            blurred_std = np.std(blurred_region)
-            assert blurred_std < original_std, (
-                "Blurring should reduce the standard deviation of pixel values in a checkerboard pattern"
-            )
+
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path)
+            original_img = cv2.imread(test_image_path)
+
+            # Check rectangle blur by comparing regions
+            blurred_rect_region = img[rect_area["y1"]:rect_area["y2"], rect_area["x1"]:rect_area["x2"]]
+            original_rect_region = original_img[rect_area["y1"]:rect_area["y2"], rect_area["x1"]:rect_area["x2"]]
+            assert not np.array_equal(blurred_rect_region, original_rect_region)
+            assert np.std(blurred_rect_region) < np.std(original_rect_region)
+
+            # Check polygon blur by checking a point inside
+            # Create a mask for the polygon to check pixels
+            mask = np.zeros(img.shape[:2], dtype=np.uint8)
+            cv2.fillPoly(mask, [np.array(poly_area["polygon"], dtype=np.int32)], 255)
+            original_poly_pixels = original_img[mask == 255]
+            blurred_poly_pixels = img[mask == 255]
+            assert not np.array_equal(original_poly_pixels, blurred_poly_pixels)
+            assert np.std(blurred_poly_pixels) < np.std(original_poly_pixels)
+
+            # Verify the image was created with correct dimensions
+            assert img.shape[:2] == (300, 400)  # height, width
 
     @pytest.mark.asyncio
     async def test_blur_default_output_path(self, mcp_server: FastMCP, test_image_path):
