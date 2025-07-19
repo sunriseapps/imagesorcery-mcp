@@ -36,6 +36,36 @@ def test_image_path(tmp_path):
     cv2.imwrite(str(img_path), img)
     return str(img_path)
 
+@pytest.fixture
+def test_image_for_invert_blur(tmp_path):
+    """Create a test image with a noisy background and a solid central object for invert_areas blurring."""
+    img_path = tmp_path / "test_image_invert_blur.png"
+    
+    # Create a noisy background
+    img = np.random.randint(0, 256, (300, 400, 3), dtype=np.uint8)
+    
+    # Create a checkerboard pattern in the center area (the area to be kept unblurred)
+    square_size = 20  # Size of each square in the checkerboard
+    center_x_start = 150
+    center_y_start = 100
+    for i in range(5):  # 5x5 checkerboard
+        for j in range(5):
+            if (i + j) % 2 == 0:  # Alternate black and white
+                x1 = center_x_start + j * square_size
+                y1 = center_y_start + i * square_size
+                x2 = x1 + square_size
+                y2 = y1 + square_size
+                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 0, 0), -1)  # Black square
+            else:
+                x1 = center_x_start + j * square_size
+                y1 = center_y_start + i * square_size
+                x2 = x1 + square_size
+                y2 = y1 + square_size
+                cv2.rectangle(img, (x1, y1), (x2, y2), (255, 255, 255), -1) # White square
+    
+    cv2.imwrite(str(img_path), img)
+    return str(img_path)
+
 class TestBlurToolDefinition:
     """Tests for the blur tool definition and metadata."""
 
@@ -150,6 +180,122 @@ class TestBlurToolExecution:
 
             # Verify the file exists
             assert os.path.exists(output_path)
+
+    @pytest.mark.asyncio
+    async def test_blur_invert_rectangle(self, mcp_server: FastMCP, test_image_for_invert_blur, tmp_path):
+        """Tests the blur tool with invert_areas for a rectangle."""
+        output_path = str(tmp_path / "output_inverted.png")
+        
+        # Define a rectangle in the center (the solid black area to be kept unblurred)
+        blur_area = {"x1": 150, "y1": 100, "x2": 250, "y2": 200, "blur_strength": 21}
+        
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "blur", 
+                {
+                    "input_path": test_image_for_invert_blur, 
+                    "areas": [blur_area], 
+                    "invert_areas": True,
+                    "output_path": output_path
+                }
+            )
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path)
+            original_img = cv2.imread(test_image_for_invert_blur)
+            
+            # Center pixel (inside the specified area) should NOT be blurred - remains original
+            center_pixel_original = original_img[150, 200]
+            center_pixel_blurred = img[150, 200]
+            assert np.array_equal(center_pixel_original, center_pixel_blurred)
+            
+            # Pixels outside the area (noisy background) should be blurred
+            outside_pixel_original = original_img[50, 50]
+            outside_pixel_blurred = img[50, 50]
+            assert not np.array_equal(outside_pixel_original, outside_pixel_blurred)
+            assert np.std(outside_pixel_blurred) < np.std(outside_pixel_original)
+
+    @pytest.mark.asyncio
+    async def test_blur_invert_polygon(self, mcp_server: FastMCP, test_image_for_invert_blur, tmp_path):
+        """Tests the blur tool with invert_areas for a polygon."""
+        output_path = str(tmp_path / "output_inverted_poly.png")
+        
+        # Define a triangle polygon within the central object area
+        polygon_area = {"polygon": [[160, 110], [240, 110], [200, 190]], "blur_strength": 21}
+        
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "blur",
+                {
+                    "input_path": test_image_for_invert_blur,
+                    "areas": [polygon_area],
+                    "invert_areas": True,
+                    "output_path": output_path
+                }
+            )
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path)
+            original_img = cv2.imread(test_image_for_invert_blur)
+            
+            # Center of polygon (inside the specified area) should NOT be blurred
+            poly_center_original = original_img[150, 200]
+            poly_center_blurred = img[150, 200]
+            assert np.array_equal(poly_center_original, poly_center_blurred)
+            
+            # Outside pixels (noisy background) should be blurred
+            outside_pixel_original = original_img[50, 50]
+            outside_pixel_blurred = img[50, 50]
+            assert not np.array_equal(outside_pixel_original, outside_pixel_blurred)
+            assert np.std(outside_pixel_blurred) < np.std(outside_pixel_original)
+
+    @pytest.mark.asyncio
+    async def test_blur_invert_multiple_areas(self, mcp_server: FastMCP, test_image_for_invert_blur, tmp_path):
+        """Tests invert_areas with multiple areas to keep unblurred."""
+        output_path = str(tmp_path / "output_multi_unblurred.png")
+        
+        # Keep two areas unblurred (within the central object), blur everything else
+        areas = [
+            {"x1": 160, "y1": 110, "x2": 190, "y2": 140, "blur_strength": 11},
+            {"x1": 210, "y1": 160, "x2": 240, "y2": 190, "blur_strength": 21}
+        ]
+        
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "blur",
+                {
+                    "input_path": test_image_for_invert_blur,
+                    "areas": areas,
+                    "invert_areas": True,
+                    "output_path": output_path
+                }
+            )
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path)
+            original_img = cv2.imread(test_image_for_invert_blur)
+            
+            # First kept area should NOT be blurred (remains original)
+            kept_pixel1_original = original_img[125, 175]
+            kept_pixel1_blurred = img[125, 175]
+            assert np.array_equal(kept_pixel1_original, kept_pixel1_blurred)
+            
+            # Second kept area should NOT be blurred (remains original)
+            kept_pixel2_original = original_img[175, 225]
+            kept_pixel2_blurred = img[175, 225]
+            assert np.array_equal(kept_pixel2_original, kept_pixel2_blurred)
+            
+            # Area between them (noisy background) should be blurred
+            between_pixel_original = original_img[50, 50]
+            between_pixel_blurred = img[50, 50]
+            assert not np.array_equal(between_pixel_original, between_pixel_blurred)
+            assert np.std(between_pixel_blurred) < np.std(between_pixel_original)
 
     @pytest.mark.asyncio
     async def test_blur_polygon_area(self, mcp_server: FastMCP, test_image_path, tmp_path):

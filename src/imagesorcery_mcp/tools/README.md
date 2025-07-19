@@ -16,7 +16,7 @@ These rules apply to all contributors: humans and AI.
 
 ### `blur`
 
-Blurs specified rectangular or polygonal areas of an image using OpenCV. This tool allows blurring multiple areas of an image with customizable blur strength. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points (in the same format as returned by `detect` or `find`). The `blur_strength` parameter controls the intensity of the blur effect. Higher values result in stronger blur. It must be an odd number (default is 15).
+Blurs specified rectangular or polygonal areas of an image using OpenCV. This tool allows blurring multiple areas of an image with customizable blur strength. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points (in the same format as returned by `detect` or `find`). The `blur_strength` parameter controls the intensity of the blur effect. Higher values result in stronger blur. It must be an odd number (default is 15). If `invert_areas` is True, the tool will blur everything EXCEPT the specified areas.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
@@ -25,6 +25,7 @@ Blurs specified rectangular or polygonal areas of an image using OpenCV. This to
     - A polygon: `polygon` (a list of points, e.g., `[[x1, y1], [x2, y2], ...]`).
     - Optionally, each dictionary can also contain `blur_strength` (integer, default is 15).
 - **Optional arguments:**
+  - `invert_areas` (boolean): If True, blurs everything EXCEPT the specified areas. Useful for background blurring. Default is False.
   - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_blurred' suffix.
 - **Returns:** string (path to the image with blurred areas)
 
@@ -55,6 +56,34 @@ Blur the rectangular area from (150, 100) to (250, 200) and a triangular area in
       }
     ],
     "output_path": "/home/user/images/output.png"
+  }
+}
+```
+
+**Example Claude Request (Background Blurring):**
+
+```
+Blur the background of 'my_image.png' by blurring everything outside the rectangle (100, 100) to (300, 300) with a blur strength of 25, and save it as 'object_focused.png'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "blur",
+  "arguments": {
+    "input_path": "/home/user/images/my_image.png",
+    "areas": [
+      {
+        "x1": 100,
+        "y1": 100,
+        "x2": 300,
+        "y2": 300,
+        "blur_strength": 25
+      }
+    ],
+    "invert_areas": true,
+    "output_path": "/home/user/images/object_focused.png"
   }
 }
 ```
