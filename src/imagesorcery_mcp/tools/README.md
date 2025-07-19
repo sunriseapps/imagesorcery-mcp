@@ -539,13 +539,14 @@ Fills specified rectangular or polygonal areas of an image with a color and opac
     - A polygon: `polygon` (a list of points, e.g., `[[x1, y1], [x2, y2], ...]`).
     - Optionally, each dictionary can also contain `color` (list of 3 ints [B,G,R] or `null`, default [0,0,0]) and `opacity` (float 0.0-1.0, default 0.5).
 - **Optional arguments:**
+  - `invert_areas` (boolean): If True, fills everything EXCEPT the specified areas. Useful for background removal. Default is False.
   - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_filled' suffix.
 - **Returns:** string (path to the image with filled areas)
 
 **Example Claude Request:**
 
 ```
-Fill the rectangular area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png' and save it as 'output.png'
+Fill the rectangular area from (150, 100) to (250, 200) with semi-transparent red and erase the area [[10, 10], [50, 10], [50, 50], [10, 50]] in my image 'test_image.png' and save it as 'output.png'
 ```
 
 **Example Tool Call (JSON):**
@@ -579,6 +580,34 @@ Fill the rectangular area from (150, 100) to (250, 200) with semi-transparent re
 ```json
 {
   "result": "/home/user/images/output.png"
+}
+```
+
+**Example Claude Request (Background Removal):**
+
+```
+Remove the background from 'my_image.png' by making everything outside the rectangle (100, 100) to (300, 300) transparent, and save it as 'object_only.png'
+```
+
+**Example Tool Call (JSON):**
+
+```json
+{
+  "name": "fill",
+  "arguments": {
+    "input_path": "/home/user/images/my_image.png",
+    "areas": [
+      {
+        "x1": 100,
+        "y1": 100,
+        "x2": 300,
+        "y2": 300,
+        "color": null
+      }
+    ],
+    "invert_areas": true,
+    "output_path": "/home/user/images/object_only.png"
+  }
 }
 ```
 
