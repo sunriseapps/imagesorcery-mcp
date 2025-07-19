@@ -1,8 +1,10 @@
 import json
 import os
 
+import numpy as np
 import pytest
 from fastmcp import Client, FastMCP
+from PIL import Image, ImageDraw
 
 from imagesorcery_mcp.server import mcp as image_sorcery_mcp_server
 
@@ -75,13 +77,13 @@ class TestFindToolDefinition:
                 )
 
             # Check optional parameters
-            optional_params = ["confidence", "model_name", "return_all_matches"]
+            optional_params = ["confidence", "model_name", "return_all_matches", "return_geometry", "geometry_format"]
             for param in optional_params:
                 assert param in find_tool.inputSchema["properties"], (
                     f"find tool should have a '{param}' property in its inputSchema"
                 )
 
-            # Check parameter types
+            # Check parameter types and defaults
             assert (
                 find_tool.inputSchema["properties"]["input_path"].get("type")
                 == "string"
@@ -102,6 +104,29 @@ class TestFindToolDefinition:
                 find_tool.inputSchema["properties"]["return_all_matches"].get("type")
                 == "boolean"
             ), "return_all_matches should be of type boolean"
+
+            # New parameters for geometry
+            assert (
+                find_tool.inputSchema["properties"]["return_geometry"].get("type")
+                == "boolean"
+            ), "return_geometry should be of type boolean"
+            assert (
+                find_tool.inputSchema["properties"]["return_geometry"].get("default")
+                is False
+            ), "return_geometry default should be False"
+
+            assert (
+                find_tool.inputSchema["properties"]["geometry_format"].get("type")
+                == "string"
+            ), "geometry_format should be of type string"
+            assert (
+                find_tool.inputSchema["properties"]["geometry_format"].get("enum")
+                == ["mask", "polygon"]
+            ), "geometry_format enum should be ['mask', 'polygon']"
+            assert (
+                find_tool.inputSchema["properties"]["geometry_format"].get("default")
+                == "mask"
+            ), "geometry_format default should be 'mask'"
 
 
 class TestFindToolExecution:
@@ -236,3 +261,368 @@ class TestFindToolExecution:
             
             # The query should match what we searched for
             assert find_result["query"] == "unicorn", "Query should match input description"
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_find_with_mask_geometry(self, mcp_server: FastMCP, test_image_path):
+        """Tests the find tool with mask geometry return."""
+        if not os.path.exists(test_image_path):
+            pytest.skip(f"Test image not found at {test_image_path}")
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "mask",
+                    "confidence": 0.25,
+                },
+            )
+            find_result = json.loads(result[0].text)
+            assert find_result["found"]
+            assert len(find_result["found_objects"]) > 0
+            found_object = find_result["found_objects"][0]
+            assert "mask" in found_object
+            assert "polygon" not in found_object
+            mask_data = found_object["mask"]
+            assert isinstance(mask_data, list)
+            assert len(mask_data) > 0
+            assert isinstance(mask_data[0], list)
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_find_with_polygon_geometry(self, mcp_server: FastMCP, test_image_path):
+        """Tests the find tool with polygon geometry return."""
+        if not os.path.exists(test_image_path):
+            pytest.skip(f"Test image not found at {test_image_path}")
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "polygon",
+                    "confidence": 0.25,
+                },
+            )
+            find_result = json.loads(result[0].text)
+            assert find_result["found"]
+            assert len(find_result["found_objects"]) > 0
+            found_object = find_result["found_objects"][0]
+            assert "polygon" in found_object
+            assert "mask" not in found_object
+            polygon_data = found_object["polygon"]
+            assert isinstance(polygon_data, list)
+            assert len(polygon_data) > 0
+            assert isinstance(polygon_data[0], list)
+            assert len(polygon_data[0]) == 2
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_find_no_geometry_by_default(self, mcp_server: FastMCP, test_image_path):
+        """Tests that find tool returns no geometry by default."""
+        if not os.path.exists(test_image_path):
+            pytest.skip(f"Test image not found at {test_image_path}")
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "confidence": 0.25,
+                },
+            )
+            find_result = json.loads(result[0].text)
+            assert find_result["found"]
+            assert len(find_result["found_objects"]) > 0
+            found_object = find_result["found_objects"][0]
+            assert "mask" not in found_object
+            assert "polygon" not in found_object
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_mask_correctness(self, mcp_server: FastMCP, test_image_path):
+        """Tests that returned masks are valid and correctly positioned."""
+        # Load the test image to get its dimensions
+        with Image.open(test_image_path) as img:
+            orig_width, orig_height = img.size
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "mask",
+                    "confidence": 0.25,
+                },
+            )
+            
+            find_result = json.loads(result[0].text)
+            assert find_result["found"]
+            
+            for obj in find_result["found_objects"]:
+                mask = np.array(obj["mask"])
+                bbox = obj["bbox"]
+                x1, y1, x2, y2 = bbox
+                
+                # YOLO typically resizes images to 640x640 for processing
+                # So we need to check if the mask dimensions are reasonable
+                mask_height, mask_width = mask.shape
+                
+                # Check that mask dimensions are square (typical for YOLO)
+                # or match the original image dimensions
+                assert (
+                    (mask_height == mask_width) or 
+                    (mask_height == orig_height and mask_width == orig_width)
+                ), f"Mask dimensions {mask.shape} should be square or match original image"
+                
+                # Calculate scale factors if mask was resized
+                scale_x = orig_width / mask_width
+                scale_y = orig_height / mask_height
+                
+                # Check mask is binary (contains only 0 and 1 or True/False)
+                unique_values = np.unique(mask)
+                assert len(unique_values) <= 2, "Mask should be binary"
+                assert all(v in [0, 1, True, False] for v in unique_values), (
+                    "Mask should contain only 0/1 or True/False values"
+                )
+                
+                # Check mask has positive pixels (not empty)
+                assert np.sum(mask) > 0, "Mask should not be empty"
+                
+                # Check mask pixels are within bbox bounds (scaled to mask coordinates)
+                mask_indices = np.where(mask > 0)
+                if len(mask_indices[0]) > 0:
+                    min_y, max_y = mask_indices[0].min(), mask_indices[0].max()
+                    min_x, max_x = mask_indices[1].min(), mask_indices[1].max()
+                    
+                    # Scale bbox to mask coordinates
+                    scaled_x1 = x1 / scale_x
+                    scaled_x2 = x2 / scale_x
+                    scaled_y1 = y1 / scale_y
+                    scaled_y2 = y2 / scale_y
+                    
+                    # Allow some tolerance for segmentation vs bbox differences
+                    tolerance = 10
+                    assert min_x >= scaled_x1 - tolerance, (
+                        f"Mask min_x {min_x} should be >= scaled bbox x1 {scaled_x1} (with tolerance)"
+                    )
+                    assert max_x <= scaled_x2 + tolerance, (
+                        f"Mask max_x {max_x} should be <= scaled bbox x2 {scaled_x2} (with tolerance)"
+                    )
+                    assert min_y >= scaled_y1 - tolerance, (
+                        f"Mask min_y {min_y} should be >= scaled bbox y1 {scaled_y1} (with tolerance)"
+                    )
+                    assert max_y <= scaled_y2 + tolerance, (
+                        f"Mask max_y {max_y} should be <= scaled bbox y2 {scaled_y2} (with tolerance)"
+                    )
+                
+                # Check mask coverage relative to bbox area
+                mask_area = np.sum(mask)
+                # Scale bbox area to mask resolution
+                scaled_bbox_area = ((scaled_x2 - scaled_x1) * (scaled_y2 - scaled_y1))
+                coverage_ratio = mask_area / scaled_bbox_area if scaled_bbox_area > 0 else 0
+                
+                # Mask area should be reasonable relative to bbox (typically 0.3 to 0.9)
+                assert 0.1 <= coverage_ratio <= 1.5, (
+                    f"Mask coverage ratio {coverage_ratio:.2f} should be reasonable relative to bbox"
+                )
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_polygon_correctness(self, mcp_server: FastMCP, test_image_path):
+        """Tests that returned polygons are valid and correctly positioned."""
+        # Load the test image to get its dimensions
+        with Image.open(test_image_path) as img:
+            img_width, img_height = img.size
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "polygon",
+                    "confidence": 0.25,
+                },
+            )
+            
+            find_result = json.loads(result[0].text)
+            assert find_result["found"]
+            
+            for obj in find_result["found_objects"]:
+                polygon = obj["polygon"]
+                bbox = obj["bbox"]
+                x1, y1, x2, y2 = bbox
+                
+                # 1. Check polygon has at least 3 points
+                assert len(polygon) >= 3, "Polygon should have at least 3 points"
+                
+                # 2. Check all points have exactly 2 coordinates
+                for point in polygon:
+                    assert len(point) == 2, f"Each polygon point should have 2 coordinates, got {len(point)}"
+                
+                # 3. Check all coordinates are reasonable
+                # Note: Polygon coordinates should be in original image space
+                for x, y in polygon:
+                    # Allow some tolerance outside image bounds
+                    tolerance = 10
+                    assert -tolerance <= x <= img_width + tolerance, (
+                        f"X coordinate {x} should be within image width {img_width} (with tolerance)"
+                    )
+                    assert -tolerance <= y <= img_height + tolerance, (
+                        f"Y coordinate {y} should be within image height {img_height} (with tolerance)"
+                    )
+                
+                # 4. Check polygon points are within bbox bounds (with tolerance)
+                tolerance = 10
+                xs = [p[0] for p in polygon]
+                ys = [p[1] for p in polygon]
+                
+                assert min(xs) >= x1 - tolerance, f"Min polygon x {min(xs)} should be >= bbox x1 {x1}"
+                assert max(xs) <= x2 + tolerance, f"Max polygon x {max(xs)} should be <= bbox x2 {x2}"
+                assert min(ys) >= y1 - tolerance, f"Min polygon y {min(ys)} should be >= bbox y1 {y1}"
+                assert max(ys) <= y2 + tolerance, f"Max polygon y {max(ys)} should be <= bbox y2 {y2}"
+                
+                # 5. Check polygon area is positive (using shoelace formula)
+                area = 0
+                n = len(polygon)
+                for i in range(n):
+                    j = (i + 1) % n
+                    area += polygon[i][0] * polygon[j][1]
+                    area -= polygon[j][0] * polygon[i][1]
+                area = abs(area) / 2.0
+                
+                assert area > 0, "Polygon area should be positive"
+                
+                # 6. Check polygon area relative to bbox area
+                bbox_area = (x2 - x1) * (y2 - y1)
+                area_ratio = area / bbox_area
+                
+                assert 0.1 <= area_ratio <= 1.5, (
+                    f"Polygon area ratio {area_ratio:.2f} should be reasonable relative to bbox"
+                )
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_mask_to_polygon_consistency(self, mcp_server: FastMCP, test_image_path):
+        """Tests that mask and polygon representations are consistent for the same object."""
+        # Load the test image to get its dimensions
+        with Image.open(test_image_path) as img:
+            orig_width, orig_height = img.size
+            
+        async with Client(mcp_server) as client:
+            # Get results with mask
+            mask_result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "mask",
+                    "confidence": 0.5,  # Higher confidence to get fewer, more reliable results
+                    "return_all_matches": False,  # Get only best match for consistency
+                },
+            )
+            
+            # Get results with polygon
+            polygon_result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_image_path,
+                    "description": "car",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "polygon",
+                    "confidence": 0.5,
+                    "return_all_matches": False,
+                },
+            )
+            
+            mask_data = json.loads(mask_result[0].text)
+            polygon_data = json.loads(polygon_result[0].text)
+            
+            if mask_data["found"] and polygon_data["found"]:
+                mask_obj = mask_data["found_objects"][0]
+                polygon_obj = polygon_data["found_objects"][0]
+                
+                # Check that bboxes are similar (they might differ slightly due to different runs)
+                mask_bbox = mask_obj["bbox"]
+                polygon_bbox = polygon_obj["bbox"]
+                
+                # Allow some tolerance for bbox differences
+                bbox_tolerance = 20
+                for i in range(4):
+                    assert abs(mask_bbox[i] - polygon_bbox[i]) < bbox_tolerance, (
+                        "Bounding boxes should be similar for mask and polygon representations"
+                    )
+                
+                # Convert both to same resolution for comparison
+                mask = np.array(mask_obj["mask"])
+                polygon_points = polygon_obj["polygon"]
+                
+                # Determine mask dimensions
+                mask_height, mask_width = mask.shape
+                
+                # Create a mask from the polygon at the same resolution as the returned mask
+                img = Image.new('L', (mask_width, mask_height), 0)
+                
+                # Scale polygon points if needed
+                scale_x = mask_width / orig_width
+                scale_y = mask_height / orig_height
+                
+                scaled_polygon = []
+                for x, y in polygon_points:
+                    scaled_x = x * scale_x
+                    scaled_y = y * scale_y
+                    scaled_polygon.append((scaled_x, scaled_y))
+                
+                ImageDraw.Draw(img).polygon(
+                    scaled_polygon, 
+                    outline=1, 
+                    fill=1
+                )
+                polygon_mask = np.array(img)
+                
+                # Calculate intersection over union (IoU)
+                intersection = np.logical_and(mask, polygon_mask).sum()
+                union = np.logical_or(mask, polygon_mask).sum()
+                iou = intersection / union if union > 0 else 0
+                
+                # IoU should be reasonably high for the same object
+                # Allow lower threshold as polygon and mask representations can differ
+                assert iou > 0.5, (
+                    f"Mask and polygon should represent similar regions (IoU: {iou:.2f})"
+                )

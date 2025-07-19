@@ -149,19 +149,23 @@ Crop my image 'input.png' using bounding box [10, 10, 200, 200] and save it as '
 
 ### `detect`
 
-Detects objects in an image using models from Ultralytics. This tool requires pre-downloaded models. Use the `download-yolo-models` command to download models before using this tool. If objects aren't common, consider using a specialized model.
+Detects objects in an image using models from Ultralytics. This tool requires pre-downloaded models. Use the `download-yolo-models` command to download models before using this tool. If objects aren't common, consider using a specialized model. This tool can optionally return segmentation masks or polygons if a segmentation model (e.g., one ending in '-seg.pt') is used.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
 - **Optional arguments:**
   - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.75
   - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg-pf.pt'
+  - `return_geometry` (boolean): If True, returns segmentation masks or polygons for detected objects. Default is False.
+  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'.
 - **Returns:** dictionary containing:
   - `image_path`: Path to the input image
   - `detections`: List of detected objects, each with:
     - `class`: Class name of the detected object
     - `confidence`: Confidence score (0.0 to 1.0)
     - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+    - `mask` (optional): A binary numpy array representing the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
+    - `polygon` (optional): A list of points `[x, y]` describing the object's contour. Included if `return_geometry` is True and `geometry_format` is 'polygon'.
 
 **Example Claude Request:**
 
@@ -173,10 +177,13 @@ Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
 
 ```json
 {
+  "tool_code": "imagesorcery-mcp",
   "name": "detect",
   "arguments": {
     "input_path": "/home/user/images/photo.jpg",
-    "confidence": 0.4
+    "confidence": 0.4,
+    "return_geometry": true,
+    "geometry_format": "polygon"
   }
 }
 ```
@@ -191,12 +198,14 @@ Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
       {
         "class": "person",
         "confidence": 0.92,
-        "bbox": [10.5, 20.3, 100.2, 200.1]
+        "bbox": [10.5, 20.3, 100.2, 200.1],
+        "polygon": [[10.5, 20.3], [100.2, 200.1], [100.2, 200.1], [10.5, 20.3]]
       },
       {
         "class": "car",
         "confidence": 0.85,
-        "bbox": [150.2, 30.5, 250.1, 120.7]
+        "bbox": [150.2, 30.5, 250.1, 120.7],
+        "polygon": [[150.2, 30.5], [250.1, 120.7], [250.1, 120.7], [150.2, 30.5]]
       }
     ]
   }
@@ -457,7 +466,7 @@ Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom ri
 
 ### `find`
 
-Finds objects in an image based on a text description. This tool uses open-vocabulary detection models to find objects matching a text description. It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt).
+Finds objects in an image based on a text description. This tool uses open-vocabulary detection models to find objects matching a text description. It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt). This tool can optionally return segmentation masks or polygons.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
@@ -466,6 +475,8 @@ Finds objects in an image based on a text description. This tool uses open-vocab
   - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.3
   - `model_name` (string): Model name to use for finding objects (must support text prompts). Default is 'yoloe-11l-seg.pt'
   - `return_all_matches` (boolean): If True, returns all matching objects; if False, returns only the best match. Default is False
+  - `return_geometry` (boolean): If True, returns segmentation masks or polygons for found objects. Default is False.
+  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'.
 - **Returns:** dictionary containing:
   - `image_path`: Path to the input image
   - `query`: The text description that was searched for
@@ -474,6 +485,8 @@ Finds objects in an image based on a text description. This tool uses open-vocab
     - `match`: The class name of the matched object
     - `confidence`: Confidence score (0.0 to 1.0)
     - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
+    - `mask` (optional): A binary numpy array representing the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
+    - `polygon` (optional): A list of points `[x, y]` describing the object's contour. Included if `return_geometry` is True and `geometry_format` is 'polygon'.
   - `found`: Boolean indicating whether any objects were found
 
 **Example Claude Request:**
@@ -491,7 +504,9 @@ Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4
     "input_path": "/home/user/images/photo.jpg",
     "description": "dog",
     "confidence": 0.4,
-    "return_all_matches": true
+    "return_all_matches": true,
+    "return_geometry": true,
+    "geometry_format": "mask"
   }
 }
 ```
@@ -508,13 +523,15 @@ Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4
         "description": "dog",
         "match": "dog",
         "confidence": 0.92,
-        "bbox": [150.2, 30.5, 250.1, 120.7]
+        "bbox": [150.2, 30.5, 250.1, 120.7],
+        "mask": [...],
       },
       {
         "description": "dog",
         "match": "dog",
         "confidence": 0.85,
-        "bbox": [300.5, 150.3, 400.2, 250.1]
+        "bbox": [300.5, 150.3, 400.2, 250.1],
+        "mask": [...]
       }
     ],
     "found": true

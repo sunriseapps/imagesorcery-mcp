@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Annotated, Dict, List, Union
+from typing import Annotated, Any, Dict, List, Literal, Union
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -37,8 +37,14 @@ def register_tool(mcp: FastMCP):
             Field(
                 description="Model name to use for detection (e.g., 'yoloe-11l-seg-pf.pt', 'yolov8m.pt')",
             ),
-        ] = "yoloe-11l-seg-pf.pt",  # Default model
-    ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, List[float]]]]]]:
+        ] = "yoloe-11l-seg-pf.pt",
+        return_geometry: Annotated[
+            bool, Field(description="If True, returns segmentation masks or polygons for detected objects.")
+        ] = False,
+        geometry_format: Annotated[
+            Literal["mask", "polygon"], Field(description="Format for returned geometry: 'mask' or 'polygon'.")
+        ] = "mask",
+    ) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
         """
         Detect objects in an image using models from Ultralytics.
 
@@ -47,11 +53,17 @@ def register_tool(mcp: FastMCP):
 
         If objects aren't common, consider using a specialized model.
 
+        This tool can optionally return segmentation masks or polygons if a segmentation
+        model (e.g., one ending in '-seg.pt') is used.
+
         Returns:
-            Dictionary containing the input image path and a list of detected objects
-            with their class names, confidence scores, and bounding box coordinates.
+            Dictionary containing the input image path and a list of detected objects.
+            Each object includes its class name, confidence score, and bounding box.
+            If return_geometry is True, it also includes a 'mask' (numpy array) or
+            'polygon' (list of points).
         """
-        logger.info(f"Detect tool requested for image: {input_path} with model: {model_name} and confidence: {confidence}")
+        logger.info(
+            f"Detect tool requested for image: {input_path} with model: {model_name} and confidence: {confidence}")
 
         # Check if input file exists
         if not os.path.exists(input_path):
@@ -112,9 +124,15 @@ def register_tool(mcp: FastMCP):
             results = model(input_path, conf=confidence)[0]
             logger.info(f"Inference completed. Found {len(results.boxes)} detections.")
 
+            if return_geometry and results.masks is None:
+                raise ValueError(
+                    f"Model '{model_name}' does not support segmentation, but return_geometry=True was requested. "
+                    "Please use a segmentation model (e.g., one ending in '-seg.pt')."
+                )
+
             # Process results
             detections = []
-            for box in results.boxes:
+            for i, box in enumerate(results.boxes):
                 # Get class name
                 class_id = int(box.cls.item())
                 class_name = results.names[class_id]
@@ -125,10 +143,21 @@ def register_tool(mcp: FastMCP):
                 # Get bounding box coordinates (x1, y1, x2, y2)
                 x1, y1, x2, y2 = [float(coord) for coord in box.xyxy[0].tolist()]
 
-                detections.append(
-                    {"class": class_name, "confidence": conf, "bbox": [x1, y1, x2, y2]}
-                )
-                logger.debug(f"Detected: class={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
+                detection_item = {"class": class_name, "confidence": conf, "bbox": [x1, y1, x2, y2]}
+
+                if return_geometry:
+                    if geometry_format == "mask":
+                        # Ultralytics masks are (H, W) arrays
+                        mask = results.masks.data[i].cpu().numpy()
+                        detection_item["mask"] = mask.tolist()
+                    elif geometry_format == "polygon":
+                        # Ultralytics masks.xy are lists of polygons
+                        polygon = results.masks.xy[i].tolist()
+                        detection_item["polygon"] = polygon
+
+                detections.append(detection_item)
+                logger.debug(
+                    f"Detected: class={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
 
             logger.info(f"Detection completed successfully for {input_path}")
             return {"image_path": input_path, "detections": detections}

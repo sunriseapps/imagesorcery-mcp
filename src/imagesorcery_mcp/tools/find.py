@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Annotated, Dict, List, Union
+from typing import Annotated, Any, Dict, List, Literal, Union
 
 from fastmcp import FastMCP
 from pydantic import Field
@@ -62,23 +62,33 @@ def register_tool(mcp: FastMCP):
             ),
         ] = "yoloe-11l-seg.pt",  # Default model that supports text prompts
         return_all_matches: Annotated[
-            bool,
-            Field(
-                description="If True, returns all matching objects; if False, returns only the best match"
-            ),
+            bool, Field(description="If True, returns all matching objects; if False, returns only the best match")
         ] = False,
-    ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, List[float]]]]]]:
+        return_geometry: Annotated[
+            bool, Field(description="If True, returns segmentation masks or polygons for found objects.")
+        ] = False,
+        geometry_format: Annotated[
+            Literal["mask", "polygon"], Field(description="Format for returned geometry: 'mask' or 'polygon'.")
+        ] = "mask",
+    ) -> Dict[str, Union[str, List[Dict[str, Any]], bool]]:
         """
         Find objects in an image based on a text description.
         
         This tool uses open-vocabulary detection models to find objects matching a text description.
         It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt).
-        
+
+        This tool can optionally return segmentation masks or polygons.
+
         Returns:
-            Dictionary containing the input image path and a list of found objects
-            with their confidence scores and bounding box coordinates.
+            Dictionary containing the input image path and a list of found objects.
+            Each object includes its confidence score and bounding box. If return_geometry
+            is True, it also includes a 'mask' (numpy array) or 'polygon' (list of points).
         """
-        logger.info(f"Find tool requested for image: {input_path}, description: '{description}', model: {model_name}, confidence: {confidence}, return_all_matches: {return_all_matches}")
+        logger.info(
+            f"Find tool requested for image: {input_path}, description: '{description}', model: {model_name}, "
+            f"confidence: {confidence}, return_all_matches: {return_all_matches}, "
+            f"return_geometry: {return_geometry}, geometry_format: {geometry_format}"
+        )
         
         # Check if input file exists
         if not os.path.exists(input_path):
@@ -204,13 +214,22 @@ def register_tool(mcp: FastMCP):
             if results and len(results) > 0:
                 logger.info(f"Processing {len(results)} results")
                 
-                if hasattr(results[0], 'boxes') and len(results[0].boxes) > 0:
-                    logger.info(f"Found {len(results[0].boxes)} boxes")
+                # The main result object is the first one in the list
+                main_result = results[0]
+
+                if return_geometry and main_result.masks is None:
+                    raise ValueError(
+                        f"Model '{model_name}' does not support segmentation, but return_geometry=True was requested. "
+                        "Please use a segmentation model (e.g., one ending in '-seg.pt')."
+                    )
+
+                if hasattr(main_result, 'boxes') and len(main_result.boxes) > 0:
+                    logger.info(f"Found {len(main_result.boxes)} boxes")
                     
-                    for box in results[0].boxes:
+                    for i, box in enumerate(main_result.boxes):
                         # Get class name
                         class_id = int(box.cls.item())
-                        class_name = results[0].names[class_id]
+                        class_name = main_result.names[class_id]
                         
                         # Get confidence score
                         conf = float(box.conf.item())
@@ -218,13 +237,24 @@ def register_tool(mcp: FastMCP):
                         # Get bounding box coordinates (x1, y1, x2, y2)
                         x1, y1, x2, y2 = [float(coord) for coord in box.xyxy[0].tolist()]
                         
-                        found_objects.append({
+                        found_object = {
                             "description": description,
                             "match": class_name,
                             "confidence": conf,
                             "bbox": [x1, y1, x2, y2]
-                        })
-                        logger.debug(f"Found object: match={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
+                        }
+
+                        if return_geometry:
+                            if geometry_format == "mask":
+                                mask = main_result.masks.data[i].cpu().numpy()
+                                found_object["mask"] = mask.tolist()
+                            elif geometry_format == "polygon":
+                                polygon = main_result.masks.xy[i].tolist()
+                                found_object["polygon"] = polygon
+
+                        found_objects.append(found_object)
+                        logger.debug(
+                            f"Found object: match={class_name}, confidence={conf:.2f}, bbox=[{x1:.2f}, {y1:.2f}, {x2:.2f}, {y2:.2f}]")
                 else:
                     logger.info("No boxes found in results")
             else:
