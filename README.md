@@ -52,7 +52,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `draw_lines` | Draws lines on an image using OpenCV | "Draw a red line from (50,50) to (150,100) on my image 'photo.jpg'" |
 | `draw_rectangles` | Draws rectangles on an image using OpenCV | "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'" |
 | `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
-| `fill` | Fills specified rectangular or polygonal areas of an image with a color and opacity | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
+| `fill` | Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
 | `find` | Finds objects in an image based on a text description. Can return segmentation masks/polygons. | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
 | `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |

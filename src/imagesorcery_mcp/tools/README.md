@@ -530,14 +530,14 @@ Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom ri
 
 ### `fill`
 
-Fills specified rectangular or polygonal areas of an image with a color and opacity. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black).
+Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black). **Special behavior**: If `color` is set to `null` (or `None` in Python), the specified area is made fully transparent, effectively deleting it. The `opacity` parameter is ignored in this case.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
   - `areas` (array): List of areas to fill. Each item is a dictionary that must contain either:
     - A rectangle: `x1`, `y1`, `x2`, `y2` (integers).
     - A polygon: `polygon` (a list of points, e.g., `[[x1, y1], [x2, y2], ...]`).
-    - Optionally, each dictionary can also contain `color` (list of 3 ints [B,G,R], default [0,0,0]) and `opacity` (float 0.0-1.0, default 0.5).
+    - Optionally, each dictionary can also contain `color` (list of 3 ints [B,G,R] or `null`, default [0,0,0]) and `opacity` (float 0.0-1.0, default 0.5).
 - **Optional arguments:**
   - `output_path` (string): Full path to save the output image. If not provided, will use input filename with '_filled' suffix.
 - **Returns:** string (path to the image with filled areas)
@@ -563,6 +563,10 @@ Fill the rectangular area from (150, 100) to (250, 200) with semi-transparent re
         "y2": 200,
         "color": [0, 0, 255],
         "opacity": 0.5
+      },
+      {
+        "polygon": [[10, 10], [50, 10], [50, 50], [10, 50]],
+        "color": null
       }
     ],
     "output_path": "/home/user/images/output.png"

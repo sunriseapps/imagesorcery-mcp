@@ -20,8 +20,8 @@ def register_tool(mcp: FastMCP):
                 description=(
                     "List of areas to fill. Each area should have: "
                     "a rectangle ({'x1', 'y1', 'x2', 'y2'}) or a polygon ({'polygon': [[x,y],...]}). "
-                    "Optionally, include 'color' (list of 3 ints [B,G,R], default [0,0,0]) and "
-                    "'opacity' (float 0.0-1.0, default 0.5) for each area."
+                    "Optionally, include 'color' (list of 3 ints [B,G,R] or None, default black) and "
+                    "'opacity' (float 0.0-1.0, default 0.5). If color is None, the area is made transparent."
                 )
             ),
         ],
@@ -45,8 +45,11 @@ def register_tool(mcp: FastMCP):
         
         The 'opacity' parameter controls the transparency of the fill. 1.0 is fully opaque,
         0.0 is fully transparent. Default is 0.5.
-        The 'color' is in BGR format, e.g., [255, 0, 0] for blue. Default is black [0,0,0].
-        
+        The 'color' is in BGR format, e.g., [255, 0, 0] for blue. Default is black.
+
+        If the `color` is set to `None`, the specified area will be made fully transparent,
+        effectively deleting it (similar to ImageMagick). In this case, the `opacity`
+        parameter is ignored.
         Returns:
             Path to the image with filled areas
         """
@@ -65,63 +68,76 @@ def register_tool(mcp: FastMCP):
 
         # Read the image using OpenCV
         logger.info(f"Reading image: {input_path}")
-        img = cv2.imread(input_path)
+        img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
         if img is None:
             logger.error(f"Failed to read image: {input_path}")
             raise ValueError(f"Failed to read image: {input_path}")
         logger.info(f"Image read successfully. Shape: {img.shape}")
 
+        # If any area requests transparency, ensure we have an alpha channel
+        if any(area.get("color") is None for area in areas):
+            if len(img.shape) < 3 or img.shape[2] == 3:
+                logger.info("Converting image to BGRA to support transparency")
+                img = cv2.cvtColor(img, cv2.COLOR_BGR2BGRA if len(img.shape) > 2 and img.shape[2] == 3 else cv2.COLOR_GRAY2BGRA)
+
         # Process each area to fill
         for i, area in enumerate(areas):
-            # Extract optional parameters with defaults
-            color = tuple(area.get("color", [0, 0, 0]))
-            opacity = area.get("opacity", 0.5)
+            color = area.get("color")
 
-            if not (0.0 <= opacity <= 1.0):
-                logger.warning(f"Opacity {opacity} is outside the valid range [0.0, 1.0]. Clamping it.")
-                opacity = max(0.0, min(1.0, opacity))
-
-            if "polygon" in area:
-                # It's a polygon
-                logger.debug(f"Filling polygon area {i+1} with color={color}, opacity={opacity}")
-                polygon_points = np.array(area["polygon"], dtype=np.int32)
-
-                # Create a mask for the polygon
-                mask = np.zeros(img.shape[:2], dtype=np.uint8)
-                cv2.fillPoly(mask, [polygon_points], (255))
-
-                # Get the bounding box of the polygon to process only that region for efficiency
-                x, y, w, h = cv2.boundingRect(polygon_points)
+            if color is None:
+                # Make area transparent
+                logger.debug(f"Making area {i+1} transparent")
+                if img.shape[2] != 4:
+                    raise ValueError("Image must have an alpha channel for transparency operations.")
                 
-                # Extract the region of interest (ROI) from the original image
-                roi = img[y : y + h, x : x + w]
-
-                # Create a solid color image for the ROI
-                color_roi = np.full(roi.shape, color, dtype=np.uint8)
-
-                # Blend the color and original ROI
-                blended_roi = cv2.addWeighted(color_roi, opacity, roi, 1 - opacity, 0)
-
-                # Get the mask for the ROI
-                roi_mask = mask[y : y + h, x : x + w]
-
-                # Use the mask to combine the blended ROI and original ROI
-                img[y : y + h, x : x + w] = np.where(roi_mask[:, :, None] == 255, blended_roi, roi)
-                logger.debug(f"Polygon area {i+1} filled")
-
-            elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
-                # It's a rectangle
-                x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
-                logger.debug(f"Filling rectangle area {i+1}: ({x1}, {y1}) to ({x2}, {y2}) with color={color}, opacity={opacity}")
-                
-                roi = img[y1:y2, x1:x2]
-                color_rect = np.full(roi.shape, color, dtype=np.uint8)
-                blended_roi = cv2.addWeighted(color_rect, opacity, roi, 1 - opacity, 0)
-                img[y1:y2, x1:x2] = blended_roi
-                logger.debug(f"Rectangle area {i+1} filled")
+                transparent_color = (0, 0, 0, 0)
+                if "polygon" in area:
+                    polygon_points = np.array(area["polygon"], dtype=np.int32)
+                    cv2.fillPoly(img, [polygon_points], transparent_color)
+                    logger.debug(f"Polygon area {i+1} made transparent")
+                elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
+                    x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                    img[y1:y2, x1:x2] = transparent_color
+                    logger.debug(f"Rectangle area {i+1} made transparent")
+                else:
+                    logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
             else:
-                logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
-                continue
+                # Fill with color
+                color_tuple = tuple(color)
+                opacity = area.get("opacity", 0.5)
+
+                if not (0.0 <= opacity <= 1.0):
+                    logger.warning(f"Opacity {opacity} is outside the valid range [0.0, 1.0]. Clamping it.")
+                    opacity = max(0.0, min(1.0, opacity))
+
+                if "polygon" in area:
+                    logger.debug(f"Filling polygon area {i+1} with color={color_tuple}, opacity={opacity}")
+                    polygon_points = np.array(area["polygon"], dtype=np.int32)
+                    mask = np.zeros(img.shape[:2], dtype=np.uint8)
+                    cv2.fillPoly(mask, [polygon_points], (255))
+                    x, y, w, h = cv2.boundingRect(polygon_points)
+                    roi = img[y : y + h, x : x + w]
+                    
+                    overlay_roi = roi.copy()
+                    cv2.fillPoly(overlay_roi, [polygon_points - [x, y]], color_tuple)
+                    blended_roi = cv2.addWeighted(overlay_roi, opacity, roi, 1 - opacity, 0)
+                    
+                    roi_mask = mask[y : y + h, x : x + w]
+                    img[y : y + h, x : x + w] = np.where(roi_mask[:, :, None] == 255, blended_roi, roi)
+                    logger.debug(f"Polygon area {i+1} filled")
+
+                elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
+                    x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                    logger.debug(f"Filling rectangle area {i+1}: ({x1}, {y1}) to ({x2}, {y2}) with color={color_tuple}, opacity={opacity}")
+                    
+                    roi = img[y1:y2, x1:x2]
+                    overlay_roi = roi.copy()
+                    cv2.rectangle(overlay_roi, (0, 0), (roi.shape[1], roi.shape[0]), color_tuple, -1)
+                    blended_roi = cv2.addWeighted(overlay_roi, opacity, roi, 1 - opacity, 0)
+                    img[y1:y2, x1:x2] = blended_roi
+                    logger.debug(f"Rectangle area {i+1} filled")
+                else:
+                    logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
 
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):

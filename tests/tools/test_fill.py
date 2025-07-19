@@ -130,3 +130,63 @@ class TestFillToolExecution:
             assert np.array_equal(img[100, 120], [0, 0, 255])
             assert np.allclose(img[150, 160], [0, 128, 0], atol=2)
             assert np.allclose(img[130, 155], [0, 128, 128], atol=2)
+
+    @pytest.mark.asyncio
+    async def test_fill_transparent_rectangle(self, mcp_server: FastMCP, test_image_path, tmp_path):
+        """Tests making a rectangular area transparent."""
+        output_path = str(tmp_path / "output_transparent.png")
+        fill_area = {"x1": 150, "y1": 100, "x2": 250, "y2": 200, "color": None}
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "fill",
+                {
+                    "input_path": test_image_path,
+                    "areas": [fill_area],
+                    "output_path": output_path,
+                },
+            )
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
+            assert img.shape[2] == 4  # Should have alpha channel
+
+            # Check a pixel inside the transparent area
+            pixel_inside = img[150, 200]
+            assert pixel_inside[3] == 0  # Alpha should be 0
+
+            # Check a pixel outside the transparent area
+            pixel_outside = img[50, 50]
+            assert pixel_outside[3] == 255  # Alpha should be 255
+
+    @pytest.mark.asyncio
+    async def test_fill_transparent_polygon(self, mcp_server: FastMCP, test_image_path, tmp_path):
+        """Tests making a polygonal area transparent."""
+        output_path = str(tmp_path / "output_transparent_poly.png")
+        fill_area = {"polygon": [[160, 110], [240, 110], [200, 190]], "color": None}
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "fill",
+                {
+                    "input_path": test_image_path,
+                    "areas": [fill_area],
+                    "output_path": output_path,
+                },
+            )
+            assert len(result) == 1
+            assert result[0].text == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
+            assert img.shape[2] == 4  # Should have alpha channel
+
+            # Check a pixel inside the transparent area (center of the polygon)
+            pixel_inside = img[170, 200]
+            assert pixel_inside[3] == 0  # Alpha should be 0
+
+            # Check a pixel outside the transparent area
+            pixel_outside = img[50, 50]
+            assert pixel_outside[3] == 255  # Alpha should be 255
