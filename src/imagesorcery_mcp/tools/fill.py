@@ -21,7 +21,8 @@ def register_tool(mcp: FastMCP):
                     "List of areas to fill. Each area should have: "
                     "a rectangle ({'x1', 'y1', 'x2', 'y2'}) or a polygon ({'polygon': [[x,y],...]}). "
                     "Optionally, include 'color' (list of 3 ints [B,G,R] or None, default black) and "
-                    "'opacity' (float 0.0-1.0, default 0.5). If color is None, the area is made transparent."
+                    "'opacity' (float 0.0-1.0, default 0.5) INSIDE each area object. "
+                    "Example: [{'polygon': [[0,0], [100,0], [100,100]], 'color': [255,0,0], 'opacity': 0.5}]"
                 )
             ),
         ],
@@ -47,8 +48,8 @@ def register_tool(mcp: FastMCP):
         
         This tool allows filling multiple areas of an image with a customizable
         color and opacity. Each area can be a rectangle defined by a bounding box 
-        [x1, y1, x2, y2] or a polygon defined by a list of points.
-        
+        [x1, y1, x2, y2] or a polygon defined by a list of points.  
+
         The 'opacity' parameter controls the transparency of the fill. 1.0 is fully opaque,
         0.0 is fully transparent. Default is 0.5.
         The 'color' is in BGR format, e.g., [255, 0, 0] for blue. Default is black.
@@ -58,6 +59,21 @@ def register_tool(mcp: FastMCP):
         parameter is ignored.
         
         If `invert_areas` is True, the tool will fill everything EXCEPT the specified areas.
+
+        Example usage:
+        {
+            "input_path": "/path/to/image.jpg",
+            "areas": [
+                {
+                    "polygon": [[0, 0], [100, 0], [100, 100], [0, 100]],
+                    "color": null,  // Makes area transparent
+                    "opacity": 1.0
+                }
+            ],
+            "invert_areas": true,  // Removes background, keeps only the polygon area
+            "output_path": "/path/to/output.png"
+        }
+        
         Returns:
             Path to the image with filled areas
         """

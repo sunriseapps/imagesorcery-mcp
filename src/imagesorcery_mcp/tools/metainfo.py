@@ -24,6 +24,11 @@ def register_tool(mcp: FastMCP):
         """
         logger.info(f"Get metainfo tool requested for image: {input_path}")
 
+        # Check if input_path is empty
+        if not input_path or not input_path.strip():
+            logger.error("Input path is empty. Please provide a full path to the image file.")
+            raise ValueError("input_path cannot be empty. Please provide a full path to the image file.")
+
         # Check if input file exists
         if not os.path.exists(input_path):
             logger.error(f"Input file not found: {input_path}")
