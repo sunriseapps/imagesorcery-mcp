@@ -1,4 +1,3 @@
-import json
 
 import pytest
 from fastmcp import Client, FastMCP
