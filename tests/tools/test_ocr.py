@@ -127,10 +127,8 @@ class TestOcrToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-
             # Parse the result
-            ocr_result = json.loads(result[0].text)
+            ocr_result = result.structured_content
 
             # Basic structure checks
             assert "image_path" in ocr_result

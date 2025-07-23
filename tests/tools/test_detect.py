@@ -152,11 +152,11 @@ class TestDetectToolExecution:
                 },
             )
 
-            # Check that the tool returned a result
-            assert len(result) == 1
-
             # Parse the result
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            
+            # Check that the tool returned a result
+            assert detection_result is not None
 
             # Basic structure checks
             assert "image_path" in detection_result
@@ -214,7 +214,7 @@ class TestDetectToolExecution:
                     "confidence": 0.3,
                 },
             )
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
             assert len(detection_result["detections"]) > 0
             detection = detection_result["detections"][0]
             assert "mask" in detection
@@ -245,7 +245,8 @@ class TestDetectToolExecution:
                     "confidence": 0.3,
                 },
             )
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             detection = detection_result["detections"][0]
             assert "polygon" in detection
@@ -276,7 +277,8 @@ class TestDetectToolExecution:
                     "confidence": 0.3,
                 },
             )
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             detection = detection_result["detections"][0]
             assert "mask" not in detection
@@ -341,11 +343,11 @@ class TestDetectToolExecution:
                 },
             )
 
-            # Check that the tool returned a result
-            assert len(result) == 1
-
             # Parse the result
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            
+            # Check that the tool returned a result
+            assert detection_result is not None
 
             # Basic structure checks
             assert "image_path" in detection_result
@@ -404,7 +406,8 @@ class TestDetectGeometryValidation:
                 },
             )
             
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             
             for detection in detection_result["detections"]:
@@ -498,7 +501,8 @@ class TestDetectGeometryValidation:
                 },
             )
             
-            detection_result = json.loads(result[0].text)
+            detection_result = result.structured_content
+            assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             
             for detection in detection_result["detections"]:
@@ -590,8 +594,10 @@ class TestDetectGeometryValidation:
                 },
             )
             
-            mask_data = json.loads(mask_result[0].text)
-            polygon_data = json.loads(polygon_result[0].text)
+            mask_data = mask_result.structured_content
+            assert mask_result is not None
+            polygon_data = polygon_result.structured_content
+            assert polygon_result is not None
             
             # Get detections for both
             mask_detections = mask_data["detections"]

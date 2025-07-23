@@ -151,11 +151,8 @@ class TestFindToolExecution:
                 },
             )
 
-            # Check that the tool returned a result
-            assert len(result) == 1
-
             # Parse the result
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
 
             # Basic structure checks
             assert "image_path" in find_result, "Result should contain image_path"
@@ -206,7 +203,7 @@ class TestFindToolExecution:
             )
 
             # Parse the result
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             
             # Verify that exactly one car was found when return_all_matches is False
             assert find_result["found"] is True, "Should have found a car in the test image"
@@ -247,7 +244,7 @@ class TestFindToolExecution:
             )
 
             # Parse the result
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             
             # Check the structure of the result
             assert "image_path" in find_result, "Result should contain image_path"
@@ -284,7 +281,7 @@ class TestFindToolExecution:
                     "confidence": 0.25,
                 },
             )
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             assert find_result["found"]
             assert len(find_result["found_objects"]) > 0
             found_object = find_result["found_objects"][0]
@@ -317,7 +314,7 @@ class TestFindToolExecution:
                     "confidence": 0.25,
                 },
             )
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             assert find_result["found"]
             assert len(find_result["found_objects"]) > 0
             found_object = find_result["found_objects"][0]
@@ -349,7 +346,7 @@ class TestFindToolExecution:
                     "confidence": 0.25,
                 },
             )
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             assert find_result["found"]
             assert len(find_result["found_objects"]) > 0
             found_object = find_result["found_objects"][0]
@@ -380,7 +377,7 @@ class TestFindToolExecution:
                 },
             )
             
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             assert find_result["found"]
             
             for obj in find_result["found_objects"]:
@@ -475,7 +472,7 @@ class TestFindToolExecution:
                 },
             )
             
-            find_result = json.loads(result[0].text)
+            find_result = result.structured_content
             assert find_result["found"]
             
             for obj in find_result["found_objects"]:
@@ -571,8 +568,10 @@ class TestFindToolExecution:
                 },
             )
             
-            mask_data = json.loads(mask_result[0].text)
-            polygon_data = json.loads(polygon_result[0].text)
+            mask_data = mask_result.structured_content
+            assert mask_data is not None, "Mask data should be present"
+            polygon_data = polygon_result.structured_content
+            assert polygon_data is not None, "Polygon data should be present"
             
             if mask_data["found"] and polygon_data["found"]:
                 mask_obj = mask_data["found_objects"][0]

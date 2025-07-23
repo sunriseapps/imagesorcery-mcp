@@ -99,8 +99,7 @@ class TestFillToolExecution:
         
         async with Client(mcp_server) as client:
             result = await client.call_tool("fill", {"input_path": test_image_path, "areas": [fill_area], "output_path": output_path})
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -119,8 +118,7 @@ class TestFillToolExecution:
 
         async with Client(mcp_server) as client:
             result = await client.call_tool("fill", {"input_path": test_image_path, "areas": [polygon_area], "output_path": output_path})
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -132,9 +130,8 @@ class TestFillToolExecution:
         """Tests the fill tool with default output path."""
         async with Client(mcp_server) as client:
             result = await client.call_tool("fill", {"input_path": test_image_path, "areas": [{"x1": 150, "y1": 100, "x2": 250, "y2": 200}]})
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_filled.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
             assert os.path.exists(expected_output)
 
     @pytest.mark.asyncio
@@ -164,8 +161,7 @@ class TestFillToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -194,8 +190,7 @@ class TestFillToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -227,8 +222,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -263,8 +257,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -297,8 +290,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -334,8 +326,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -377,8 +368,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -410,8 +400,7 @@ class TestFillToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -449,8 +438,7 @@ class TestFillToolWithJPEG:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -482,8 +470,7 @@ class TestFillToolWithJPEG:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -519,8 +506,7 @@ class TestFillToolWithJPEG:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -552,8 +538,7 @@ class TestFillToolWithJPEG:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)

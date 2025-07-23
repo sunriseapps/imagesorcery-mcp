@@ -106,9 +106,8 @@ class TestMetainfoToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
             # Parse the JSON string from the text attribute
-            metadata = json.loads(result[0].text)
+            metadata = result.data
 
             # Verify the metadata contains expected fields
             assert "filename" in metadata

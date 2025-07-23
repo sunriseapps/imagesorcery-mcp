@@ -97,7 +97,7 @@ class TestModelsResourceDefinition:
             assert models_resource is not None, f"models://list resource should exist. Found resources: {[str(r.uri) for r in resources]}"
             
             # Check name - it appears FastMCP uses the full URI as the name
-            assert models_resource.name == "models://list", f"Resource name should be 'models://list' but got '{models_resource.name}'"
+            assert models_resource.name == "list_models", f"Resource name should be 'list_models' but got '{models_resource.name}'"
             
             # Since description is None, let's skip this check for now or check for None
             # The actual resource implementation might not set a description at the transport level

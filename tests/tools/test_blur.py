@@ -175,8 +175,7 @@ class TestBlurToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -199,8 +198,7 @@ class TestBlurToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -235,8 +233,7 @@ class TestBlurToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -274,8 +271,7 @@ class TestBlurToolExecution:
                     "output_path": output_path
                 }
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -319,8 +315,7 @@ class TestBlurToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -366,8 +361,7 @@ class TestBlurToolExecution:
                 },
             )
 
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -411,9 +405,8 @@ class TestBlurToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_blurred.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
 
             # Verify the file exists
             assert os.path.exists(expected_output)
@@ -449,8 +442,7 @@ class TestBlurToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)

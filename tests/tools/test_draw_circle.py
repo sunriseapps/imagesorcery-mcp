@@ -131,8 +131,7 @@ class TestDrawCircleToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
             img = cv2.imread(output_path)
             assert img.shape[:2] == (300, 400)
@@ -153,8 +152,7 @@ class TestDrawCircleToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
             img = cv2.imread(output_path)
             assert np.array_equal(img[150, 150], [0, 255, 0]), "Circle should be filled with green"
@@ -167,9 +165,8 @@ class TestDrawCircleToolExecution:
                 "draw_circles",
                 {"input_path": test_image_path, "circles": [{"center_x": 50, "center_y": 50, "radius": 20}]},
             )
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_with_circles.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
             assert os.path.exists(expected_output)
             img = cv2.imread(expected_output)
             assert img.shape[:2] == (300, 400)

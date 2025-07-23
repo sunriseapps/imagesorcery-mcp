@@ -99,8 +99,7 @@ class TestOverlayToolExecution:
                 },
             )
 
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -125,8 +124,7 @@ class TestOverlayToolExecution:
                 },
             )
 
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -171,7 +169,6 @@ class TestOverlayToolExecution:
                     "y": 0,
                 },
             )
-            assert len(result) == 1
             expected_output = base_image_path.replace(".png", "_overlaid.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
             assert os.path.exists(expected_output)

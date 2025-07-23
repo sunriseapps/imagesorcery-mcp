@@ -86,8 +86,7 @@ class TestChangeColorToolExecution:
                 "change_color",
                 {"input_path": test_image_path, "palette": "grayscale", "output_path": output_path},
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
@@ -115,8 +114,7 @@ class TestChangeColorToolExecution:
                 "change_color",
                 {"input_path": test_image_path, "palette": "sepia", "output_path": output_path},
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
 
             img = cv2.imread(output_path)
@@ -136,9 +134,8 @@ class TestChangeColorToolExecution:
         """Tests the change_color tool with a default output path."""
         async with Client(mcp_server) as client:
             result = await client.call_tool("change_color", {"input_path": test_image_path, "palette": "grayscale"})
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_grayscale.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
             assert os.path.exists(expected_output)
 
     @pytest.mark.asyncio
@@ -147,4 +144,4 @@ class TestChangeColorToolExecution:
         async with Client(mcp_server) as client:
             with pytest.raises(Exception) as excinfo:
                 await client.call_tool("change_color", {"input_path": test_image_path, "palette": "invalid_palette"})
-        assert "error calling tool 'change_color'" in str(excinfo.value).lower()
+        assert "input validation error" in str(excinfo.value).lower()

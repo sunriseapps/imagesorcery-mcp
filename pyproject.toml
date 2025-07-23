@@ -16,7 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 dependencies = [
-    "fastmcp", # core for MCP servers
+    "fastmcp>=2.10.0", # core for MCP servers
     "pydantic>=2.0.0", # For data validation, settings management, and serialization of classes
     "opencv-python>=4.5.0", # For image processing and computer vision tasks
     "imutils>=0.5.4", # For image processing typical tasks which are not included in OpenCV

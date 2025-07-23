@@ -195,8 +195,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -224,8 +223,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -253,8 +251,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -285,8 +282,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -317,8 +313,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -349,8 +344,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -380,8 +374,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -409,8 +402,7 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -431,9 +423,8 @@ class TestResizeToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_resized.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
 
             # Verify the file exists
             assert os.path.exists(expected_output)
@@ -466,8 +457,7 @@ class TestResizeToolExecution:
                 )
 
                 # Check that the tool returned a result
-                assert len(result) == 1
-                assert result[0].text == output_path_smaller
+                assert result.data == output_path_smaller
 
                 # Verify the file exists
                 assert os.path.exists(output_path_smaller)
@@ -492,8 +482,7 @@ class TestResizeToolExecution:
                 )
 
                 # Check that the tool returned a result
-                assert len(result) == 1
-                assert result[0].text == output_path_larger
+                assert result.data == output_path_larger
 
                 # Verify the file exists
                 assert os.path.exists(output_path_larger)

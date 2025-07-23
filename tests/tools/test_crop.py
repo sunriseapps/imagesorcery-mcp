@@ -136,8 +136,7 @@ class TestCropToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
 
             # Verify the file exists
             assert os.path.exists(output_path)
@@ -164,9 +163,8 @@ class TestCropToolExecution:
             )
 
             # Check that the tool returned a result
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_cropped.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
 
             # Verify the file exists
             assert os.path.exists(expected_output)

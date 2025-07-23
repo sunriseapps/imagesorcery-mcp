@@ -104,8 +104,7 @@ class TestDrawArrowsToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
             img = cv2.imread(output_path)
             assert img.shape[:2] == (300, 400)
@@ -134,8 +133,7 @@ class TestDrawArrowsToolExecution:
                     "output_path": output_path,
                 },
             )
-            assert len(result) == 1
-            assert result[0].text == output_path
+            assert result.data == output_path
             assert os.path.exists(output_path)
             img = cv2.imread(output_path)
             # Check a pixel near the midpoint (55, 55) for default black color [0,0,0]
@@ -149,9 +147,8 @@ class TestDrawArrowsToolExecution:
                 "draw_arrows",
                 {"input_path": test_image_path, "arrows": [{"x1": 20, "y1": 20, "x2": 120, "y2": 120}]},
             )
-            assert len(result) == 1
             expected_output = test_image_path.replace(".png", "_with_arrows.png")
-            assert result[0].text == expected_output
+            assert result.data == expected_output
             assert os.path.exists(expected_output)
             img = cv2.imread(expected_output)
             assert img.shape[:2] == (300, 400)
