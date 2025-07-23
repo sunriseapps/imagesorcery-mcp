@@ -292,10 +292,12 @@ This repository is organized as follows:
 │   └── *.pt                     # Pre-trained model.
 ├── src/                       # Contains the source code for the 🪄 ImageSorcery MCP server.
 │   └── imagesorcery_mcp/       # The main package directory for the server.
+│       ├── README.md            # High-level overview of the core architecture (server and middleware).
 │       ├── __init__.py          # Makes `imagesorcery_mcp` a Python package.
 │       ├── __main__.py          # Entry point for running the package as a script.
 │       ├── logging_config.py    # Configures the logging for the server.
 │       ├── server.py            # The main server file, responsible for initializing FastMCP and registering tools.
+│       ├── middleware.py        # Custom middleware for improved validation error handling.
 │       ├── logs/                # Directory for storing server logs.
 │       ├── scripts/             # Contains utility scripts for model management.
 │       │   ├── README.md        # Documentation for the scripts.

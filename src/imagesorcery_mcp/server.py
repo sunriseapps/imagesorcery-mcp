@@ -4,9 +4,11 @@ import sys
 from pathlib import Path
 
 from fastmcp import FastMCP
+from fastmcp.server.middleware.error_handling import ErrorHandlingMiddleware
 
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
+from imagesorcery_mcp.middleware import ImprovedValidationMiddleware
 from imagesorcery_mcp.resources import models
 from imagesorcery_mcp.tools import (
     blur,
@@ -34,7 +36,18 @@ mcp = FastMCP(
         "An MCP server providing tools for image processing operations. "
         "Input images must be specified with full paths."
     ),
+    log_level="DEBUG"
 )
+
+validation_middleware = ImprovedValidationMiddleware(logger=logger)
+mcp.add_middleware(validation_middleware)
+
+error_middleware = ErrorHandlingMiddleware(
+    logger=logger,
+    include_traceback=True,
+    transform_errors=True,
+)
+mcp.add_middleware(error_middleware)
 
 # Register tools with the module-level mcp instance
 blur.register_tool(mcp)
