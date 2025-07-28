@@ -148,7 +148,7 @@ class TestFillToolExecution:
 
     @pytest.mark.asyncio
     async def test_fill_transparent_rectangle(self, mcp_server: FastMCP, test_image_path, tmp_path):
-        """Tests making a rectangular area transparent."""
+        """Tests making a rectangular area transparent with all channels set to 0."""
         output_path = str(tmp_path / "output_transparent.png")
         fill_area = {"x1": 150, "y1": 100, "x2": 250, "y2": 200, "color": None}
 
@@ -167,17 +167,24 @@ class TestFillToolExecution:
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
             assert img.shape[2] == 4  # Should have alpha channel
 
-            # Check a pixel inside the transparent area
+            # Check a pixel inside the transparent area - all channels should be 0
             pixel_inside = img[150, 200]
-            assert pixel_inside[3] == 0  # Alpha should be 0
+            assert np.array_equal(pixel_inside, [0, 0, 0, 0]), "All BGRA channels should be 0 for transparent areas"
+
+            # Check multiple pixels in the transparent area
+            for y in range(100, 200, 20):
+                for x in range(150, 250, 20):
+                    pixel = img[y, x]
+                    assert np.array_equal(pixel, [0, 0, 0, 0]), f"Pixel at ({y}, {x}) should have all channels set to 0"
 
             # Check a pixel outside the transparent area
             pixel_outside = img[50, 50]
             assert pixel_outside[3] == 255  # Alpha should be 255
+            assert np.array_equal(pixel_outside[:3], [255, 255, 255])  # Should be white
 
     @pytest.mark.asyncio
     async def test_fill_transparent_polygon(self, mcp_server: FastMCP, test_image_path, tmp_path):
-        """Tests making a polygonal area transparent."""
+        """Tests making a polygonal area transparent with all channels set to 0."""
         output_path = str(tmp_path / "output_transparent_poly.png")
         fill_area = {"polygon": [[160, 110], [240, 110], [200, 190]], "color": None}
 
@@ -196,13 +203,21 @@ class TestFillToolExecution:
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
             assert img.shape[2] == 4  # Should have alpha channel
 
-            # Check a pixel inside the transparent area (center of the polygon)
-            pixel_inside = img[170, 200]
-            assert pixel_inside[3] == 0  # Alpha should be 0
+            # Check pixels inside the transparent polygon - all channels should be 0
+            test_points = [
+                (140, 200),  # Center of polygon
+                (170, 200),  # Another point inside
+                (150, 180),  # Another point inside
+            ]
+            
+            for y, x in test_points:
+                pixel = img[y, x]
+                assert np.array_equal(pixel, [0, 0, 0, 0]), f"Pixel at ({y}, {x}) inside polygon should have all channels set to 0"
 
             # Check a pixel outside the transparent area
             pixel_outside = img[50, 50]
             assert pixel_outside[3] == 255  # Alpha should be 255
+            assert np.array_equal(pixel_outside[:3], [255, 255, 255])  # Should be white
     
     @pytest.mark.asyncio
     async def test_fill_invert_rectangle(self, mcp_server: FastMCP, test_image_path, tmp_path):
@@ -274,7 +289,7 @@ class TestFillToolExecution:
 
     @pytest.mark.asyncio
     async def test_fill_invert_transparent(self, mcp_server: FastMCP, test_image_path, tmp_path):
-        """Tests making everything except a rectangle transparent (background removal)."""
+        """Tests making everything except a rectangle transparent (background removal) with all channels set to 0."""
         output_path = str(tmp_path / "output_bg_removed.png")
         
         # Keep only the center rectangle, make everything else transparent
@@ -301,9 +316,16 @@ class TestFillToolExecution:
             assert inside_pixel[3] == 255  # Alpha should be 255 (opaque)
             assert np.array_equal(inside_pixel[:3], [0, 0, 0])  # Color preserved
             
-            # Outside the kept area - should be transparent
-            outside_pixel = img[50, 50]
-            assert outside_pixel[3] == 0  # Alpha should be 0 (transparent)
+            # Outside the kept area - should be fully transparent (all channels 0)
+            outside_pixels = [
+                (50, 50),    # Top left
+                (250, 350),  # Bottom right
+                (10, 10),    # Corner
+            ]
+            
+            for y, x in outside_pixels:
+                pixel = img[y, x]
+                assert np.array_equal(pixel, [0, 0, 0, 0]), f"Pixel at ({y}, {x}) outside kept area should have all channels set to 0"
 
     @pytest.mark.asyncio
     async def test_fill_invert_multiple_areas(self, mcp_server: FastMCP, test_image_path, tmp_path):
@@ -425,7 +447,7 @@ class TestFillToolWithJPEG:
 
     @pytest.mark.asyncio
     async def test_fill_jpeg_to_transparent_rectangle(self, mcp_server: FastMCP, test_jpeg_image_path, tmp_path):
-        """Tests making a rectangular area transparent in a JPEG image."""
+        """Tests making a rectangular area transparent in a JPEG image with all channels set to 0."""
         output_path = str(tmp_path / "output_transparent.png")  # Output as PNG to support transparency
         fill_area = {"x1": 150, "y1": 100, "x2": 250, "y2": 200, "color": None}
 
@@ -444,17 +466,18 @@ class TestFillToolWithJPEG:
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
             assert img.shape[2] == 4  # Should have alpha channel added
 
-            # Check a pixel inside the transparent area
+            # Check a pixel inside the transparent area - all channels should be 0
             pixel_inside = img[150, 200]
-            assert pixel_inside[3] == 0  # Alpha should be 0
+            assert np.array_equal(pixel_inside, [0, 0, 0, 0]), "All BGRA channels should be 0 for transparent areas"
 
             # Check a pixel outside the transparent area
             pixel_outside = img[50, 50]
             assert pixel_outside[3] == 255  # Alpha should be 255
+            assert np.array_equal(pixel_outside[:3], [255, 255, 255])  # Should be white
 
     @pytest.mark.asyncio
     async def test_fill_jpeg_invert_transparent(self, mcp_server: FastMCP, test_jpeg_image_path, tmp_path):
-        """Tests making everything except a rectangle transparent in a JPEG image (background removal)."""
+        """Tests making everything except a rectangle transparent in a JPEG image (background removal) with all channels set to 0."""
         output_path = str(tmp_path / "output_bg_removed.png")
         
         # Keep only the center rectangle, make everything else transparent
@@ -484,9 +507,16 @@ class TestFillToolWithJPEG:
             assert circle_center[3] == 255  # Should be opaque
             assert np.allclose(circle_center[:3], [0, 0, 255], atol=2)  # Should be red (BGR) - allow tolerance for JPEG
             
-            # Outside the kept area - should be transparent
-            outside_pixel = img[50, 50]
-            assert outside_pixel[3] == 0  # Alpha should be 0 (transparent)
+            # Outside the kept area - should be fully transparent (all channels 0)
+            outside_pixels = [
+                (50, 50),    # Top left
+                (10, 10),    # Corner
+                (250, 350),  # Bottom right
+            ]
+            
+            for y, x in outside_pixels:
+                pixel = img[y, x]
+                assert np.array_equal(pixel, [0, 0, 0, 0]), f"Pixel at ({y}, {x}) outside kept area should have all channels set to 0"
 
     @pytest.mark.asyncio
     async def test_fill_jpeg_invert_with_color(self, mcp_server: FastMCP, test_jpeg_image_path, tmp_path):
@@ -521,7 +551,7 @@ class TestFillToolWithJPEG:
 
     @pytest.mark.asyncio 
     async def test_fill_jpeg_multiple_transparent_areas(self, mcp_server: FastMCP, test_jpeg_image_path, tmp_path):
-        """Tests multiple transparent areas on a JPEG image."""
+        """Tests multiple transparent areas on a JPEG image with all channels set to 0."""
         output_path = str(tmp_path / "output_multi_transparent.png")
         
         areas = [
@@ -544,14 +574,15 @@ class TestFillToolWithJPEG:
             img = cv2.imread(output_path, cv2.IMREAD_UNCHANGED)
             assert img.shape[2] == 4  # Should have alpha channel
             
-            # First transparent area
+            # First transparent area - all channels should be 0
             pixel_area1 = img[75, 75]
-            assert pixel_area1[3] == 0  # Should be transparent
+            assert np.array_equal(pixel_area1, [0, 0, 0, 0]), "First transparent area should have all channels set to 0"
             
-            # Second transparent area (inside polygon)
+            # Second transparent area (inside polygon) - all channels should be 0
             pixel_area2 = img[180, 300]
-            assert pixel_area2[3] == 0  # Should be transparent
+            assert np.array_equal(pixel_area2, [0, 0, 0, 0]), "Second transparent area should have all channels set to 0"
             
             # Non-transparent area
             pixel_normal = img[150, 200]
             assert pixel_normal[3] == 255  # Should be opaque
+            assert np.allclose(pixel_normal[:3], [0, 0, 255], atol=2)  # Should be red (from the circle)

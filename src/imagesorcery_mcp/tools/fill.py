@@ -126,11 +126,11 @@ def register_tool(mcp: FastMCP):
             
             # Apply the fill using the mask
             if color is None:
-                # Make masked areas transparent
+                # Make masked areas fully transparent (black transparent)
                 if img.shape[2] != 4:
                     raise ValueError("Image must have an alpha channel for transparency operations.")
-                # Set alpha to 0 where mask is 255
-                img[:, :, 3] = np.where(mask == 255, 0, img[:, :, 3])
+                # Set all channels to 0 where mask is 255 (BGRA = 0,0,0,0)
+                img[mask == 255] = [0, 0, 0, 0]
             else:
                 # Fill with color where mask is 255
                 color_tuple = tuple(color)

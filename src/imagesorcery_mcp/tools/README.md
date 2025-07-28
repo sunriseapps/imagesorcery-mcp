@@ -559,7 +559,9 @@ Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom ri
 
 ### `fill`
 
-Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black). **Special behavior**: If `color` is set to `null` (or `None` in Python), the specified area is made fully transparent, effectively deleting it. The `opacity` parameter is ignored in this case.
+Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black). 
+
+**Special behavior**: If `color` is set to `null` (or `None` in Python), the specified area is made fully transparent by setting all channels (BGRA) to 0, effectively creating a black transparent color. This ensures better compatibility with older PNG viewers. The `opacity` parameter is ignored in this case.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
