@@ -1,6 +1,8 @@
 # 🪄 ImageSorcery MCP
 **ComputerVision-based 🪄 sorcery of local image recognition and editing tools for AI assistants**
 
+Official website: [imagesorcery.net](https://imagesorcery.net?utm_source=readme)
+
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT) [![MCP](https://img.shields.io/badge/Protocol-MCP-lightgrey)](https://github.com/microsoft/mcp)
 [![Claude](https://img.shields.io/badge/Works_with-Claude-orange)](https://claude.ai) [![Cursor](https://img.shields.io/badge/Works_with-Cursor-white)](https://cursor.so) [![Cline](https://img.shields.io/badge/Works_with-Cline-purple)](https://github.com/ClineLabs/cline)
 [![Verified on MseeP](https://mseep.ai/badge.svg)](https://mseep.ai/app/2620351a-15b1-4840-a93a-cbdbd23a6944) [![PyPI Downloads](https://static.pepy.tech/badge/imagesorcery-mcp)](https://pepy.tech/projects/imagesorcery-mcp)
@@ -8,7 +10,6 @@
 <a href="https://glama.ai/mcp/servers/@sunriseapps/imagesorcery-mcp">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/@sunriseapps/imagesorcery-mcp/badge" />
 </a>
-
 
 ## ✅ With ImageSorcery MCP
 
