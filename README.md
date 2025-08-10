@@ -25,18 +25,18 @@ Official website: [imagesorcery.net](https://imagesorcery.net?utm_source=readme)
 
 Just ask your AI to help with image tasks:
 
-> "copy photos with pets from frolder `photos` to folder `pets`"
+> "copy photos with pets from folder `photos` to folder `pets`"
 ![Copying pets](https://i.imgur.com/wsaDWbf.gif)
 
-> "Find a cat at the photo.jpg and crop the image in a half in height and width to make the cat be centerized"
+> "Find a cat at the photo.jpg and crop the image in a half in height and width to make the cat be centered"
 ![Centerizing cat](https://i.imgur.com/tD0O3l6.gif)
 😉 _**Hint:** Use full path to your files"._
 
-> "Numerate form fields on this `form.jpg` with `foduucom/web-form-ui-field-detection` model and fill the `form.md` with a list of described fields"
+> "Enumerate form fields on this `form.jpg` with `foduucom/web-form-ui-field-detection` model and fill the `form.md` with a list of described fields"
 ![Numerate form fields](https://i.imgur.com/1SNGfaP.gif)
 😉 _**Hint:** Specify the model and the confidence"._
 
-😉 _**Hint:** Add "use imagesorcery" to make sure it will uses propper tool"._
+😉 _**Hint:** Add "use imagesorcery" to make sure it will use the proper tool"._
 
 Your tool will combine multiple tools listed below to achieve your goal.
 
@@ -44,7 +44,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 | Tool | Description | Example Prompt |
 |------|-------------|----------------|
-| `blur` | Blurs specified rectangular or polygonal areas of an image using OpenCV. Can also invert the provided areas f.e. to blur background. | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
+| `blur` | Blurs specified rectangular or polygonal areas of an image using OpenCV. Can also invert the provided areas e.g. to blur background. | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
 | `change_color` | Changes the color palette of an image | "Convert my image 'test_image.png' to sepia and save it as 'output.png'" |
 | `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
 | `detect` | Detects objects in an image using models from Ultralytics. Can return segmentation masks/polygons. | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
@@ -53,7 +53,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `draw_lines` | Draws lines on an image using OpenCV | "Draw a red line from (50,50) to (150,100) on my image 'photo.jpg'" |
 | `draw_rectangles` | Draws rectangles on an image using OpenCV | "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'" |
 | `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
-| `fill` | Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. Can also invert the provided areas f.e. to remove background. | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
+| `fill` | Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. Can also invert the provided areas e.g. to remove background. | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
 | `find` | Finds objects in an image based on a text description. Can return segmentation masks/polygons. | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
 | `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |
@@ -173,7 +173,7 @@ You can run this process anytime to restore the default models and attempt `clip
     If you intend to use `uvx` to run the main `imagesorcery-mcp` server and require `clip` functionality, you'll need to ensure the `clip` package is installed in an accessible Python environment that `uvx` can find, or consider installing `imagesorcery-mcp` into a persistent environment created with `python -m venv`.
 </details>
 
-## ⚙️ Configuration MCP client
+## ⚙️ Configure MCP client
 
 Add to your MCP client these settings.
 If `imagesorcery-mcp` is in your system's PATH after installation, you can use `imagesorcery-mcp` directly as the command. Otherwise, you'll need to provide the full path to the executable.
@@ -347,26 +347,26 @@ This will install `imagesorcery-mcp` and all dependencies from `[project.depende
 
 These rules apply to all contributors: humans and AI.
 
-0. Read all the `README.md` files in the project. Understand the project structure and purpose. Understand the guidelines for contributing. Think through how it's relate to you task, and how to make changes accordingly.
+0. Read all the `README.md` files in the project. Understand the project structure and purpose. Understand the guidelines for contributing. Think through how it relates to your task, and how to make changes accordingly.
 1. Read `pyproject.toml`.
-Make attention to sections: `[tool.ruff]`, `[tool.ruff.lint]`, `[project.optional-dependencies]` and `[project]dependencies`.
+Pay attention to sections: `[tool.ruff]`, `[tool.ruff.lint]`, `[project.optional-dependencies]` and `[project]dependencies`.
 Strictly follow code style defined in `pyproject.toml`.
 Stick to the stack defined in `pyproject.toml` dependencies and do not add any new dependencies without a good reason.
 2. Write your code in new and existing files.
-If new dependencies needed, update `pyproject.toml` and install them via `pip install -e .` or `pip install -e ".[dev]"`. Do not install them diirectly via `pip install`.
-Check out exixisting source codes for examples (e.g. `src/imagesorcery_mcp/server.py`, `src/imagesorcery_mcp/tools/crop.py`). Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing code.
+If new dependencies are needed, update `pyproject.toml` and install them via `pip install -e .` or `pip install -e ".[dev]"`. Do not install them directly via `pip install`.
+Check out existing source codes for examples (e.g. `src/imagesorcery_mcp/server.py`, `src/imagesorcery_mcp/tools/crop.py`). Stick to the code style, naming conventions, input and output data formats, code structure, architecture, etc. of the existing code.
 3. Update related `README.md` files with your changes.
 Stick to the format and structure of the existing `README.md` files.
 4. Write tests for your code.
 Check out existing tests for examples (e.g. `tests/test_server.py`, `tests/tools/test_crop.py`).
-Stick to the code style, naming conventions, input and outpput data formats, codeode structure, arcchitecture, etc. of the existing tests.
+Stick to the code style, naming conventions, input and output data formats, code structure, architecture, etc. of the existing tests.
 
 5. Run tests and linter to ensure everything works:
 ```bash
 pytest
 ruff check .
 ```
-In case of fails - fix the code and tests. It is **strictly required** to have all new code to comply with the linter rules and pass all tests.
+In case of failures - fix the code and tests. It is **strictly required** to have all new code to comply with the linter rules and pass all tests.
 
 
 ### Coding hints
