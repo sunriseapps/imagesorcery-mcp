@@ -156,19 +156,20 @@ def register_tool(mcp: FastMCP):
                         mask = results.masks.data[i].cpu().numpy()
                         mask_image = (mask * 255).astype(np.uint8)
 
-                        # Generate a unique filename for the mask
-                        base_name, ext = os.path.splitext(input_path)
-                        mask_output_path = f"{base_name}_mask_{i}{ext if ext else '.png'}"
+                        # Generate a unique filename for the mask, always with .png extension
+                        base_name = Path(input_path).stem
+                        mask_output_path = f"{base_name}_mask_{i}.png"
 
                         # Save the mask as a PNG file
                         try:
-                            cv2.imwrite(mask_output_path, mask_image)
-                            logger.info(f"Saved detection mask to {mask_output_path}")
-                            detection_item["mask_path"] = mask_output_path
+                            success = cv2.imwrite(mask_output_path, mask_image)
+                            if success:
+                                logger.info(f"Saved detection mask to {mask_output_path}")
+                                detection_item["mask_path"] = mask_output_path
+                            else:
+                                logger.error(f"Failed to save mask to {mask_output_path}")
                         except Exception as e:
-                            logger.error(f"Failed to save mask to {mask_output_path}: {e}")
-                            # Optionally, handle the error, e.g., by not adding the mask_path
-                            pass
+                            logger.error(f"An unexpected error occurred while saving mask to {mask_output_path}: {e}")
 
                     elif geometry_format == "polygon":
                         # Ultralytics masks.xy are lists of polygons

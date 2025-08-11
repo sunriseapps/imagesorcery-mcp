@@ -203,27 +203,33 @@ class TestDetectToolExecution:
         if not os.path.exists(test_image_path):
             pytest.skip(f"Test image not found at {test_image_path}")
 
-        async with Client(mcp_server) as client:
-            result = await client.call_tool(
-                "detect",
-                {
-                    "input_path": test_image_path,
-                    "model_name": "yoloe-11s-seg-pf.pt",
-                    "return_geometry": True,
-                    "geometry_format": "mask",
-                    "confidence": 0.3,
-                },
-            )
-            detection_result = result.structured_content
-            assert len(detection_result["detections"]) > 0
-            detection = detection_result["detections"][0]
-            assert "mask_path" in detection
-            assert "polygon" not in detection
-            mask_path = detection["mask_path"]
-            assert isinstance(mask_path, str)
-            assert os.path.exists(mask_path)
-            # Clean up the created mask file
-            os.remove(mask_path)
+        created_mask_files = []
+        try:
+            async with Client(mcp_server) as client:
+                result = await client.call_tool(
+                    "detect",
+                    {
+                        "input_path": test_image_path,
+                        "model_name": "yoloe-11s-seg-pf.pt",
+                        "return_geometry": True,
+                        "geometry_format": "mask",
+                        "confidence": 0.3,
+                    },
+                )
+                detection_result = result.structured_content
+                assert len(detection_result["detections"]) > 0
+
+                for detection in detection_result["detections"]:
+                    assert "mask_path" in detection
+                    assert "polygon" not in detection
+                    mask_path = detection["mask_path"]
+                    created_mask_files.append(mask_path)
+                    assert isinstance(mask_path, str)
+                    assert os.path.exists(mask_path)
+        finally:
+            for mask_path in created_mask_files:
+                if os.path.exists(mask_path):
+                    os.remove(mask_path)
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(
