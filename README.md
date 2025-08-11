@@ -47,14 +47,14 @@ Your tool will combine multiple tools listed below to achieve your goal.
 | `blur` | Blurs specified rectangular or polygonal areas of an image using OpenCV. Can also invert the provided areas e.g. to blur background. | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
 | `change_color` | Changes the color palette of an image | "Convert my image 'test_image.png' to sepia and save it as 'output.png'" |
 | `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
-| `detect` | Detects objects in an image using models from Ultralytics. Can return segmentation masks/polygons. | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
+| `detect` | Detects objects in an image using models from Ultralytics. Can return segmentation masks (as PNG files) or polygons. | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `draw_arrows` | Draws arrows on an image using OpenCV | "Draw a red arrow from (50,50) to (150,100) on my image 'photo.jpg'" |
 | `draw_circles` | Draws circles on an image using OpenCV | "Draw a red circle with center (100,100) and radius 50 on my image 'photo.jpg'" |
 | `draw_lines` | Draws lines on an image using OpenCV | "Draw a red line from (50,50) to (150,100) on my image 'photo.jpg'" |
 | `draw_rectangles` | Draws rectangles on an image using OpenCV | "Draw a red rectangle from (50,50) to (150,100) and a filled blue rectangle from (200,150) to (300,250) on my image 'photo.jpg'" |
 | `draw_texts` | Draws text on an image using OpenCV | "Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom right corner of my image 'photo.jpg'" |
-| `fill` | Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. Can also invert the provided areas e.g. to remove background. | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
-| `find` | Finds objects in an image based on a text description. Can return segmentation masks/polygons. | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
+| `fill` | Fills specified rectangular, polygonal, or mask-based areas of an image with a color and opacity, or makes them transparent. Can also invert the provided areas e.g. to remove background. | "Fill the area from (150, 100) to (250, 200) with semi-transparent red in my image 'test_image.png'" |
+| `find` | Finds objects in an image based on a text description. Can return segmentation masks (as PNG files) or polygons. | "Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `get_metainfo` | Gets metadata information about an image file | "Get metadata information about my image 'photo.jpg'" |
 | `ocr` | Performs Optical Character Recognition (OCR) on an image using EasyOCR | "Extract text from my image 'document.jpg' using OCR with English language" |
 | `overlay` | Overlays one image on top of another, handling transparency | "Overlay 'logo.png' on top of 'background.jpg' at position (10, 10)" |

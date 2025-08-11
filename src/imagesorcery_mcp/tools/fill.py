@@ -18,8 +18,8 @@ def register_tool(mcp: FastMCP):
             List[Dict[str, Any]],
             Field(
                 description=(
-                    "List of areas to fill. Each area should have: "
-                    "a rectangle ({'x1', 'y1', 'x2', 'y2'}) or a polygon ({'polygon': [[x,y],...]}). "
+                    "List of areas to fill. Each area can be a rectangle ({'x1', 'y1', 'x2', 'y2'}), "
+                    "a polygon ({'polygon': [[x,y],...]}), or a mask from a file ({'mask_path': 'path/to/mask.png'}). "
                     "Optionally, include 'color' (list of 3 ints [B,G,R] or None, default black) and "
                     "'opacity' (float 0.0-1.0, default 0.5) INSIDE each area object. "
                     "Example: [{'polygon': [[0,0], [100,0], [100,100]], 'color': [255,0,0], 'opacity': 0.5}]"
@@ -44,11 +44,10 @@ def register_tool(mcp: FastMCP):
         ] = None,
     ) -> str:
         """
-        Fill specified rectangular or polygonal areas of an image with a color and opacity.
+        Fill specified areas of an image with a color and opacity.
         
         This tool allows filling multiple areas of an image with a customizable
-        color and opacity. Each area can be a rectangle defined by a bounding box 
-        [x1, y1, x2, y2] or a polygon defined by a list of points.  
+        color and opacity. Each area can be a rectangle, a polygon, or a mask from a PNG file.
 
         The 'opacity' parameter controls the transparency of the fill. 1.0 is fully opaque,
         0.0 is fully transparent. Default is 0.5.
@@ -111,11 +110,23 @@ def register_tool(mcp: FastMCP):
             
             # Mark each area as 0 (don't fill)
             for area in areas:
-                if "polygon" in area:
+                if "mask_path" in area:
+                    if not os.path.exists(area["mask_path"]):
+                        logger.warning(f"Mask file not found: {area['mask_path']}. Skipping.")
+                        continue
+                    area_mask = cv2.imread(area["mask_path"], cv2.IMREAD_GRAYSCALE)
+                    if area_mask is None:
+                        logger.warning(f"Failed to read mask file: {area['mask_path']}. Skipping.")
+                        continue
+                    # Resize mask to match image dimensions if necessary
+                    if area_mask.shape != mask.shape:
+                        area_mask = cv2.resize(area_mask, (mask.shape[1], mask.shape[0]), interpolation=cv2.INTER_NEAREST)
+                    mask[area_mask > 0] = 0  # Set area to not fill
+                elif "polygon" in area:
                     polygon_points = np.array(area["polygon"], dtype=np.int32)
                     cv2.fillPoly(mask, [polygon_points], 0)
                 elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
-                    x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                    x1, y1, x2, y2 = int(area["x1"]), int(area["y1"]), int(area["x2"]), int(area["y2"])
                     mask[y1:y2, x1:x2] = 0
             
             # Get fill parameters from the first area
@@ -158,16 +169,28 @@ def register_tool(mcp: FastMCP):
                         raise ValueError("Image must have an alpha channel for transparency operations.")
                     
                     transparent_color = (0, 0, 0, 0)
-                    if "polygon" in area:
+                    if "mask_path" in area:
+                        if not os.path.exists(area["mask_path"]):
+                            logger.warning(f"Mask file not found: {area['mask_path']}. Skipping.")
+                            continue
+                        mask = cv2.imread(area["mask_path"], cv2.IMREAD_GRAYSCALE)
+                        if mask is None:
+                            logger.warning(f"Failed to read mask file: {area['mask_path']}. Skipping.")
+                            continue
+                        if mask.shape != img.shape[:2]:
+                            mask = cv2.resize(mask, (img.shape[1], img.shape[0]), interpolation=cv2.INTER_NEAREST)
+                        img[mask > 0] = transparent_color
+                        logger.debug(f"Mask area {i+1} from {area['mask_path']} made transparent")
+                    elif "polygon" in area:
                         polygon_points = np.array(area["polygon"], dtype=np.int32)
                         cv2.fillPoly(img, [polygon_points], transparent_color)
                         logger.debug(f"Polygon area {i+1} made transparent")
                     elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
-                        x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                        x1, y1, x2, y2 = int(area["x1"]), int(area["y1"]), int(area["x2"]), int(area["y2"])
                         img[y1:y2, x1:x2] = transparent_color
                         logger.debug(f"Rectangle area {i+1} made transparent")
                     else:
-                        logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
+                        logger.warning(f"Skipping area {i+1} due to missing 'polygon', 'mask_path' or 'x1,y1,x2,y2' keys.")
                 else:
                     # Fill with color
                     color_tuple = tuple(color)
@@ -177,34 +200,44 @@ def register_tool(mcp: FastMCP):
                         logger.warning(f"Opacity {opacity} is outside the valid range [0.0, 1.0]. Clamping it.")
                         opacity = max(0.0, min(1.0, opacity))
 
-                    if "polygon" in area:
+                    mask_to_fill = None
+                    if "mask_path" in area:
+                        if not os.path.exists(area["mask_path"]):
+                            logger.warning(f"Mask file not found: {area['mask_path']}. Skipping.")
+                            continue
+                        mask_to_fill = cv2.imread(area["mask_path"], cv2.IMREAD_GRAYSCALE)
+                        if mask_to_fill is None:
+                            logger.warning(f"Failed to read mask file: {area['mask_path']}. Skipping.")
+                            continue
+                        if mask_to_fill.shape != img.shape[:2]:
+                            mask_to_fill = cv2.resize(mask_to_fill, (img.shape[1], img.shape[0]), interpolation=cv2.INTER_NEAREST)
+                        logger.debug(f"Filling mask area {i+1} from {area['mask_path']} with color={color_tuple}, opacity={opacity}")
+                    elif "polygon" in area:
                         logger.debug(f"Filling polygon area {i+1} with color={color_tuple}, opacity={opacity}")
                         polygon_points = np.array(area["polygon"], dtype=np.int32)
-                        mask = np.zeros(img.shape[:2], dtype=np.uint8)
-                        cv2.fillPoly(mask, [polygon_points], (255))
-                        x, y, w, h = cv2.boundingRect(polygon_points)
-                        roi = img[y : y + h, x : x + w]
-                        
-                        overlay_roi = roi.copy()
-                        cv2.fillPoly(overlay_roi, [polygon_points - [x, y]], color_tuple)
-                        blended_roi = cv2.addWeighted(overlay_roi, opacity, roi, 1 - opacity, 0)
-                        
-                        roi_mask = mask[y : y + h, x : x + w]
-                        img[y : y + h, x : x + w] = np.where(roi_mask[:, :, None] == 255, blended_roi, roi)
-                        logger.debug(f"Polygon area {i+1} filled")
-
+                        mask_to_fill = np.zeros(img.shape[:2], dtype=np.uint8)
+                        cv2.fillPoly(mask_to_fill, [polygon_points], 255)
                     elif "x1" in area and "y1" in area and "x2" in area and "y2" in area:
-                        x1, y1, x2, y2 = area["x1"], area["y1"], area["x2"], area["y2"]
+                        x1, y1, x2, y2 = int(area["x1"]), int(area["y1"]), int(area["x2"]), int(area["y2"])
                         logger.debug(f"Filling rectangle area {i+1}: ({x1}, {y1}) to ({x2}, {y2}) with color={color_tuple}, opacity={opacity}")
+                        mask_to_fill = np.zeros(img.shape[:2], dtype=np.uint8)
+                        cv2.rectangle(mask_to_fill, (x1, y1), (x2, y2), 255, -1)
+
+                    if mask_to_fill is not None:
+                        # Create an overlay for the fill color
+                        overlay = img.copy()
+                        # Apply color to the overlay where the mask is set
+                        overlay[mask_to_fill > 0] = color_tuple + (255,) if img.shape[2] == 4 else color_tuple
                         
-                        roi = img[y1:y2, x1:x2]
-                        overlay_roi = roi.copy()
-                        cv2.rectangle(overlay_roi, (0, 0), (roi.shape[1], roi.shape[0]), color_tuple, -1)
-                        blended_roi = cv2.addWeighted(overlay_roi, opacity, roi, 1 - opacity, 0)
-                        img[y1:y2, x1:x2] = blended_roi
-                        logger.debug(f"Rectangle area {i+1} filled")
+                        # Blend the overlay with the original image using the mask
+                        img = np.where(
+                            mask_to_fill[:, :, None] > 0,  # Condition where to apply the blend
+                            cv2.addWeighted(overlay, opacity, img, 1 - opacity, 0),
+                            img
+                        )
+                        logger.debug(f"Area {i+1} filled")
                     else:
-                        logger.warning(f"Skipping area {i+1} due to missing 'polygon' or 'x1,y1,x2,y2' keys.")
+                        logger.warning(f"Skipping area {i+1} due to missing 'polygon', 'mask_path' or 'x1,y1,x2,y2' keys.")
 
         output_dir = os.path.dirname(output_path)
         if output_dir and not os.path.exists(output_dir):

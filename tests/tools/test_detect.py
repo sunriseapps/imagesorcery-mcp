@@ -1,5 +1,6 @@
 import os
 
+import cv2
 import numpy as np
 import pytest
 from fastmcp import Client, FastMCP
@@ -216,12 +217,13 @@ class TestDetectToolExecution:
             detection_result = result.structured_content
             assert len(detection_result["detections"]) > 0
             detection = detection_result["detections"][0]
-            assert "mask" in detection
+            assert "mask_path" in detection
             assert "polygon" not in detection
-            mask_data = detection["mask"]
-            assert isinstance(mask_data, list)
-            assert len(mask_data) > 0
-            assert isinstance(mask_data[0], list)
+            mask_path = detection["mask_path"]
+            assert isinstance(mask_path, str)
+            assert os.path.exists(mask_path)
+            # Clean up the created mask file
+            os.remove(mask_path)
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(
@@ -280,7 +282,7 @@ class TestDetectToolExecution:
             assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             detection = detection_result["detections"][0]
-            assert "mask" not in detection
+            assert "mask_path" not in detection
             assert "polygon" not in detection
 
     @pytest.mark.asyncio
@@ -409,73 +411,63 @@ class TestDetectGeometryValidation:
             assert detection_result is not None
             assert len(detection_result["detections"]) > 0
             
-            for detection in detection_result["detections"]:
-                mask = np.array(detection["mask"])
-                bbox = detection["bbox"]
-                x1, y1, x2, y2 = bbox
-                
-                # YOLO typically resizes images to 640x640 for processing
-                # So we need to check if the mask dimensions are reasonable
-                mask_height, mask_width = mask.shape
-                
-                # Check that mask dimensions are square (typical for YOLO)
-                # or match the original image dimensions
-                assert (
-                    (mask_height == mask_width) or 
-                    (mask_height == orig_height and mask_width == orig_width)
-                ), f"Mask dimensions {mask.shape} should be square or match original image"
-                
-                # Calculate scale factors if mask was resized
-                scale_x = orig_width / mask_width
-                scale_y = orig_height / mask_height
-                
-                # Check mask is binary (contains only 0 and 1 or True/False)
-                unique_values = np.unique(mask)
-                assert len(unique_values) <= 2, "Mask should be binary"
-                assert all(v in [0, 1, True, False] for v in unique_values), (
-                    "Mask should contain only 0/1 or True/False values"
-                )
-                
-                # Check mask has positive pixels (not empty)
-                assert np.sum(mask) > 0, "Mask should not be empty"
-                
-                # Check mask pixels are within bbox bounds (scaled to mask coordinates)
-                mask_indices = np.where(mask > 0)
-                if len(mask_indices[0]) > 0:
-                    min_y, max_y = mask_indices[0].min(), mask_indices[0].max()
-                    min_x, max_x = mask_indices[1].min(), mask_indices[1].max()
+            created_mask_files = []
+            try:
+                for detection in detection_result["detections"]:
+                    assert "mask_path" in detection
+                    mask_path = detection["mask_path"]
+                    created_mask_files.append(mask_path)
+                    assert os.path.exists(mask_path)
                     
-                    # Scale bbox to mask coordinates
-                    scaled_x1 = x1 / scale_x
-                    scaled_x2 = x2 / scale_x
-                    scaled_y1 = y1 / scale_y
-                    scaled_y2 = y2 / scale_y
+                    mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+                    assert mask is not None
                     
-                    # Allow some tolerance for segmentation vs bbox differences
-                    tolerance = 10
-                    assert min_x >= scaled_x1 - tolerance, (
-                        f"Mask min_x {min_x} should be >= scaled bbox x1 {scaled_x1} (with tolerance)"
+                    bbox = detection["bbox"]
+                    x1, y1, x2, y2 = bbox
+
+                    mask_height, mask_width = mask.shape
+
+                    assert (
+                        (mask_height == mask_width) or
+                        (mask_height == orig_height and mask_width == orig_width)
+                    ), f"Mask dimensions {mask.shape} should be square or match original image"
+
+                    scale_x = orig_width / mask_width
+                    scale_y = orig_height / mask_height
+
+                    unique_values = np.unique(mask)
+                    assert len(unique_values) <= 2, "Mask should be binary"
+                    assert all(v in [0, 255] for v in unique_values), (
+                        "Mask should contain only 0/255 values"
                     )
-                    assert max_x <= scaled_x2 + tolerance, (
-                        f"Mask max_x {max_x} should be <= scaled bbox x2 {scaled_x2} (with tolerance)"
-                    )
-                    assert min_y >= scaled_y1 - tolerance, (
-                        f"Mask min_y {min_y} should be >= scaled bbox y1 {scaled_y1} (with tolerance)"
-                    )
-                    assert max_y <= scaled_y2 + tolerance, (
-                        f"Mask max_y {max_y} should be <= scaled bbox y2 {scaled_y2} (with tolerance)"
-                    )
-                
-                # Check mask coverage relative to bbox area
-                mask_area = np.sum(mask)
-                # Scale bbox area to mask resolution
-                scaled_bbox_area = ((scaled_x2 - scaled_x1) * (scaled_y2 - scaled_y1))
-                coverage_ratio = mask_area / scaled_bbox_area if scaled_bbox_area > 0 else 0
-                
-                # Mask area should be reasonable relative to bbox (typically 0.3 to 0.9)
-                assert 0.1 <= coverage_ratio <= 1.5, (
-                    f"Mask coverage ratio {coverage_ratio:.2f} should be reasonable relative to bbox"
-                )
+
+                    assert np.sum(mask) > 0, "Mask should not be empty"
+
+                    mask_indices = np.where(mask > 0)
+                    if len(mask_indices[0]) > 0:
+                        min_y, max_y = mask_indices[0].min(), mask_indices[0].max()
+                        min_x, max_x = mask_indices[1].min(), mask_indices[1].max()
+
+                        scaled_x1 = x1 / scale_x
+                        scaled_x2 = x2 / scale_x
+                        scaled_y1 = y1 / scale_y
+                        scaled_y2 = y2 / scale_y
+
+                        tolerance = 10
+                        assert min_x >= scaled_x1 - tolerance
+                        assert max_x <= scaled_x2 + tolerance
+                        assert min_y >= scaled_y1 - tolerance
+                        assert max_y <= scaled_y2 + tolerance
+
+                    mask_area = np.sum(mask > 0)
+                    scaled_bbox_area = ((scaled_x2 - scaled_x1) * (scaled_y2 - scaled_y1))
+                    coverage_ratio = mask_area / scaled_bbox_area if scaled_bbox_area > 0 else 0
+
+                    assert 0.1 <= coverage_ratio <= 1.5
+            finally:
+                for mask_file in created_mask_files:
+                    if os.path.exists(mask_file):
+                        os.remove(mask_file)
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(
@@ -564,108 +556,61 @@ class TestDetectGeometryValidation:
     )
     async def test_mask_to_polygon_consistency(self, mcp_server: FastMCP, test_image_path):
         """Tests that mask and polygon representations are consistent for the same object."""
-        # Load the test image to get its dimensions
         with Image.open(test_image_path) as img:
             orig_width, orig_height = img.size
             
         async with Client(mcp_server) as client:
-            # Get results with mask
-            mask_result = await client.call_tool(
-                "detect",
-                {
-                    "input_path": test_image_path,
-                    "model_name": "yoloe-11s-seg-pf.pt",
-                    "return_geometry": True,
-                    "geometry_format": "mask",
-                    "confidence": 0.5,  # Higher confidence to get fewer, more reliable results
-                },
-            )
-            
-            # Get results with polygon
-            polygon_result = await client.call_tool(
-                "detect",
-                {
-                    "input_path": test_image_path,
-                    "model_name": "yoloe-11s-seg-pf.pt",
-                    "return_geometry": True,
-                    "geometry_format": "polygon",
-                    "confidence": 0.5,
-                },
-            )
+            mask_result = await client.call_tool("detect", {"input_path": test_image_path, "model_name": "yoloe-11s-seg-pf.pt", "return_geometry": True, "geometry_format": "mask", "confidence": 0.5})
+            polygon_result = await client.call_tool("detect", {"input_path": test_image_path, "model_name": "yoloe-11s-seg-pf.pt", "return_geometry": True, "geometry_format": "polygon", "confidence": 0.5})
             
             mask_data = mask_result.structured_content
-            assert mask_result is not None
             polygon_data = polygon_result.structured_content
-            assert polygon_result is not None
             
-            # Get detections for both
-            mask_detections = mask_data["detections"]
-            polygon_detections = polygon_data["detections"]
+            assert len(mask_data["detections"]) == len(polygon_data["detections"])
             
-            # Should have same number of detections
-            assert len(mask_detections) == len(polygon_detections), (
-                "Should have same number of detections for mask and polygon"
-            )
-            
-            if len(mask_detections) > 0:
-                # Sort detections by class and confidence to match them
-                mask_detections = sorted(mask_detections, key=lambda x: (x["class"], -x["confidence"]))
-                polygon_detections = sorted(polygon_detections, key=lambda x: (x["class"], -x["confidence"]))
-                
-                # Check first detection of same class
-                mask_det = mask_detections[0]
-                polygon_det = polygon_detections[0]
-                
-                # Should be same class
-                assert mask_det["class"] == polygon_det["class"], (
-                    "First detections should be of same class"
-                )
-                
-                # Check that bboxes are similar (they might differ slightly due to different runs)
-                mask_bbox = mask_det["bbox"]
-                polygon_bbox = polygon_det["bbox"]
-                
-                # Allow some tolerance for bbox differences
-                bbox_tolerance = 20
-                for i in range(4):
-                    assert abs(mask_bbox[i] - polygon_bbox[i]) < bbox_tolerance, (
-                        "Bounding boxes should be similar for mask and polygon representations"
-                    )
-                
-                # Convert both to same resolution for comparison
-                mask = np.array(mask_det["mask"])
-                polygon_points = polygon_det["polygon"]
-                
-                # Determine mask dimensions
-                mask_height, mask_width = mask.shape
-                
-                # Create a mask from the polygon at the same resolution as the returned mask
-                img = Image.new('L', (mask_width, mask_height), 0)
-                
-                # Scale polygon points if needed
-                scale_x = mask_width / orig_width
-                scale_y = mask_height / orig_height
-                
-                scaled_polygon = []
-                for x, y in polygon_points:
-                    scaled_x = x * scale_x
-                    scaled_y = y * scale_y
-                    scaled_polygon.append((scaled_x, scaled_y))
-                
-                ImageDraw.Draw(img).polygon(
-                    scaled_polygon, 
-                    outline=1, 
-                    fill=1
-                )
-                polygon_mask = np.array(img)
-                
-                # Calculate intersection over union (IoU)
-                intersection = np.logical_and(mask, polygon_mask).sum()
-                union = np.logical_or(mask, polygon_mask).sum()
-                iou = intersection / union if union > 0 else 0
-                
-                # IoU should be reasonably high for the same object
-                # Allow lower threshold as polygon and mask representations can differ
-                assert iou > 0.5, (
-                    f"Mask and polygon should represent similar regions (IoU: {iou:.2f})"
-                )
+            created_mask_files = []
+            try:
+                if len(mask_data["detections"]) > 0:
+                    mask_detections = sorted(mask_data["detections"], key=lambda x: (x["class"], -x["confidence"]))
+                    polygon_detections = sorted(polygon_data["detections"], key=lambda x: (x["class"], -x["confidence"]))
+
+                    mask_det = mask_detections[0]
+                    polygon_det = polygon_detections[0]
+
+                    mask_path = mask_det["mask_path"]
+                    created_mask_files.append(mask_path)
+                    mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+
+                    assert mask_det["class"] == polygon_det["class"]
+
+                    mask_bbox = mask_det["bbox"]
+                    polygon_bbox = polygon_det["bbox"]
+
+                    bbox_tolerance = 20
+                    for i in range(4):
+                        assert abs(mask_bbox[i] - polygon_bbox[i]) < bbox_tolerance
+
+                    polygon_points = polygon_det["polygon"]
+                    mask_height, mask_width = mask.shape
+
+                    img = Image.new('L', (mask_width, mask_height), 0)
+
+                    scale_x = mask_width / orig_width
+                    scale_y = mask_height / orig_height
+
+                    scaled_polygon = [(p[0] * scale_x, p[1] * scale_y) for p in polygon_points]
+
+                    ImageDraw.Draw(img).polygon(scaled_polygon, outline=1, fill=1)
+                    polygon_mask = np.array(img)
+
+                    mask_bool = mask > 0
+                    polygon_mask_bool = polygon_mask > 0
+                    intersection = np.logical_and(mask_bool, polygon_mask_bool).sum()
+                    union = np.logical_or(mask_bool, polygon_mask_bool).sum()
+                    iou = intersection / union if union > 0 else 0
+
+                    assert iou > 0.5
+            finally:
+                for mask_file in created_mask_files:
+                    if os.path.exists(mask_file):
+                        os.remove(mask_file)

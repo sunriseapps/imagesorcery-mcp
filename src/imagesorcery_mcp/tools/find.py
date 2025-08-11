@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Union
 
+import cv2
+import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
@@ -79,10 +81,14 @@ def register_tool(mcp: FastMCP):
 
         This tool can optionally return segmentation masks or polygons.
 
+        When 'mask' is chosen for geometry_format, a PNG file is created for each
+        found object's mask. The file path is returned in the 'mask_path' field.
+
         Returns:
             Dictionary containing the input image path and a list of found objects.
             Each object includes its confidence score and bounding box. If return_geometry
-            is True, it also includes a 'mask' (numpy array) or 'polygon' (list of points).
+            is True, it also includes a 'mask_path' (path to a PNG file) or
+            'polygon' (list of points).
         """
         logger.info(
             f"Find tool requested for image: {input_path}, description: '{description}', model: {model_name}, "
@@ -246,8 +252,23 @@ def register_tool(mcp: FastMCP):
 
                         if return_geometry:
                             if geometry_format == "mask":
+                                # Convert mask to a savable format
                                 mask = main_result.masks.data[i].cpu().numpy()
-                                found_object["mask"] = mask.tolist()
+                                mask_image = (mask * 255).astype(np.uint8)
+
+                                # Generate a unique filename for the mask
+                                base_name, ext = os.path.splitext(input_path)
+                                mask_output_path = f"{base_name}_mask_{i}{ext if ext else '.png'}"
+
+                                # Save the mask as a PNG file
+                                try:
+                                    cv2.imwrite(mask_output_path, mask_image)
+                                    logger.info(f"Saved find mask to {mask_output_path}")
+                                    found_object["mask_path"] = mask_output_path
+                                except Exception as e:
+                                    logger.error(f"Failed to save mask to {mask_output_path}: {e}")
+                                    # Optionally, handle the error, e.g., by not adding the mask_path
+                                    pass
                             elif geometry_format == "polygon":
                                 polygon = main_result.masks.xy[i].tolist()
                                 found_object["polygon"] = polygon
