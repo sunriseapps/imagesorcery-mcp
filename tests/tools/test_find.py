@@ -1,4 +1,5 @@
 import os
+import shutil
 
 import cv2
 import numpy as np
@@ -16,12 +17,26 @@ def mcp_server():
 
 
 @pytest.fixture
-def test_image_path():
+def test_image_path(tmp_path):
     """Path to a test image with known objects for finding."""
     # Path to the test image in the tests/data directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     test_data_dir = os.path.join(os.path.dirname(current_dir), "data")
-    return os.path.join(test_data_dir, "test_detection.jpg")
+    src_path = os.path.join(test_data_dir, "test_detection.jpg")
+    dest_path = tmp_path / "test_detection.jpg"
+    shutil.copy(src_path, dest_path)
+    return str(dest_path)
+
+
+@pytest.fixture
+def test_segmentation_image_path(tmp_path):
+    """Path to a simple test image for segmentation mask validation."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    test_data_dir = os.path.join(os.path.dirname(current_dir), "data")
+    src_path = os.path.join(test_data_dir, "test_detection_mask.jpg")
+    dest_path = tmp_path / "test_detection_mask.jpg"
+    shutil.copy(src_path, dest_path)
+    return str(dest_path)
 
 
 class TestFindToolDefinition:
@@ -290,8 +305,6 @@ class TestFindToolExecution:
             mask_path = found_object["mask_path"]
             assert isinstance(mask_path, str)
             assert os.path.exists(mask_path)
-            # Clean up the created mask file
-            os.remove(mask_path)
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(
@@ -370,61 +383,54 @@ class TestFindToolExecution:
             find_result = result.structured_content
             assert find_result["found"]
             
-            created_mask_files = []
-            try:
-                for obj in find_result["found_objects"]:
-                    assert "mask_path" in obj
-                    mask_path = obj["mask_path"]
-                    created_mask_files.append(mask_path)
-                    assert os.path.exists(mask_path)
+            for obj in find_result["found_objects"]:
+                assert "mask_path" in obj
+                mask_path = obj["mask_path"]
+                assert os.path.exists(mask_path)
 
-                    mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
-                    assert mask is not None
+                mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+                assert mask is not None
 
-                    bbox = obj["bbox"]
-                    x1, y1, x2, y2 = bbox
-                    
-                    mask_height, mask_width = mask.shape
-                    
-                    assert (
-                        (mask_height == mask_width) or
-                        (mask_height == orig_height and mask_width == orig_width)
-                    ), f"Mask dimensions {mask.shape} should be square or match original image"
+                bbox = obj["bbox"]
+                x1, y1, x2, y2 = bbox
+                
+                mask_height, mask_width = mask.shape
+                
+                assert (
+                    (mask_height == mask_width) or
+                    (mask_height == orig_height and mask_width == orig_width)
+                ), f"Mask dimensions {mask.shape} should be square or match original image"
 
-                    scale_x = orig_width / mask_width
-                    scale_y = orig_height / mask_height
+                scale_x = orig_width / mask_width
+                scale_y = orig_height / mask_height
 
-                    unique_values = np.unique(mask)
-                    assert len(unique_values) <= 2
-                    assert all(v in [0, 255] for v in unique_values)
+                unique_values = np.unique(mask)
+                assert len(unique_values) <= 2
+                assert all(v in [0, 255] for v in unique_values)
 
-                    assert np.sum(mask) > 0
+                assert np.sum(mask) > 0
 
-                    mask_indices = np.where(mask > 0)
-                    if len(mask_indices[0]) > 0:
-                        min_y, max_y = mask_indices[0].min(), mask_indices[0].max()
-                        min_x, max_x = mask_indices[1].min(), mask_indices[1].max()
+                mask_indices = np.where(mask > 0)
+                if len(mask_indices[0]) > 0:
+                    min_y, max_y = mask_indices[0].min(), mask_indices[0].max()
+                    min_x, max_x = mask_indices[1].min(), mask_indices[1].max()
 
-                        scaled_x1 = x1 / scale_x
-                        scaled_x2 = x2 / scale_x
-                        scaled_y1 = y1 / scale_y
-                        scaled_y2 = y2 / scale_y
+                    scaled_x1 = x1 / scale_x
+                    scaled_x2 = x2 / scale_x
+                    scaled_y1 = y1 / scale_y
+                    scaled_y2 = y2 / scale_y
 
-                        tolerance = 10
-                        assert min_x >= scaled_x1 - tolerance
-                        assert max_x <= scaled_x2 + tolerance
-                        assert min_y >= scaled_y1 - tolerance
-                        assert max_y <= scaled_y2 + tolerance
+                    tolerance = 10
+                    assert min_x >= scaled_x1 - tolerance
+                    assert max_x <= scaled_x2 + tolerance
+                    assert min_y >= scaled_y1 - tolerance
+                    assert max_y <= scaled_y2 + tolerance
 
-                    mask_area = np.sum(mask > 0)
-                    scaled_bbox_area = ((scaled_x2 - scaled_x1) * (scaled_y2 - scaled_y1))
-                    coverage_ratio = mask_area / scaled_bbox_area if scaled_bbox_area > 0 else 0
+                mask_area = np.sum(mask > 0)
+                scaled_bbox_area = ((scaled_x2 - scaled_x1) * (scaled_y2 - scaled_y1))
+                coverage_ratio = mask_area / scaled_bbox_area if scaled_bbox_area > 0 else 0
 
-                    assert 0.1 <= coverage_ratio <= 1.5
-            finally:
-                for mask_file in created_mask_files:
-                    if os.path.exists(mask_file):
-                        os.remove(mask_file)
+                assert 0.1 <= coverage_ratio <= 1.5
 
     @pytest.mark.asyncio
     @pytest.mark.skipif(
@@ -523,44 +529,111 @@ class TestFindToolExecution:
             mask_data = mask_result.structured_content
             polygon_data = polygon_result.structured_content
             
-            created_mask_files = []
-            try:
-                if mask_data["found"] and polygon_data["found"]:
-                    mask_obj = mask_data["found_objects"][0]
-                    polygon_obj = polygon_data["found_objects"][0]
+            if mask_data["found"] and polygon_data["found"]:
+                mask_obj = mask_data["found_objects"][0]
+                polygon_obj = polygon_data["found_objects"][0]
 
-                    mask_path = mask_obj["mask_path"]
-                    created_mask_files.append(mask_path)
-                    mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+                mask_path = mask_obj["mask_path"]
+                mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
 
-                    mask_bbox = mask_obj["bbox"]
-                    polygon_bbox = polygon_obj["bbox"]
+                mask_bbox = mask_obj["bbox"]
+                polygon_bbox = polygon_obj["bbox"]
 
-                    bbox_tolerance = 20
-                    for i in range(4):
-                        assert abs(mask_bbox[i] - polygon_bbox[i]) < bbox_tolerance
+                bbox_tolerance = 20
+                for i in range(4):
+                    assert abs(mask_bbox[i] - polygon_bbox[i]) < bbox_tolerance
 
-                    polygon_points = polygon_obj["polygon"]
-                    mask_height, mask_width = mask.shape
+                polygon_points = polygon_obj["polygon"]
+                mask_height, mask_width = mask.shape
 
-                    img = Image.new('L', (mask_width, mask_height), 0)
+                img = Image.new('L', (mask_width, mask_height), 0)
 
-                    scale_x = mask_width / orig_width
-                    scale_y = mask_height / orig_height
+                scale_x = mask_width / orig_width
+                scale_y = mask_height / orig_height
 
-                    scaled_polygon = [(p[0] * scale_x, p[1] * scale_y) for p in polygon_points]
+                scaled_polygon = [(p[0] * scale_x, p[1] * scale_y) for p in polygon_points]
 
-                    ImageDraw.Draw(img).polygon(scaled_polygon, outline=1, fill=1)
-                    polygon_mask = np.array(img)
+                ImageDraw.Draw(img).polygon(scaled_polygon, outline=1, fill=1)
+                polygon_mask = np.array(img)
 
-                    mask_bool = mask > 0
-                    polygon_mask_bool = polygon_mask > 0
-                    intersection = np.logical_and(mask_bool, polygon_mask_bool).sum()
-                    union = np.logical_or(mask_bool, polygon_mask_bool).sum()
-                    iou = intersection / union if union > 0 else 0
+                mask_bool = mask > 0
+                polygon_mask_bool = polygon_mask > 0
+                intersection = np.logical_and(mask_bool, polygon_mask_bool).sum()
+                union = np.logical_or(mask_bool, polygon_mask_bool).sum()
+                iou = intersection / union if union > 0 else 0
 
-                    assert iou > 0.5
-            finally:
-                for mask_file in created_mask_files:
-                    if os.path.exists(mask_file):
-                        os.remove(mask_file)
+                assert iou > 0.5
+
+    @pytest.mark.asyncio
+    @pytest.mark.skipif(
+        os.environ.get("SKIP_YOLO_TESTS") == "1",
+        reason="Skipping YOLO tests to avoid downloading models in CI",
+    )
+    async def test_find_mask_validation_on_simple_image(
+        self, mcp_server: FastMCP, test_segmentation_image_path
+    ):
+        """
+        Tests that generated masks from the find tool are valid using a simple image.
+        It checks for binarity and bounding box confinement for every generated mask.
+        """
+        with Image.open(test_segmentation_image_path) as img:
+            orig_width, orig_height = img.size
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "find",
+                {
+                    "input_path": test_segmentation_image_path,
+                    "description": "dog",
+                    "model_name": "yoloe-11s-seg.pt",
+                    "return_geometry": True,
+                    "geometry_format": "mask",
+                    "confidence": 0.3,
+                    "return_all_matches": True,
+                },
+            )
+
+            find_result = result.structured_content
+            assert find_result is not None
+            assert find_result["found"], "Should have found a dog in the image"
+            assert len(find_result["found_objects"]) >= 1, "Should have found at least one dog"
+
+            # Validate every mask that was generated
+            for found_object in find_result["found_objects"]:
+                assert "mask_path" in found_object, "Each found object should have a mask_path"
+                mask_path = found_object["mask_path"]
+                assert os.path.exists(mask_path), f"Mask file should exist at {mask_path}"
+
+                mask = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+                assert mask is not None, f"Mask file {mask_path} could not be read"
+
+                # 1. Check for binarity (only 0 and 255 values)
+                unique_values = np.unique(mask)
+                assert all(v in [0, 255] for v in unique_values), (
+                    f"Mask {mask_path} is not binary. Found values: {unique_values}"
+                )
+                assert np.sum(mask) > 0, f"Mask {mask_path} should not be empty"
+
+                # 2. Check for bounding box confinement
+                bbox = found_object["bbox"]
+                x1, y1, x2, y2 = bbox
+                mask_height, mask_width = mask.shape
+
+                scale_x = orig_width / mask_width
+                scale_y = orig_height / mask_height
+
+                mask_indices = np.where(mask > 0)
+                if len(mask_indices[0]) > 0:
+                    min_mask_y, max_mask_y = mask_indices[0].min(), mask_indices[0].max()
+                    min_mask_x, max_mask_x = mask_indices[1].min(), mask_indices[1].max()
+
+                    scaled_x1 = x1 / scale_x
+                    scaled_y1 = y1 / scale_y
+                    scaled_x2 = x2 / scale_x
+                    scaled_y2 = y2 / scale_y
+
+                    tolerance = 10
+                    assert min_mask_x >= scaled_x1 - tolerance, f"Mask content of {mask_path} extends past the left of its bbox"
+                    assert max_mask_x <= scaled_x2 + tolerance, f"Mask content of {mask_path} extends past the right of its bbox"
+                    assert min_mask_y >= scaled_y1 - tolerance, f"Mask content of {mask_path} extends past the top of its bbox"
+                    assert max_mask_y <= scaled_y2 + tolerance, f"Mask content of {mask_path} extends past the bottom of its bbox"

@@ -257,15 +257,17 @@ def register_tool(mcp: FastMCP):
                                 mask_image = (mask * 255).astype(np.uint8)
 
                                 # Generate a unique filename for the mask, always with .png extension
-                                base_name = Path(input_path).stem
-                                mask_output_path = f"{base_name}_mask_{i}.png"
+                                input_p = Path(input_path)
+                                base_name = input_p.stem
+                                output_dir = input_p.parent
+                                mask_output_path = output_dir / f"{base_name}_mask_{i}.png"
 
                                 # Save the mask as a PNG file
                                 try:
-                                    success = cv2.imwrite(mask_output_path, mask_image)
+                                    success = cv2.imwrite(str(mask_output_path), mask_image)
                                     if success:
                                         logger.info(f"Saved find mask to {mask_output_path}")
-                                        found_object["mask_path"] = mask_output_path
+                                        found_object["mask_path"] = str(mask_output_path)
                                     else:
                                         logger.error(f"Failed to save mask to {mask_output_path}")
                                 except Exception as e:

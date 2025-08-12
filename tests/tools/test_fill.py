@@ -473,9 +473,6 @@ class TestFillToolExecution:
             # Check a pixel outside the masked area
             assert np.array_equal(img[50, 50], [255, 255, 255])
 
-        # Clean up the mask file
-        os.remove(mask_path)
-
 
 class TestFillToolWithJPEG:
     """Tests for the fill tool with JPEG images (no alpha channel)."""
