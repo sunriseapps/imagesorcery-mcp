@@ -180,7 +180,7 @@ Crop my image 'input.png' using bounding box [10, 10, 200, 200] and save it as '
 
 ### `detect`
 
-Detects objects in an image using models from Ultralytics. This tool requires pre-downloaded models. Use the `download-yolo-models` command to download models before using this tool. If objects aren't common, consider using a specialized model. This tool can optionally return segmentation masks or polygons if a segmentation model (e.g., one ending in '-seg.pt') is used.
+Detects objects in an image using models from Ultralytics. This tool requires pre-downloaded models. Use the `download-yolo-models` command to download models before using this tool. If objects aren't common, consider using a specialized model. This tool can optionally return segmentation masks (as PNG files) or polygons if a segmentation model (e.g., one ending in '-seg.pt') is used.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
@@ -188,14 +188,14 @@ Detects objects in an image using models from Ultralytics. This tool requires pr
   - `confidence` (float): Confidence threshold for detection (0.0 to 1.0). Default is 0.75
   - `model_name` (string): Model name to use for detection (e.g., 'yoloe-11s-seg.pt', 'yolov8m.pt'). Default is 'yoloe-11l-seg-pf.pt'
   - `return_geometry` (boolean): If True, returns segmentation masks or polygons for detected objects. Default is False.
-  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'.
+  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'. When 'mask' is selected, a PNG file is created for each mask and its path is returned.
 - **Returns:** dictionary containing:
   - `image_path`: Path to the input image
   - `detections`: List of detected objects, each with:
     - `class`: Class name of the detected object
     - `confidence`: Confidence score (0.0 to 1.0)
     - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
-    - `mask` (optional): A binary numpy array representing the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
+    - `mask_path` (optional): Path to the PNG file for the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
     - `polygon` (optional): A list of points `[x, y]` describing the object's contour. Included if `return_geometry` is True and `geometry_format` is 'polygon'.
 
 **Example Claude Request:**
@@ -230,13 +230,13 @@ Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4
         "class": "person",
         "confidence": 0.92,
         "bbox": [10.5, 20.3, 100.2, 200.1],
-        "polygon": [[10.5, 20.3], [100.2, 200.1], [100.2, 200.1], [10.5, 20.3]]
+        "mask_path": "/home/user/images/photo_mask_0.png"
       },
       {
         "class": "car",
         "confidence": 0.85,
         "bbox": [150.2, 30.5, 250.1, 120.7],
-        "polygon": [[150.2, 30.5], [250.1, 120.7], [250.1, 120.7], [150.2, 30.5]]
+        "mask_path": "/home/user/images/photo_mask_1.png"
       }
     ]
   }
@@ -559,15 +559,16 @@ Add text 'Hello World' at position (50,50) and 'Copyright 2023' at the bottom ri
 
 ### `fill`
 
-Fills specified rectangular or polygonal areas of an image with a color and opacity, or makes them transparent. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle defined by a bounding box with coordinates `[x1, y1, x2, y2]` or a polygon defined by a list of points. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black). 
+Fills specified rectangular, polygonal, or mask-based areas of an image with a color and opacity, or makes them transparent. This tool allows filling multiple areas of an image with a customizable color and opacity. Each area can be a rectangle, a polygon, or a mask from a PNG file. The `opacity` parameter controls the transparency of the fill (1.0 is fully opaque, 0.0 is fully transparent, default is 0.5). The `color` is in BGR format, e.g., `[255, 0, 0]` for blue (default is `[0,0,0]` black).
 
 **Special behavior**: If `color` is set to `null` (or `None` in Python), the specified area is made fully transparent by setting all channels (BGRA) to 0, effectively creating a black transparent color. This ensures better compatibility with older PNG viewers. The `opacity` parameter is ignored in this case.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
-  - `areas` (array): List of areas to fill. Each item is a dictionary that must contain either:
+  - `areas` (array): List of areas to fill. Each item is a dictionary that must contain one of:
     - A rectangle: `x1`, `y1`, `x2`, `y2` (integers).
     - A polygon: `polygon` (a list of points, e.g., `[[x1, y1], [x2, y2], ...]`).
+    - A mask: `mask_path` (string path to a PNG mask file).
     - Optionally, each dictionary can also contain `color` (list of 3 ints [B,G,R] or `null`, default [0,0,0]) and `opacity` (float 0.0-1.0, default 0.5).
 - **Optional arguments:**
   - `invert_areas` (boolean): If True, fills everything EXCEPT the specified areas. Useful for background removal. Default is False.
@@ -644,7 +645,7 @@ Remove the background from 'my_image.png' by making everything outside the recta
 
 ### `find`
 
-Finds objects in an image based on a text description. This tool uses open-vocabulary detection models to find objects matching a text description. It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt). This tool can optionally return segmentation masks or polygons.
+Finds objects in an image based on a text description. This tool uses open-vocabulary detection models to find objects matching a text description. It requires pre-downloaded YOLOE models that support text prompts (e.g. yoloe-11l-seg.pt). This tool can optionally return segmentation masks (as PNG files) or polygons.
 
 - **Required arguments:**
   - `input_path` (string): Full path to the input image
@@ -654,7 +655,7 @@ Finds objects in an image based on a text description. This tool uses open-vocab
   - `model_name` (string): Model name to use for finding objects (must support text prompts). Default is 'yoloe-11l-seg.pt'
   - `return_all_matches` (boolean): If True, returns all matching objects; if False, returns only the best match. Default is False
   - `return_geometry` (boolean): If True, returns segmentation masks or polygons for found objects. Default is False.
-  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'.
+  - `geometry_format` (string): Format for returned geometry: 'mask' or 'polygon'. Default is 'mask'. When 'mask' is selected, a PNG file is created for each mask and its path is returned.
 - **Returns:** dictionary containing:
   - `image_path`: Path to the input image
   - `query`: The text description that was searched for
@@ -663,7 +664,7 @@ Finds objects in an image based on a text description. This tool uses open-vocab
     - `match`: The class name of the matched object
     - `confidence`: Confidence score (0.0 to 1.0)
     - `bbox`: Bounding box coordinates [x1, y1, x2, y2]
-    - `mask` (optional): A binary numpy array representing the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
+    - `mask_path` (optional): Path to the PNG file for the object's mask. Included if `return_geometry` is True and `geometry_format` is 'mask'.
     - `polygon` (optional): A list of points `[x, y]` describing the object's contour. Included if `return_geometry` is True and `geometry_format` is 'polygon'.
   - `found`: Boolean indicating whether any objects were found
 
@@ -702,14 +703,14 @@ Find all dogs in my image 'photo.jpg' with a confidence threshold of 0.4
         "match": "dog",
         "confidence": 0.92,
         "bbox": [150.2, 30.5, 250.1, 120.7],
-        "mask": [...],
+        "mask_path": "/home/user/images/photo_mask_0.png"
       },
       {
         "description": "dog",
         "match": "dog",
         "confidence": 0.85,
         "bbox": [300.5, 150.3, 400.2, 250.1],
-        "mask": [...]
+        "mask_path": "/home/user/images/photo_mask_1.png"
       }
     ],
     "found": true

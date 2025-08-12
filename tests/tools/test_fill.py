@@ -442,6 +442,38 @@ class TestFillToolExecution:
             edge_pixel = img[79, 150]  # Just above the object
             assert edge_pixel[3] == 0
 
+    @pytest.mark.asyncio
+    async def test_fill_with_mask_path(self, mcp_server: FastMCP, test_image_path, tmp_path):
+        """Tests filling an area using a mask from a file."""
+        output_path = str(tmp_path / "output_mask_fill.png")
+        mask_path = str(tmp_path / "test_mask.png")
+
+        # Create a mask image (e.g., a circle)
+        mask_img = np.zeros((300, 400), dtype=np.uint8)
+        cv2.circle(mask_img, (150, 150), 50, 255, -1)
+        cv2.imwrite(mask_path, mask_img)
+
+        fill_area = {"mask_path": mask_path, "color": [0, 255, 255], "opacity": 1.0}
+
+        async with Client(mcp_server) as client:
+            result = await client.call_tool(
+                "fill",
+                {
+                    "input_path": test_image_path,
+                    "areas": [fill_area],
+                    "output_path": output_path,
+                },
+            )
+            assert result.data == output_path
+            assert os.path.exists(output_path)
+
+            img = cv2.imread(output_path)
+            # Check a pixel inside the masked area
+            assert np.array_equal(img[150, 150], [0, 255, 255])
+            # Check a pixel outside the masked area
+            assert np.array_equal(img[50, 50], [255, 255, 255])
+
+
 class TestFillToolWithJPEG:
     """Tests for the fill tool with JPEG images (no alpha channel)."""
 

@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 from typing import Annotated, Any, Dict, List, Literal, Union
 
+import cv2
+import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
@@ -56,10 +58,13 @@ def register_tool(mcp: FastMCP):
         This tool can optionally return segmentation masks or polygons if a segmentation
         model (e.g., one ending in '-seg.pt') is used.
 
+        When 'mask' is chosen for geometry_format, a PNG file is created for each
+        detected object's mask. The file path is returned in the 'mask_path' field.
+
         Returns:
             Dictionary containing the input image path and a list of detected objects.
             Each object includes its class name, confidence score, and bounding box.
-            If return_geometry is True, it also includes a 'mask' (numpy array) or
+            If return_geometry is True, it also includes a 'mask_path' (path to a PNG file) or
             'polygon' (list of points).
         """
         logger.info(
@@ -147,9 +152,27 @@ def register_tool(mcp: FastMCP):
 
                 if return_geometry:
                     if geometry_format == "mask":
-                        # Ultralytics masks are (H, W) arrays
+                        # Convert mask to a savable format
                         mask = results.masks.data[i].cpu().numpy()
-                        detection_item["mask"] = mask.tolist()
+                        mask_image = (mask * 255).astype(np.uint8)
+
+                        # Generate a unique filename for the mask, always with .png extension
+                        input_p = Path(input_path)
+                        base_name = input_p.stem
+                        output_dir = input_p.parent
+                        mask_output_path = output_dir / f"{base_name}_mask_{i}.png"
+
+                        # Save the mask as a PNG file
+                        try:
+                            success = cv2.imwrite(str(mask_output_path), mask_image)
+                            if success:
+                                logger.info(f"Saved detection mask to {mask_output_path}")
+                                detection_item["mask_path"] = str(mask_output_path)
+                            else:
+                                logger.error(f"Failed to save mask to {mask_output_path}")
+                        except Exception as e:
+                            logger.error(f"An unexpected error occurred while saving mask to {mask_output_path}: {e}")
+
                     elif geometry_format == "polygon":
                         # Ultralytics masks.xy are lists of polygons
                         polygon = results.masks.xy[i].tolist()
