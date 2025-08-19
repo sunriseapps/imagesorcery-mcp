@@ -16,6 +16,7 @@ Official website: [imagesorcery.net](https://imagesorcery.net?utm_source=readme)
 `🪄 ImageSorcery` empowers AI assistants with powerful image processing capabilities:
 
 - ✅ Crop, resize, and rotate images with precision
+- ✅ Remove background
 - ✅ Draw text and shapes on images
 - ✅ Add logos and watermarks
 - ✅ Detect objects using state-of-the-art models
