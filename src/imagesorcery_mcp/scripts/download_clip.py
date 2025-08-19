@@ -53,47 +53,25 @@ def download_file(url, output_path):
 def download_clip_model():
     """Download the MobileCLIP model required for YOLOe text prompts."""
     logger.info("Attempting to download CLIP model")
-    models_dir = get_models_dir()
-    clip_model_path = models_dir / "mobileclip_blt.ts"
     root_clip_model_path = Path("mobileclip_blt.ts").resolve()
-    
-    # Check if model already exists in either location
-    if clip_model_path.exists() and root_clip_model_path.exists():
-        logger.info(f"CLIP model already exists at: {clip_model_path} and {root_clip_model_path}")
+
+    # Check if model already exists in root directory
+    if root_clip_model_path.exists():
+        logger.info(f"CLIP model already exists at: {root_clip_model_path}")
         return True
-    
+
     # URL for the MobileCLIP model
     url = "https://github.com/ultralytics/assets/releases/download/v8.3.0/mobileclip_blt.ts"
-    
-    # Download to models directory
-    if not clip_model_path.exists():
-        logger.info(f"Downloading CLIP model to models directory from: {url}")
-        success_models = download_file(url, clip_model_path)
-        if success_models:
-            logger.info(f"CLIP model successfully downloaded to: {clip_model_path}")
-        else:
-            logger.error(f"Failed to download CLIP model to: {clip_model_path}")
-            return False
-    
-    # Download or copy to root directory
-    if not root_clip_model_path.exists():
-        if clip_model_path.exists():
-            # Copy from models directory to root
-            import shutil
-            logger.info(f"Copying CLIP model from {clip_model_path} to {root_clip_model_path}")
-            shutil.copy(clip_model_path, root_clip_model_path)
-            logger.info(f"CLIP model successfully copied to: {root_clip_model_path}")
-        else:
-            # Download directly to root
-            logger.info(f"Downloading CLIP model to root directory from: {url}")
-            success_root = download_file(url, root_clip_model_path)
-            if success_root:
-                logger.info(f"CLIP model successfully downloaded to: {root_clip_model_path}")
-            else:
-                logger.error(f"Failed to download CLIP model to: {root_clip_model_path}")
-                return False
-    
-    return True
+
+    # Download directly to root directory
+    logger.info(f"Downloading CLIP model to root directory from: {url}")
+    success = download_file(url, root_clip_model_path)
+    if success:
+        logger.info(f"CLIP model successfully downloaded to: {root_clip_model_path}")
+        return True
+    else:
+        logger.error(f"Failed to download CLIP model to: {root_clip_model_path}")
+        return False
 
 
 def main():

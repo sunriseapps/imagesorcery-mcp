@@ -94,7 +94,7 @@ Downloads the MobileCLIP model required for YOLOe text prompts functionality.
 - **Purpose:** Ensures that the required MobileCLIP model is available for text-based detection in the `find` tool.
 - **Functionality:**
   - Downloads the MobileCLIP model required for YOLOe text prompts
-  - Places the model in both the models directory and root directory for compatibility
+  - Places the model in the root directory where it's expected by the find tool
 - **Usage:** Run directly or through the provided command-line entry point.
 
 **Command-line Usage:**
