@@ -77,6 +77,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 ### Requirements
 
 - `Python 3.10` or higher
+- `pipx` (recommended) - for easy installation and virtual environment management
 - `ffmpeg`, `libsm6`, `libxext6`, `libgl1-mesa-glx` - system libraries required by OpenCV
 - `Claude.app`, `Cline`, or another MCP client
 
@@ -105,22 +106,56 @@ RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 libgl1-mesa-glx
 
 ```md
 1.  Load MCP documentation if you have the tool for it. It will give you path to *MCP-configuration file* and other needed instructions.
-2.  Run command `python -m venv imagesorcery-mcp`
-3.  Run command `source imagesorcery-mcp/bin/activate`
-    For windows bash run command `source imagesorcery-mcp/Scripts/activate`
-    For windows cmd run command `imagesorcery-mcp\Scripts\activate`
-4.  Run command `pip install imagesorcery-mcp`
-5.  Run command `imagesorcery-mcp --post-install`
-6.  Create or modify *MCP-configuration file*.
-7.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the *MCP-configuration file*
-    `"imagesorcery-mcp": {"command": "/full/path/to/venv/bin/imagesorcery-mcp","timeout": 100}`
-8.  Access available models using `models://list` resource from `imagesorcery-mcp`
-9.  Attempt completion, indicating that the installation and configuration are complete.
+2.  Run command `pipx install imagesorcery-mcp`
+3.  Run command `imagesorcery-mcp --post-install`
+4.  Create or modify *MCP-configuration file*.
+5.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the *MCP-configuration file*
+    `"imagesorcery-mcp": {"command": "imagesorcery-mcp","timeout": 100}`
+6.  Access available models using `models://list` resource from `imagesorcery-mcp`
+7.  Attempt completion, indicating that the installation and configuration are complete.
 ```
 </details>
 
-1.  **Create and activate a virtual environment (Strongly Recommended):**
-    For reliable installation of all components, especially the `clip` package (installed via the post-install script), it is **strongly recommended to use Python's built-in `venv` module instead of `uv venv`**.
+#### Method 1: Using pipx (Recommended)
+
+`pipx` is the recommended way to install ImageSorcery MCP as it automatically handles virtual environment creation and management, making the installation process much simpler.
+
+<details>
+<summary>0.  Install pipx (if not already installed):</summary>
+
+0.  **Install pipx (if not already installed):**
+    ```bash
+    # On macOS with Homebrew:
+    brew install pipx
+
+    # On Ubuntu/Debian:
+    sudo apt update && sudo apt install pipx
+
+    # On other systems with pip:
+    pip install --user pipx
+    pipx ensurepath
+    ```
+</details>
+
+1.  **Install ImageSorcery MCP with pipx:**
+    ```bash
+    pipx install imagesorcery-mcp
+    ```
+
+2.  **Run the post-installation script:**
+    This step is crucial. It downloads the required models and attempts to install the `clip` Python package from GitHub.
+    ```bash
+    imagesorcery-mcp --post-install
+    ```
+
+#### Method 2: Manual Virtual Environment (Plan B)
+
+<details>
+<summary>If pipx doesn't work for your system, you can manually create a virtual environment</summary>
+
+For reliable installation of all components, especially the `clip` package (installed via the post-install script), it is **strongly recommended to use Python's built-in `venv` module instead of `uv venv`**.
+
+1.  **Create and activate a virtual environment:**
     ```bash
     python -m venv imagesorcery-mcp
     source imagesorcery-mcp/bin/activate  # For Linux/macOS
@@ -141,6 +176,11 @@ RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 libgl1-mesa-glx
     imagesorcery-mcp --post-install
     ```
 
+**Note:** When using this method, you'll need to provide the full path to the executable in your MCP client configuration (e.g., `/full/path/to/venv/bin/imagesorcery-mcp`).
+</details>
+
+
+#### Additional Notes
 <details>
 <summary>What does the post-installation script do?</summary>
 The `imagesorcery-mcp --post-install` script performs the following actions:
@@ -177,12 +217,24 @@ You can run this process anytime to restore the default models and attempt `clip
 ## ⚙️ Configure MCP client
 
 Add to your MCP client these settings.
-If `imagesorcery-mcp` is in your system's PATH after installation, you can use `imagesorcery-mcp` directly as the command. Otherwise, you'll need to provide the full path to the executable.
 
+**For pipx installation (recommended):**
 ```json
 "mcpServers": {
     "imagesorcery-mcp": {
-      "command": "imagesorcery-mcp", // Or /full/path/to/venv/bin/imagesorcery-mcp if installed in a venv
+      "command": "imagesorcery-mcp",
+      "transportType": "stdio",
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "timeout": 100
+    }
+}
+```
+
+**For manual venv installation:**
+```json
+"mcpServers": {
+    "imagesorcery-mcp": {
+      "command": "/full/path/to/venv/bin/imagesorcery-mcp",
       "transportType": "stdio",
       "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
@@ -207,10 +259,23 @@ If `imagesorcery-mcp` is in your system's PATH after installation, you can use `
 <details>
 <summary>For Windows</summary>
 
+**For pipx installation (recommended):**
 ```json
 "mcpServers": {
     "imagesorcery-mcp": {
-      "command": "imagesorcery-mcp.exe", // Or C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe if installed in a venv
+      "command": "imagesorcery-mcp.exe",
+      "transportType": "stdio",
+      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "timeout": 100
+    }
+}
+```
+
+**For manual venv installation:**
+```json
+"mcpServers": {
+    "imagesorcery-mcp": {
+      "command": "C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe",
       "transportType": "stdio",
       "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
