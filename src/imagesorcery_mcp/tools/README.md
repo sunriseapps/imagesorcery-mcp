@@ -134,6 +134,114 @@ Convert my image 'test_image.png' to sepia and save it as 'output.png'
 }
 ```
 
+### `config`
+
+View or update ImageSorcery MCP configuration settings. This tool allows you to view current configuration values, update them for the current session or persistently, and reset runtime overrides. Configuration values control default parameters for other tools like detection confidence thresholds, blur strength, drawing colors, etc.
+
+- **Required arguments:**
+  - `action` (string): Action to perform. Must be one of:
+    - `"get"`: View configuration values
+    - `"set"`: Update configuration values
+    - `"reset"`: Reset runtime configuration overrides
+- **Optional arguments:**
+  - `key` (string): Configuration key to get/set using dot notation (e.g., "detection.confidence_threshold", "blur.strength"). Leave empty to get/set entire config.
+  - `value` (string|number|boolean): Value to set (only used with action="set")
+  - `persist` (boolean): Whether to persist changes to config file (only used with action="set"). Default is False.
+- **Returns:** Dictionary containing the requested configuration data or update result
+
+**Available Configuration Keys:**
+- `detection.confidence_threshold`: Default confidence threshold for object detection (0.0-1.0)
+- `detection.default_model`: Default model for detection tool
+- `find.confidence_threshold`: Default confidence threshold for object finding (0.0-1.0)
+- `find.default_model`: Default model for find tool
+- `blur.strength`: Default blur strength (must be odd number)
+- `text.font_scale`: Default font scale for text drawing
+- `drawing.color`: Default color in BGR format [Blue, Green, Red]
+- `drawing.thickness`: Default line thickness
+- `ocr.language`: Default language code for OCR
+- `resize.interpolation`: Default interpolation method
+
+**Example Claude Requests:**
+
+```
+Show me the current configuration
+```
+
+```
+What is the current detection confidence threshold?
+```
+
+```
+Set the default blur strength to 21
+```
+
+```
+Set the detection confidence to 0.8 and save it to the config file
+```
+
+```
+Reset all configuration overrides
+```
+
+**Example Tool Calls (JSON):**
+
+Get all configuration:
+```json
+{
+  "name": "config",
+  "arguments": {
+    "action": "get"
+  }
+}
+```
+
+Get specific configuration value:
+```json
+{
+  "name": "config",
+  "arguments": {
+    "action": "get",
+    "key": "detection.confidence_threshold"
+  }
+}
+```
+
+Set configuration value (runtime only):
+```json
+{
+  "name": "config",
+  "arguments": {
+    "action": "set",
+    "key": "blur.strength",
+    "value": 21,
+    "persist": false
+  }
+}
+```
+
+Set and persist configuration value:
+```json
+{
+  "name": "config",
+  "arguments": {
+    "action": "set",
+    "key": "detection.confidence_threshold",
+    "value": 0.8,
+    "persist": true
+  }
+}
+```
+
+Reset runtime overrides:
+```json
+{
+  "name": "config",
+  "arguments": {
+    "action": "reset"
+  }
+}
+```
+
 ### `crop`
 
 Crops an image using OpenCV's NumPy slicing approach.

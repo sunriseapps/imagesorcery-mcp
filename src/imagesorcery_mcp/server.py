@@ -14,6 +14,7 @@ from imagesorcery_mcp.resources import models
 from imagesorcery_mcp.tools import (
     blur,
     change_color,
+    config,
     crop,
     detect,
     draw_arrows,
@@ -53,6 +54,7 @@ mcp.add_middleware(error_middleware)
 # Register tools with the module-level mcp instance
 blur.register_tool(mcp)
 change_color.register_tool(mcp)
+config.register_tool(mcp)
 crop.register_tool(mcp)
 detect.register_tool(mcp)
 draw_arrows.register_tool(mcp)

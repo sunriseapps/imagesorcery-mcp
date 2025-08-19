@@ -21,3 +21,6 @@ models/settings.json
 
 # CLIP model file
 mobileclip_blt.ts
+
+# User configuration file
+config.toml

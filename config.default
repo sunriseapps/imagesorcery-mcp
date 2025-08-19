@@ -1,0 +1,34 @@
+# ImageSorcery MCP Default Configuration
+# This file contains the default configuration values for ImageSorcery MCP
+# It will be copied to config.toml during installation
+
+# Detection tool configuration
+[detection]
+confidence_threshold = 0.75  # Default confidence threshold for object detection (0.0-1.0)
+default_model = "yoloe-11l-seg-pf.pt"  # Default model for detection tool
+
+# Find tool configuration  
+[find]
+confidence_threshold = 0.75  # Default confidence threshold for object finding (0.0-1.0)
+default_model = "yoloe-11l-seg-pf.pt"  # Default model for find tool (can be different from detection)
+
+# Blur tool configuration
+[blur]
+strength = 15  # Default blur strength (must be odd number)
+
+# Text drawing configuration
+[text]
+font_scale = 1.0  # Default font scale for text drawing
+
+# Drawing configuration
+[drawing]
+color = [0, 0, 0]  # Default color in BGR format [Blue, Green, Red] (black)
+thickness = 1      # Default line thickness for drawing operations
+
+# OCR configuration
+[ocr]
+language = "en"    # Default language code for OCR (e.g., "en", "ru", "fr")
+
+# Resize configuration
+[resize]
+interpolation = "linear"  # Default interpolation method: "nearest", "linear", "area", "cubic", "lanczos"

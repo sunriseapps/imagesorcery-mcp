@@ -47,6 +47,7 @@ Your tool will combine multiple tools listed below to achieve your goal.
 |------|-------------|----------------|
 | `blur` | Blurs specified rectangular or polygonal areas of an image using OpenCV. Can also invert the provided areas e.g. to blur background. | "Blur the area from (150, 100) to (250, 200) with a blur strength of 21 in my image 'test_image.png' and save it as 'output.png'" |
 | `change_color` | Changes the color palette of an image | "Convert my image 'test_image.png' to sepia and save it as 'output.png'" |
+| `config` | View and update ImageSorcery MCP configuration settings | "Show me the current configuration" or "Set the default detection confidence to 0.8" |
 | `crop` | Crops an image using OpenCV's NumPy slicing approach | "Crop my image 'input.png' from coordinates (10,10) to (200,200) and save it as 'cropped.png'" |
 | `detect` | Detects objects in an image using models from Ultralytics. Can return segmentation masks (as PNG files) or polygons. | "Detect objects in my image 'photo.jpg' with a confidence threshold of 0.4" |
 | `draw_arrows` | Draws arrows on an image using OpenCV | "Draw a red arrow from (50,50) to (150,100) on my image 'photo.jpg'" |
@@ -193,6 +194,7 @@ For reliable installation of all components, especially the `clip` package (inst
 <summary>What does the post-installation script do?</summary>
 The `imagesorcery-mcp --post-install` script performs the following actions:
 
+- **Creates a `config.toml` configuration file** in the current directory from the `config.default` template, allowing you to customize default tool parameters.
 - Creates a `models` directory (usually within the site-packages directory of your virtual environment, or a user-specific location if installed globally) to store pre-trained models.
 - Generates an initial `models/model_descriptions.json` file there.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool into this `models` directory.
@@ -232,7 +234,7 @@ Add to your MCP client these settings.
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp",
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -244,7 +246,7 @@ Add to your MCP client these settings.
     "imagesorcery-mcp": {
       "command": "/full/path/to/venv/bin/imagesorcery-mcp",
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -257,7 +259,7 @@ Add to your MCP client these settings.
     "imagesorcery-mcp": {
       "url": "http://127.0.0.1:8000/mcp", // Use your custom host, port, and path if specified
       "transportType": "http",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -273,7 +275,7 @@ Add to your MCP client these settings.
     "imagesorcery-mcp": {
       "command": "imagesorcery-mcp.exe",
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -285,7 +287,7 @@ Add to your MCP client these settings.
     "imagesorcery-mcp": {
       "command": "C:\\full\\path\\to\\venv\\Scripts\\imagesorcery-mcp.exe",
       "transportType": "stdio",
-      "autoApprove": ["blur", "change_color", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
       "timeout": 100
     }
 }
@@ -345,6 +347,10 @@ Available transport options:
 - `--port`: Specify port for HTTP-based transports (default: 8000)
 - `--path`: Specify endpoint path for HTTP-based transports (default: /mcp)
 </details>
+
+## ⚙️ Configuring the Server
+
+The server can be configured using a `config.toml` file in the current directory. The file is created automatically during installation from the `config.default` template. You can customize the default tool parameters in this file. More in [CONFIG.md](CONFIG.md).
 
 ## 🤝 Contributing
 <details>

@@ -6,7 +6,8 @@ import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -99,8 +100,9 @@ def register_tool(mcp: FastMCP):
             logger.info("Applying blur to specified areas.")
 
         # Apply blur to the entire image (this will be used for the masked regions)
-        # Use the blur_strength from the first area, or default to 15
-        global_blur_strength = areas[0].get("blur_strength", 15) if areas else 15
+        # Use the blur_strength from the first area, or config default
+        config = get_config()
+        global_blur_strength = areas[0].get("blur_strength", config.blur.strength) if areas else config.blur.strength
         if global_blur_strength % 2 == 0:
             global_blur_strength += 1
             logger.warning(f"Adjusted global blur_strength to odd number: {global_blur_strength}")

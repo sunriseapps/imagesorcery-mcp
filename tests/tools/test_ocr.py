@@ -99,10 +99,12 @@ class TestOcrToolDefinition:
                 ocr_tool.inputSchema["properties"]["input_path"].get("type")
                 == "string"
             ), "input_path should be of type string"
-            assert (
-                ocr_tool.inputSchema["properties"]["language"].get("type")
-                == "string"
-            ), "language should be of type string"
+
+            # Check optional parameter (now has anyOf structure with null)
+            language_schema = ocr_tool.inputSchema["properties"]["language"]
+            assert "anyOf" in language_schema, "language should have anyOf structure for optional parameter"
+            assert any(item.get("type") == "string" for item in language_schema["anyOf"]), "language should allow string type"
+            assert any(item.get("type") == "null" for item in language_schema["anyOf"]), "language should allow null type"
 
 
 class TestOcrToolExecution:

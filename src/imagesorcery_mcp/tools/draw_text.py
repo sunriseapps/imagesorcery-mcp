@@ -5,7 +5,8 @@ import cv2
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -88,17 +89,20 @@ def register_tool(mcp: FastMCP):
         }
         logger.debug("OpenCV font face mapping created")
 
+        # Get configuration defaults
+        config = get_config()
+
         # Draw each text item on the image
         for i, text_item in enumerate(texts):
             # Extract text and position (required)
             text = text_item["text"]
             x = text_item["x"]
             y = text_item["y"]
-            
-            # Extract optional parameters with defaults
-            font_scale = text_item.get("font_scale", 1.0)
-            color = text_item.get("color", [0, 0, 0])  # Default: black
-            thickness = text_item.get("thickness", 1)
+
+            # Extract optional parameters with config defaults
+            font_scale = text_item.get("font_scale", config.text.font_scale)
+            color = text_item.get("color", config.drawing.color)
+            thickness = text_item.get("thickness", config.drawing.thickness)
             
             # Get font face (default to SIMPLEX if not specified or invalid)
             font_face_name = text_item.get("font_face", "FONT_HERSHEY_SIMPLEX")

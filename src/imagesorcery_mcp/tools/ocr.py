@@ -1,10 +1,11 @@
 import os
-from typing import Annotated, Dict, List, Union
+from typing import Annotated, Dict, List, Optional, Union
 
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -13,11 +14,11 @@ def register_tool(mcp: FastMCP):
     def ocr(
         input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
         language: Annotated[
-            str,
+            Optional[str],
             Field(
-                description="Language code for OCR (e.g., 'en', 'ru', 'fr', etc.)",
+                description="Language code for OCR (e.g., 'en', 'ru', 'fr', etc.). If not provided, uses config default.",
             ),
-        ] = "en",  # Default language is English
+        ] = None,
     ) -> Dict[str, Union[str, List[Dict[str, Union[str, float, List[float]]]]]]:
         """
         Performs Optical Character Recognition (OCR) on an image using EasyOCR.
@@ -29,8 +30,16 @@ def register_tool(mcp: FastMCP):
             Dictionary containing the input image path and a list of detected text segments
             with their text content, confidence scores, and bounding box coordinates.
         """
+        # Get configuration defaults
+        config = get_config()
+
+        # Use config default if language not provided
+        if language is None:
+            language = config.ocr.language
+            logger.info(f"Using config default language: {language}")
+
         logger.info(f"OCR requested for image: {input_path} with language: {language}")
-        
+
         # Check if input file exists
         if not os.path.exists(input_path):
             logger.error(f"Input file not found: {input_path}")

@@ -5,7 +5,8 @@ import cv2
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -44,14 +45,14 @@ def register_tool(mcp: FastMCP):
             ),
         ] = None,
         interpolation: Annotated[
-            str,
+            Optional[str],
             Field(
                 description=(
                     "Interpolation method: 'nearest', 'linear', 'area', "
-                    "'cubic', 'lanczos'"
+                    "'cubic', 'lanczos'. If not provided, uses config default."
                 )
             ),
-        ] = "linear",
+        ] = None,
         output_path: Annotated[
             str,
             Field(
@@ -74,6 +75,14 @@ def register_tool(mcp: FastMCP):
         Returns:
             Path to the resized image
         """
+        # Get configuration defaults
+        config = get_config()
+
+        # Use config default if interpolation not provided
+        if interpolation is None:
+            interpolation = config.resize.interpolation
+            logger.info(f"Using config default interpolation: {interpolation}")
+
         logger.info(f"Resize tool requested for image: {input_path}, width: {width}, height: {height}, scale_factor: {scale_factor}, interpolation: {interpolation}")
 
         # Check if input file exists

@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 import cv2
 import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -27,19 +28,19 @@ def register_tool(mcp: FastMCP):
     def detect(
         input_path: Annotated[str, Field(description="Full path to the input image (must be a full path)")],
         confidence: Annotated[
-            float,
+            Optional[float],
             Field(
-                description="Confidence threshold for detection (0.0 to 1.0)",
+                description="Confidence threshold for detection (0.0 to 1.0). If not provided, uses config default.",
                 ge=0.0,
                 le=1.0,
             ),
-        ] = 0.75,
+        ] = None,
         model_name: Annotated[
-            str,
+            Optional[str],
             Field(
-                description="Model name to use for detection (e.g., 'yoloe-11l-seg-pf.pt', 'yolov8m.pt')",
+                description="Model name to use for detection (e.g., 'yoloe-11l-seg-pf.pt', 'yolov8m.pt'). If not provided, uses config default.",
             ),
-        ] = "yoloe-11l-seg-pf.pt",
+        ] = None,
         return_geometry: Annotated[
             bool, Field(description="If True, returns segmentation masks or polygons for detected objects.")
         ] = False,
@@ -67,6 +68,18 @@ def register_tool(mcp: FastMCP):
             If return_geometry is True, it also includes a 'mask_path' (path to a PNG file) or
             'polygon' (list of points).
         """
+        # Get configuration defaults
+        config = get_config()
+
+        # Use config defaults if parameters not provided
+        if confidence is None:
+            confidence = config.detection.confidence_threshold
+            logger.info(f"Using config default confidence: {confidence}")
+
+        if model_name is None:
+            model_name = config.detection.default_model
+            logger.info(f"Using config default model: {model_name}")
+
         logger.info(
             f"Detect tool requested for image: {input_path} with model: {model_name} and confidence: {confidence}")
 

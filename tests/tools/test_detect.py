@@ -114,14 +114,17 @@ class TestDetectToolDefinition:
                 detect_tool.inputSchema["properties"]["input_path"].get("type")
                 == "string"
             ), "input_path should be of type string"
-            assert (
-                detect_tool.inputSchema["properties"]["confidence"].get("type")
-                == "number"
-            ), "confidence should be of type number"
-            assert (
-                detect_tool.inputSchema["properties"]["model_name"].get("type")
-                == "string"
-            ), "model_name should be of type string"
+
+            # Check optional parameters (now have anyOf structure with null)
+            confidence_schema = detect_tool.inputSchema["properties"]["confidence"]
+            assert "anyOf" in confidence_schema, "confidence should have anyOf structure for optional parameter"
+            assert any(item.get("type") == "number" for item in confidence_schema["anyOf"]), "confidence should allow number type"
+            assert any(item.get("type") == "null" for item in confidence_schema["anyOf"]), "confidence should allow null type"
+
+            model_name_schema = detect_tool.inputSchema["properties"]["model_name"]
+            assert "anyOf" in model_name_schema, "model_name should have anyOf structure for optional parameter"
+            assert any(item.get("type") == "string" for item in model_name_schema["anyOf"]), "model_name should allow string type"
+            assert any(item.get("type") == "null" for item in model_name_schema["anyOf"]), "model_name should allow null type"
             
             # New parameters for geometry
             assert (

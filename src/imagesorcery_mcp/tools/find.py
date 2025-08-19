@@ -1,13 +1,14 @@
 import os
 from pathlib import Path
-from typing import Annotated, Any, Dict, List, Literal, Union
+from typing import Annotated, Any, Dict, List, Literal, Optional, Union
 
 import cv2
 import numpy as np
 from fastmcp import FastMCP
 from pydantic import Field
 
-# Import the central logger
+# Import the central logger and config
+from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.logging_config import logger
 
 
@@ -50,19 +51,19 @@ def register_tool(mcp: FastMCP):
             str, Field(description="Text description of the object to find")
         ],
         confidence: Annotated[
-            float,
+            Optional[float],
             Field(
-                description="Confidence threshold for detection (0.0 to 1.0)",
+                description="Confidence threshold for detection (0.0 to 1.0). If not provided, uses config default.",
                 ge=0.0,
                 le=1.0,
             ),
-        ] = 0.3,
+        ] = None,
         model_name: Annotated[
-            str,
+            Optional[str],
             Field(
-                description="Model name to use for finding objects (must support text prompts)",
+                description="Model name to use for finding objects (must support text prompts). If not provided, uses config default.",
             ),
-        ] = "yoloe-11l-seg.pt",  # Default model that supports text prompts
+        ] = None,
         return_all_matches: Annotated[
             bool, Field(description="If True, returns all matching objects; if False, returns only the best match")
         ] = False,
@@ -90,12 +91,24 @@ def register_tool(mcp: FastMCP):
             is True, it also includes a 'mask_path' (path to a PNG file) or
             'polygon' (list of points).
         """
+        # Get configuration defaults
+        config = get_config()
+
+        # Use config defaults if parameters not provided
+        if confidence is None:
+            confidence = config.find.confidence_threshold
+            logger.info(f"Using config default confidence: {confidence}")
+
+        if model_name is None:
+            model_name = config.find.default_model
+            logger.info(f"Using config default model: {model_name}")
+
         logger.info(
             f"Find tool requested for image: {input_path}, description: '{description}', model: {model_name}, "
             f"confidence: {confidence}, return_all_matches: {return_all_matches}, "
             f"return_geometry: {return_geometry}, geometry_format: {geometry_format}"
         )
-        
+
         # Check if input file exists
         if not os.path.exists(input_path):
             logger.error(f"Input file not found: {input_path}")
