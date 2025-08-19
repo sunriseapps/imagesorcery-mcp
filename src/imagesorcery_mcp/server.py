@@ -9,6 +9,7 @@ from fastmcp.server.middleware.error_handling import ErrorHandlingMiddleware
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
 from imagesorcery_mcp.middleware import ImprovedValidationMiddleware
+from imagesorcery_mcp.prompts import remove_background
 from imagesorcery_mcp.resources import models
 from imagesorcery_mcp.tools import (
     blur,
@@ -69,6 +70,9 @@ rotate.register_tool(mcp)
 
 # Register resources
 models.register_resource(mcp)
+
+# Register prompts
+remove_background.register_prompt(mcp)
 
 def parse_arguments():
     """Parse command line arguments."""

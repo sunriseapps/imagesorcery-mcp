@@ -72,6 +72,14 @@ Your tool will combine multiple tools listed below to achieve your goal.
 
 😉 _**Hint:** detailed information and usage instructions for each resource can be found in the resource's `/src/imagesorcery_mcp/resources/README.md`._
 
+## 💬 Available Prompts
+
+| Prompt Name | Description | Example Usage |
+|-------------|-------------|---------------|
+| `remove-background` | Guides the AI through a comprehensive background removal workflow using object detection and masking tools | "Use the remove-background prompt to remove the background from my photo 'portrait.jpg', keeping only the person" |
+
+😉 _**Hint:** detailed information and usage instructions for each prompt can be found in the prompt's `/src/imagesorcery_mcp/prompts/README.md`._
+
 ## 🚀 Getting Started
 
 ### Requirements
@@ -377,6 +385,10 @@ This repository is organized as follows:
 │       │   ├── README.md        # Documentation for the tools.
 │       │   ├── __init__.py      # Makes `tools` a Python package.
 │       │   └── *.py           # Implements the tool.
+│       ├── prompts/             # Contains the implementation of individual MCP prompts.
+│       │   ├── README.md        # Documentation for the prompts.
+│       │   ├── __init__.py      # Makes `prompts` a Python package.
+│       │   └── *.py           # Implements the prompt.
 │       └── resources/           # Contains the implementation of individual MCP resources.
 │           ├── README.md        # Documentation for the resources.
 │           ├── __init__.py      # Makes `resources` a Python package.
@@ -385,6 +397,7 @@ This repository is organized as follows:
     ├── test_server.py         # Tests for the main server functionality.
     ├── data/                  # Contains test data, likely image files used in tests.
     ├── tools/                 # Contains tests for individual tools.
+    ├── prompts/               # Contains tests for individual prompts.
     └── resources/             # Contains tests for individual resources.
 ```
 
