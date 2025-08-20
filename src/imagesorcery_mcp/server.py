@@ -117,18 +117,18 @@ def main():
     
     logger.info("Starting 🪄 ImageSorcery MCP server setup")
     
+    # Get version from package metadata
+    try:
+        from importlib.metadata import version
+        package_version = version("imagesorcery-mcp")
+        print(f"ImageSorcery MCP Version: {package_version}")
+    except Exception as e:
+        logger.error(f"Could not read version from package metadata: {e}")
+        print("ImageSorcery MCP Version: unknown")
+
+
     # Change to project root directory
     project_root = Path(__file__).parent.parent.parent
-
-    # Read version from pyproject.toml and print it
-    try:
-        import toml
-        with open(project_root / "pyproject.toml", "r") as f:
-            pyproject_data = toml.load(f)
-        version = pyproject_data.get("project", {}).get("version", "N/A")
-        print(f"ImageSorcery MCP Version: {version}")
-    except Exception as e:
-        logger.error(f"Could not read version from pyproject.toml: {e}")
 
     os.chdir(project_root)
     logger.info(f"Changed current working directory to: {project_root}")
