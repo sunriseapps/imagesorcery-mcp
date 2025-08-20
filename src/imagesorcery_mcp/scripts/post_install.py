@@ -59,63 +59,18 @@ def install_clip():
 
 
 def create_config_file():
-    """Create config.toml from config.default if it doesn't exist."""
+    """Ensure config.toml exists, create with default values if needed."""
     config_file = Path("config.toml")
     if config_file.exists():
         logger.info(f"Configuration file already exists: {config_file}")
         return True
 
-    # Look for config.default in multiple locations
-    search_paths = [
-        # First check current working directory
-        Path.cwd() / "config.default",
-        # Then check repository root (relative to this script)
-        Path(__file__).parent.parent.parent.parent / "config.default",
-        # Also check relative to the package
-        Path(__file__).parent.parent / "config.default"
-    ]
-
-    config_default_found = None
-    for path in search_paths:
-        if path.exists():
-            config_default_found = path
-            break
-
-    if config_default_found:
-        import shutil
-        shutil.copy2(config_default_found, config_file)
-        logger.info(f"Created config.toml from config.default: {config_default_found}")
-        print(f"✅ Configuration file created from config.default: {config_file}")
-        return True
-    else:
-        logger.warning(f"config.default not found in any of these locations: {[str(p) for p in search_paths]}")
-        logger.info("Creating config.toml using configuration system defaults")
-
-        # Use the configuration system to create a proper config file
-        try:
-            import toml
-
-            from imagesorcery_mcp.config import ImageSorceryConfig
-
-            # Create default configuration using the configuration system
-            default_config = ImageSorceryConfig()
-            config_dict = default_config.model_dump()
-
-            # Write to file with proper formatting
-            with open(config_file, 'w') as f:
-                f.write("# ImageSorcery MCP Configuration\n")
-                f.write("# This file contains configuration values for ImageSorcery MCP\n")
-                f.write("# Generated from configuration system defaults\n\n")
-                toml.dump(config_dict, f)
-
-            logger.info(f"Created config.toml using configuration system defaults: {config_file}")
-            print(f"✅ Configuration file created with system defaults: {config_file}")
-            return True
-
-        except Exception as e:
-            logger.error(f"Failed to create config file using configuration system: {e}")
-            print(f"❌ Failed to create configuration file: {e}")
-            return False
+    logger.info("Creating config.toml using configuration system defaults")
+    # The config manager will create it with defaults if it doesn't exist
+    from imagesorcery_mcp.config import get_config_manager
+    get_config_manager()
+    print(f"✅ Configuration file created with default values: {config_file}")
+    return True
 
 
 def run_post_install():

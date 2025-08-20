@@ -194,7 +194,7 @@ For reliable installation of all components, especially the `clip` package (inst
 <summary>What does the post-installation script do?</summary>
 The `imagesorcery-mcp --post-install` script performs the following actions:
 
-- **Creates a `config.toml` configuration file** in the current directory from the `config.default` template, allowing you to customize default tool parameters.
+- **Creates a `config.toml` configuration file** in the current directory, allowing users to customize default tool parameters.
 - Creates a `models` directory (usually within the site-packages directory of your virtual environment, or a user-specific location if installed globally) to store pre-trained models.
 - Generates an initial `models/model_descriptions.json` file there.
 - Downloads default YOLO models (`yoloe-11l-seg-pf.pt`, `yoloe-11s-seg-pf.pt`, `yoloe-11l-seg.pt`, `yoloe-11s-seg.pt`) required by the `detect` tool into this `models` directory.
@@ -350,7 +350,7 @@ Available transport options:
 
 ## ⚙️ Configuring the Server
 
-The server can be configured using a `config.toml` file in the current directory. The file is created automatically during installation from the `config.default` template. You can customize the default tool parameters in this file. More in [CONFIG.md](CONFIG.md).
+The server can be configured using a `config.toml` file in the current directory. The file is created automatically during installation with default values. You can customize the default tool parameters in this file. More in [CONFIG.md](CONFIG.md).
 
 ## 🤝 Contributing
 <details>

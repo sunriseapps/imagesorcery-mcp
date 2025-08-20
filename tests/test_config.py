@@ -30,7 +30,7 @@ class TestImageSorceryConfig:
         
         # Find defaults
         assert config.find.confidence_threshold == 0.75
-        assert config.find.default_model == "yoloe-11l-seg-pf.pt"
+        assert config.find.default_model == "yoloe-11l-seg.pt"
         
         # Blur defaults
         assert config.blur.strength == 15

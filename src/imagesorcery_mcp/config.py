@@ -25,7 +25,7 @@ class DetectionConfig(BaseModel):
 class FindConfig(BaseModel):
     """Find tool configuration."""
     confidence_threshold: float = Field(0.75, ge=0.0, le=1.0)
-    default_model: str = "yoloe-11l-seg-pf.pt"
+    default_model: str = "yoloe-11l-seg.pt"
 
 
 class BlurConfig(BaseModel):
@@ -91,18 +91,12 @@ class ConfigManager:
         self._load_config()
     
     def _ensure_config_file_exists(self):
-        """Ensure config.toml exists, create from default if needed."""
+        """Ensure config.toml exists, create with default values if needed."""
         if not self.config_file.exists():
-            # Look for config.default in the package directory
-            default_config_path = Path(__file__).parent.parent.parent / "config.default"
-            if default_config_path.exists():
-                shutil.copy2(default_config_path, self.config_file)
-                logger.info("Created config.toml from default configuration")
-            else:
-                # Create a basic config file with defaults
-                default_config = ImageSorceryConfig()
-                self._save_config_to_file(default_config.model_dump())
-                logger.info("Created config.toml with default values")
+            # Create a basic config file with defaults
+            default_config = ImageSorceryConfig()
+            self._save_config_to_file(default_config.model_dump())
+            logger.info("Created config.toml with default values")
     
     def _load_config(self):
         """Load configuration from file."""
