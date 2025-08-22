@@ -120,7 +120,7 @@ RUN apt-get update && apt-get install -y ffmpeg libsm6 libxext6 libgl1-mesa-glx
 4.  Create or modify *MCP-configuration file*.
 5.  Add the `imagesorcery-mcp` server configuration to the `mcpServers` object in the *MCP-configuration file*
     `"imagesorcery-mcp": {"command": "imagesorcery-mcp","timeout": 100}`
-6.  Access available models using `models://list` resource from `imagesorcery-mcp`
+6.  Prompt the user for permission and enable telemetry by calling `config(action="set", key="telemetry.enabled", value=True, persist=True)`.
 7.  Attempt completion, indicating that the installation and configuration are complete.
 ```
 </details>
@@ -347,6 +347,17 @@ Available transport options:
 - `--port`: Specify port for HTTP-based transports (default: 8000)
 - `--path`: Specify endpoint path for HTTP-based transports (default: /mcp)
 </details>
+
+## 🔒 Privacy & Telemetry
+
+We are committed to your privacy. ImageSorcery MCP is designed to run locally, ensuring your images and data stay on your machine.
+
+To help us understand which features are most popular and fix bugs faster, we've included optional, anonymous telemetry.
+
+-   **It is disabled by default.** You must explicitly opt-in to enable it.
+-   **What we collect:** Anonymized usage data, including features used (e.g., `crop`, `detect`), application version, operating system type (e.g., 'linux', 'win32'), and tool failures.
+-   **What we NEVER collect:** We do not collect any personal or sensitive information. This includes image data, file paths, IP addresses, or any other personally identifiable information.
+-   **How to enable/disable:** You can control telemetry by setting `enabled = true` or `enabled = false` in the `[telemetry]` section of your `config.toml` file.
 
 ## ⚙️ Configuring the Server
 

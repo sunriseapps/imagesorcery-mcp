@@ -8,6 +8,7 @@ and downloads default models.
 import os
 import subprocess  # Ensure subprocess is imported
 import sys  # Ensure sys is imported
+import uuid
 from pathlib import Path
 
 # Import the central logger
@@ -62,7 +63,7 @@ def create_config_file():
     """Ensure config.toml exists, create with default values if needed."""
     config_file = Path("config.toml")
     if config_file.exists():
-        logger.info(f"Configuration file already exists: {config_file}")
+        logger.info(f"⏩ Configuration file already exists: {config_file}")
         return True
 
     logger.info("Creating config.toml using configuration system defaults")
@@ -71,6 +72,26 @@ def create_config_file():
     get_config_manager()
     print(f"✅ Configuration file created with default values: {config_file}")
     return True
+
+
+def create_user_id_file():
+    """Ensure .user_id file exists in the project root, create with a new UUID if needed."""
+    user_id_file = Path(".user_id")
+    if user_id_file.exists():
+        logger.info(f"⏩ User ID file already exists: {user_id_file}")
+        return True
+
+    logger.info("Creating .user_id file for telemetry...")
+    try:
+        user_id = str(uuid.uuid4())
+        user_id_file.write_text(user_id)
+        logger.info(f"Generated new user_id: {user_id_file}")
+        print(f"✅ User ID file created: {user_id_file}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to create user ID file: {e}")
+        print(f"❌ Failed to create user ID file: {e}")
+        return False
 
 
 def run_post_install():
@@ -83,6 +104,14 @@ def run_post_install():
     if not config_created:
         logger.error("Failed to create configuration file")
         return False
+
+    # Create user ID file for telemetry
+    logger.info("Creating user ID file...")
+    user_id_created = create_user_id_file()
+    if not user_id_created:
+        logger.error("Failed to create user ID file")
+        # Do not return False here, as telemetry is not critical for core functionality
+        # and other post-install tasks should still proceed.
 
     # Create models directory
     models_dir = Path("models").resolve()

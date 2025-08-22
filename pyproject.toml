@@ -27,6 +27,8 @@ dependencies = [
     "huggingface_hub", # For accessing models from Hugging Face
     "easyocr", # For OCR
     "toml", # For reading pyproject.toml
+    "amplitude-analytics", # For telemetry
+    "posthog", # For telemetry
 ]
 
 [project.urls]

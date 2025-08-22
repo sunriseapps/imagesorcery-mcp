@@ -48,6 +48,9 @@ class TestImageSorceryConfig:
         # Resize defaults
         assert config.resize.interpolation == "linear"
 
+        # Telemetry defaults
+        assert config.telemetry.enabled is False
+
     def test_validation_confidence_threshold(self):
         """Test validation of confidence thresholds."""
         # Valid values
@@ -98,6 +101,19 @@ class TestImageSorceryConfig:
         # Invalid interpolation method
         with pytest.raises(ValueError):
             ImageSorceryConfig(resize={"interpolation": "invalid"})
+
+    def test_validation_telemetry_enabled(self):
+        """Test validation of telemetry enabled flag."""
+        # Valid values
+        config = ImageSorceryConfig(telemetry={"enabled": True})
+        assert config.telemetry.enabled is True
+
+        config = ImageSorceryConfig(telemetry={"enabled": False})
+        assert config.telemetry.enabled is False
+
+        # Invalid values
+        with pytest.raises(ValueError):
+            ImageSorceryConfig(telemetry={"enabled": "not_a_bool"})
 
 
 class TestConfigManager:
@@ -186,6 +202,27 @@ class TestConfigManager:
         
         assert file_config["detection"]["confidence_threshold"] == 0.85
         assert file_config["ocr"]["language"] == "fr"
+
+    def test_persistent_telemetry_update(self):
+        """Test persistent telemetry configuration update."""
+        config_manager = ConfigManager()
+
+        # Update telemetry with persistence
+        updates = {
+            "telemetry.enabled": True
+        }
+
+        config_manager.update_config(updates, persist=True)
+
+        # Check that file was modified
+        with open("config.toml", "r") as f:
+            file_config = toml.load(f)
+
+        assert file_config["telemetry"]["enabled"] is True
+
+        # Verify the runtime config also reflects the change
+        config = config_manager.config
+        assert config.telemetry.enabled is True
 
     def test_validation_in_updates(self):
         """Test that updates are validated."""

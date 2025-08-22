@@ -28,6 +28,9 @@ The configuration system covers the following parameters:
 ### Resize Tool
 - `resize.interpolation`: Default interpolation method ("nearest", "linear", "area", "cubic", "lanczos")
 
+### Telemetry
+- `telemetry.enabled` (true/false): Enable or disable anonymous, non-invasive telemetry to help improve the project. Defaults to `false`.
+
 ## How It Works
 
 ### 1. Configuration File Creation

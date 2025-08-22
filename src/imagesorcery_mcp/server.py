@@ -8,7 +8,8 @@ from fastmcp.server.middleware.error_handling import ErrorHandlingMiddleware
 
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
-from imagesorcery_mcp.middleware import ImprovedValidationMiddleware
+from imagesorcery_mcp.middlewares.telemetry import TelemetryMiddleware
+from imagesorcery_mcp.middlewares.validation import ImprovedValidationMiddleware
 from imagesorcery_mcp.prompts import remove_background
 from imagesorcery_mcp.resources import models
 from imagesorcery_mcp.tools import (
@@ -31,6 +32,12 @@ from imagesorcery_mcp.tools import (
     rotate,
 )
 
+# Change to project root directory
+project_root = Path(__file__).parent.parent.parent
+
+os.chdir(project_root)
+logger.info(f"Changed current working directory to: {project_root}")
+
 # Create a module-level mcp instance for backward compatibility with tests
 mcp = FastMCP(
     name="imagesorcery-mcp",
@@ -43,6 +50,9 @@ mcp = FastMCP(
 
 validation_middleware = ImprovedValidationMiddleware(logger=logger)
 mcp.add_middleware(validation_middleware)
+
+telemetry_middleware = TelemetryMiddleware(logger=logger)
+mcp.add_middleware(telemetry_middleware)
 
 error_middleware = ErrorHandlingMiddleware(
     logger=logger,
@@ -126,12 +136,6 @@ def main():
         logger.error(f"Could not read version from package metadata: {e}")
         print("ImageSorcery MCP Version: unknown")
 
-
-    # Change to project root directory
-    project_root = Path(__file__).parent.parent.parent
-
-    os.chdir(project_root)
-    logger.info(f"Changed current working directory to: {project_root}")
     
     # If --post-install flag is provided, run post-installation tasks and exit
     if args.post_install:

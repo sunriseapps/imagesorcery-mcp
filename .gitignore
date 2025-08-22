@@ -24,3 +24,6 @@ mobileclip_blt.ts
 
 # User configuration file
 config.toml
+
+# Telemetry user ID
+.user_id

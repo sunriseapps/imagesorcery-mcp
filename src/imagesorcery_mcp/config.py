@@ -5,15 +5,13 @@ This module provides a centralized configuration system that loads settings
 from TOML files and allows runtime updates through the MCP config tool.
 """
 
-import logging
-import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import toml
 from pydantic import BaseModel, Field, field_validator
 
-logger = logging.getLogger(__name__)
+from imagesorcery_mcp.logging_config import logger
 
 
 class DetectionConfig(BaseModel):
@@ -69,6 +67,11 @@ class ResizeConfig(BaseModel):
     interpolation: str = Field("linear", pattern="^(nearest|linear|area|cubic|lanczos)$")
 
 
+class TelemetryConfig(BaseModel):
+    """Telemetry configuration."""
+    enabled: bool = False
+
+
 class ImageSorceryConfig(BaseModel):
     """Main configuration class for ImageSorcery MCP."""
     detection: DetectionConfig = DetectionConfig()
@@ -78,6 +81,7 @@ class ImageSorceryConfig(BaseModel):
     drawing: DrawingConfig = DrawingConfig()
     ocr: OCRConfig = OCRConfig()
     resize: ResizeConfig = ResizeConfig()
+    telemetry: TelemetryConfig = TelemetryConfig()
 
 
 class ConfigManager:
@@ -86,6 +90,7 @@ class ConfigManager:
     def __init__(self):
         """Initialize the configuration manager."""
         self.config_file = Path("config.toml")
+        logger.debug(f"Looking for user config file at: {self.config_file.absolute()}")
         self._config: Optional[ImageSorceryConfig] = None
         self._runtime_overrides: Dict[str, Any] = {}
         self._load_config()
@@ -97,6 +102,8 @@ class ConfigManager:
             default_config = ImageSorceryConfig()
             self._save_config_to_file(default_config.model_dump())
             logger.info("Created config.toml with default values")
+        else:
+            logger.debug(f"Config file already exists at: {self.config_file.absolute()}")
     
     def _load_config(self):
         """Load configuration from file."""
@@ -155,7 +162,10 @@ class ConfigManager:
     
     def get_config_dict(self) -> Dict[str, Any]:
         """Get configuration as a dictionary."""
-        return self.config.model_dump()
+        logger.debug("get_config_dict called")
+        result = self.config.model_dump()
+        logger.debug(f"get_config_dict returning: {result}")
+        return result
     
     def update_config(self, updates: Dict[str, Any], persist: bool = False) -> Dict[str, Any]:
         """Update configuration values.
@@ -167,6 +177,8 @@ class ConfigManager:
         Returns:
             Updated configuration as dictionary
         """
+        logger.debug(f"Updating configuration with: {updates}, persist: {persist}")
+        
         # Validate updates by creating a temporary config object
         current_config = self.config.model_dump()
         
@@ -212,11 +224,13 @@ class ConfigManager:
     
     def reset_runtime_overrides(self):
         """Reset all runtime overrides and reload from file."""
+        logger.debug("Resetting runtime overrides")
         self._runtime_overrides.clear()
         self._load_config()
     
     def get_runtime_overrides(self) -> Dict[str, Any]:
         """Get current runtime overrides."""
+        logger.debug(f"Getting runtime overrides: {self._runtime_overrides}")
         return self._runtime_overrides.copy()
 
 
@@ -226,19 +240,28 @@ _config_manager: Optional[ConfigManager] = None
 
 def get_config_manager() -> ConfigManager:
     """Get the global configuration manager instance."""
+    logger.debug("get_config_manager called")
     global _config_manager
     if _config_manager is None:
+        logger.debug("_config_manager is None, creating new instance")
         _config_manager = ConfigManager()
+        logger.debug(f"_config_manager set to {_config_manager}")
+    else:
+        logger.debug("_config_manager already exists, returning existing instance")
     return _config_manager
 
 
 def get_config() -> ImageSorceryConfig:
     """Get the current configuration."""
-    return get_config_manager().config
+    logger.debug("get_config called")
+    result = get_config_manager().config
+    logger.debug(f"get_config returning: {result}")
+    return result
 
 
 def get_config_schema_info() -> Dict[str, Any]:
     """Get configuration schema information for documentation and validation."""
+    logger.debug("get_config_schema_info")
     schema_info = {
         "detection.confidence_threshold": {
             "description": "Default confidence threshold for object detection (0.0-1.0)",
@@ -289,6 +312,11 @@ def get_config_schema_info() -> Dict[str, Any]:
             "description": "Default resize interpolation method",
             "type": "string",
             "constraints": "One of: nearest, linear, area, cubic, lanczos"
+        },
+        "telemetry.enabled": {
+            "description": "Enable or disable anonymous telemetry",
+            "type": "boolean",
+            "constraints": "true or false"
         }
     }
     return schema_info
@@ -296,11 +324,13 @@ def get_config_schema_info() -> Dict[str, Any]:
 
 def get_available_config_keys() -> List[str]:
     """Get list of all available configuration keys."""
+    logger.debug("get_available_config_keys")
     return list(get_config_schema_info().keys())
 
 
 def generate_config_documentation() -> str:
     """Generate configuration documentation from schema."""
+    logger.debug("generate_config_documentation")
     schema_info = get_config_schema_info()
 
     lines = ["Available configuration keys:"]
