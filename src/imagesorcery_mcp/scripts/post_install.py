@@ -13,6 +13,14 @@ from pathlib import Path
 
 # Import the central logger
 from imagesorcery_mcp.logging_config import logger
+
+# For loading .env file
+try:
+    from dotenv import load_dotenv
+    DOTENV_AVAILABLE = True
+except ImportError:
+    DOTENV_AVAILABLE = False
+    logger.warning("python-dotenv not available. .env file will not be loaded automatically.")
 from imagesorcery_mcp.scripts.create_model_descriptions import create_model_descriptions
 from imagesorcery_mcp.scripts.download_clip import download_clip_model
 from imagesorcery_mcp.scripts.download_models import download_ultralytics_model
@@ -75,28 +83,35 @@ def create_config_file():
 
 
 def create_user_id_file():
-    """Ensure .user_id file exists in the project root, create with a new UUID if needed."""
+    """Ensure .user_id file exists in the project root, create a new UUID if needed."""
     user_id_file = Path(".user_id")
     if user_id_file.exists():
-        logger.info(f"⏩ User ID file already exists: {user_id_file}")
+        logger.info(f"⏩ .user_id file already exists: {user_id_file}")
         return True
 
     logger.info("Creating .user_id file for telemetry...")
     try:
         user_id = str(uuid.uuid4())
         user_id_file.write_text(user_id)
-        logger.info(f"Generated new user_id: {user_id_file}")
-        print(f"✅ User ID file created: {user_id_file}")
+        logger.info(f"Generated new .user_id file with user_id: {user_id_file}")
+        print(f"✅ .user_id file created: {user_id_file}")
         return True
     except Exception as e:
-        logger.error(f"Failed to create user ID file: {e}")
-        print(f"❌ Failed to create user ID file: {e}")
+        logger.error(f"Failed to create .user_id file: {e}")
+        print(f"❌ Failed to create .user_id file: {e}")
         return False
 
 
 def run_post_install():
     """Run all post-installation tasks."""
     logger.info(f"Running post-installation tasks from {Path(__file__).resolve()}...")
+
+    # Get API keys from environment variables (for Step 4)
+    amplitude_api_key = os.environ.get("IMAGESORCERY_AMPLITUDE_API_KEY", "")
+    posthog_api_key = os.environ.get("IMAGESORCERY_POSTHOG_API_KEY", "")
+    
+    logger.debug(f"Amplitude API key from environment: {'*' * 8 if amplitude_api_key else 'Not set'}")
+    logger.debug(f"PostHog API key from environment: {'*' * 8 if posthog_api_key else 'Not set'}")
 
     # Create configuration file
     logger.info("Creating configuration file...")
@@ -174,6 +189,17 @@ def run_post_install():
 
 def main():
     """Main entry point for the post_install script."""
+    # Load .env file if available
+    if DOTENV_AVAILABLE:
+        env_file = Path(".env")
+        if env_file.exists():
+            load_dotenv()
+            logger.info(f"Loaded environment variables from {env_file}")
+        else:
+            logger.info(".env file not found, skipping dotenv loading")
+    else:
+        logger.info("python-dotenv not available, skipping .env file loading")
+    
     logger.info(f"Starting post-installation process from {Path(__file__).resolve()}")
     success = run_post_install()
     if not success:

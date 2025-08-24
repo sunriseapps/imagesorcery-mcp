@@ -1,13 +1,13 @@
 import logging
 import sys
 from importlib.metadata import version
-from pathlib import Path  # Added for Path
 from typing import Any
 
 from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
 
 from imagesorcery_mcp.config import get_config
 from imagesorcery_mcp.telemetry_amplitude import amplitude_handler
+from pathlib import Path
 from imagesorcery_mcp.telemetry_posthog import posthog_handler
 
 
@@ -25,12 +25,13 @@ class TelemetryMiddleware(Middleware):
 
     def _get_user_id(self) -> str:
         """Get user_id from .user_id file."""
-        user_id_file = Path(".user_id") # Path to .user_id in project root
+        user_id_file = Path(".user_id")  # Path to .user_id in project root
         self.logger.debug(f"Looking for user ID file at: {user_id_file.absolute()}")
         try:
             if user_id_file.exists():
                 user_id = user_id_file.read_text().strip()
                 if user_id:
+                    self.logger.debug(f"User ID from file: {user_id}")
                     return user_id
             self.logger.warning("User ID file not found or empty. Telemetry will use 'anonymous'.")
             return "anonymous"

@@ -48,7 +48,7 @@ class TestTelemetryMiddleware:
         config_manager = get_config_manager()
         config_manager._ensure_config_file_exists()
 
-        # Create a dummy .user_id file for testing
+        # Create a .user_id file for testing
         self.user_id_file = Path(".user_id")
         self.test_user_id = str(uuid.uuid4())
         self.user_id_file.write_text(self.test_user_id)

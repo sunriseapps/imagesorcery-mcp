@@ -29,6 +29,7 @@ dependencies = [
     "toml", # For reading pyproject.toml
     "amplitude-analytics", # For telemetry
     "posthog", # For telemetry
+    "python-dotenv", # For loading environment variables from .env file
 ]
 
 [project.urls]

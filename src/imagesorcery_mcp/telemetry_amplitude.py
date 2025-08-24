@@ -4,16 +4,17 @@ from typing import Any, Dict
 
 from amplitude import Amplitude, BaseEvent
 
-# TODO: Move API Key to an environment variable during build process
-AMPLITUDE_API_KEY = "2a7b4bd93a772ef00c74b8ed69830c41"
+from imagesorcery_mcp.telemetry_keys import AMPLITUDE_API_KEY
 
 
 class AmplitudeHandler:
     """Handles sending telemetry events to Amplitude."""
 
-    def __init__(self, api_key: str, logger: logging.Logger | None = None):
+    def __init__(self, logger: logging.Logger | None = None):
         self.logger = logger or logging.getLogger("imagesorcery.telemetry.amplitude")
         self.logger.debug("Initializing Amplitude handler")
+        
+        api_key = self._get_api_key()
         
         if not api_key:
             self.amplitude = None
@@ -22,7 +23,16 @@ class AmplitudeHandler:
         else:
             self.amplitude = Amplitude(api_key)
             self.logger.info("Amplitude handler initialized.")
-            self.logger.debug(f"Amplitude handler enabled with API key: {api_key[:8]}...")
+            self.logger.debug(f"Amplitude handler enabled with API key: {api_key}")
+
+    def _get_api_key(self) -> str:
+        """Get Amplitude API key.
+
+        Priority:
+        1. Environment variable IMAGESORCERY_AMPLITUDE_API_KEY
+        2. Value from src/imagesorcery_mcp/telemetry_keys.py (AMPLITUDE_API_KEY)
+        """
+        return os.environ.get('IMAGESORCERY_AMPLITUDE_API_KEY', AMPLITUDE_API_KEY)
 
     def track_event(self, event_data: Dict[str, Any]):
         """
@@ -59,4 +69,4 @@ class AmplitudeHandler:
 
 
 # Global instance to be used by other modules
-amplitude_handler = AmplitudeHandler(api_key=AMPLITUDE_API_KEY)
+amplitude_handler = AmplitudeHandler()

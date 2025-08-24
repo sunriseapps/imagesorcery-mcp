@@ -10,8 +10,9 @@ The scripts directory contains utility scripts for model management and setup wi
 - `create-model-descriptions`: Creating model descriptions (used in `setup.sh`)
 - `download-clip-models`: Downloading CLIP models required for text-based detection (YOLOe *-pf models) (used in `setup.sh`)
 - `post-install-imagesorcery`: Running all post-installation tasks in a single command
+- `populate_telemetry_keys.py` / `clear_telemetry_keys.py`: build-time helpers for telemetry keys management
 
-These scripts are typically run during project setup or when adding new models to the system.
+These scripts are typically run during project setup, packaging, or when adding new models to the system.
 
 ## Common Functions
 
@@ -121,12 +122,13 @@ Runs all post-installation tasks for the ImageSorcery MCP server in a single com
   - Downloads default YOLO models (yoloe-11l-seg-pf.pt, yoloe-11s-seg-pf.pt, yoloe-11l-seg.pt, yoloe-11s-seg.pt) with `download-yolo-models`
   - Installs the `clip` Python package from Ultralytics' GitHub repository.
   - Downloads the required CLIP model file for text prompts with `download-clip-models`.
+  - Ensures a `.user_id` file exists in project root (used for telemetry user identification).
 - **Usage:** Run directly, through the server with the `--post-install` flag, or through the provided command-line entry point.
 
 **Command-line Usage:**
 ```bash
 # Run post-installation as a standalone script
-post-install-imagesorcery
+python -m src.imagesorcery_mcp.scripts.post_install
 
 # Or run it through the server with the --post-install flag
 imagesorcery-mcp --post-install
@@ -144,26 +146,71 @@ else:
     print("Post-installation failed.")
 ```
 
-## Example Workflow
+## Telemetry Keys Management (build-time)
 
-A typical workflow for setting up the 🪄 ImageSorcery MCP server with all required models:
+Telemetry keys are no longer stored in `telemetry.toml`. Instead, telemetry API keys are managed via a small Python module and/or environment variables:
 
+- Telemetry user identifier is stored in `.user_id` (created by `post_install.py`).
+- API keys are provided either via environment variables or the Python module:
+  - Environment variables (preferred during build/deploy):
+    - `IMAGESORCERY_AMPLITUDE_API_KEY`
+    - `IMAGESORCERY_POSTHOG_API_KEY`
+  - Fallback module (kept in the repository as empty defaults): `src/imagesorcery_mcp/telemetry_keys.py`
+    - Contains `AMPLITUDE_API_KEY = ""` and `POSTHOG_API_KEY = ""`
+
+Rationale:
+- `telemetry.toml` was unreliable in some packaging/build scenarios (it could be omitted from final artifacts). Using environment variables (and a small Python module as a fallback) ensures keys are available at runtime and during build without embedding secrets in the repo.
+
+### `populate_telemetry_keys.py`
+
+**Purpose**: Populate `src/imagesorcery_mcp/telemetry_keys.py` with API keys from the environment (or `.env`) during build time if desired.
+
+**Functionality**:
+- Reads `IMAGESORCERY_AMPLITUDE_API_KEY` and `IMAGESORCERY_POSTHOG_API_KEY` from environment variables (or `.env` when python-dotenv is available)
+- Writes these values into `src/imagesorcery_mcp/telemetry_keys.py`
+- Intended to be used in CI/build pipelines where keys are injected as environment variables before packaging
+
+**Command-line Usage**:
 ```bash
-# Option 1: Complete setup with a single command
-imagesorcery-mcp --post-install
-
-# Option 2: Manual step-by-step setup
-# 1. Create model descriptions
-create-model-descriptions
-
-# 2. Download required YOLO models
-download-yolo-models --ultralytics yoloe-11l-seg-pf.pt
-download-yolo-models --ultralytics yoloe-11s-seg-pf.pt
-download-yolo-models --ultralytics yoloe-11l-seg.pt
-download-yolo-models --ultralytics yoloe-11s-seg.pt
-
-# 3. Download CLIP models for text prompts
-download-clip-models
+python -m src.imagesorcery_mcp.scripts.populate_telemetry_keys
 ```
 
-The `--post-install` flag is designed to automate all these steps and is the recommended approach for initial setup.
+**Notes**:
+- The script will not commit changes; CI should handle any necessary cleanup.
+- To skip population, set `SKIP_TELEMETRY_POPULATION=true`.
+
+### `clear_telemetry_keys.py`
+
+**Purpose**: Clear API keys in `src/imagesorcery_mcp/telemetry_keys.py` after build to keep the repository clean.
+
+**Functionality**:
+- Overwrites `src/imagesorcery_mcp/telemetry_keys.py` with empty string defaults:
+  ```py
+  AMPLITUDE_API_KEY = ""
+  POSTHOG_API_KEY = ""
+  ```
+- Intended to be invoked as a post-build/cleanup step in CI
+
+**Command-line Usage**:
+```bash
+python -m src.imagesorcery_mcp.scripts.clear_telemetry_keys
+```
+
+### Recommended CI / Build Integration
+
+A suggested pipeline for safely using telemetry keys in CI:
+
+1. In CI, set environment variables:
+   - `IMAGESORCERY_AMPLITUDE_API_KEY` and `IMAGESORCERY_POSTHOG_API_KEY`
+2. Run the populate script:
+   - `python -m src.imagesorcery_mcp.scripts.populate_telemetry_keys`
+3. Build/package the project
+4. Run the clear script to remove keys from the working copy:
+   - `python -m src.imagesorcery_mcp.scripts.clear_telemetry_keys`
+5. Ensure the CI does not persist telemetry_keys.py with real keys in any artifact or commit.
+
+**Dependencies**:
+- `python-dotenv` (optional) — used by scripts to load a `.env` file when present
+
+**Error Handling**:
+- Scripts log errors and return non-zero exit codes on failure so CI can fail fast.
