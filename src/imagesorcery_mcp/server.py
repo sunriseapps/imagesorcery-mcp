@@ -57,15 +57,8 @@ mcp = FastMCP(
     instructions=(
         "An MCP server providing tools for image processing operations. "
         "Input images must be specified with full paths."
-    ),
-    log_level="DEBUG"
+    )
 )
-
-validation_middleware = ImprovedValidationMiddleware(logger=logger)
-mcp.add_middleware(validation_middleware)
-
-telemetry_middleware = TelemetryMiddleware(logger=logger)
-mcp.add_middleware(telemetry_middleware)
 
 error_middleware = ErrorHandlingMiddleware(
     logger=logger,
@@ -73,6 +66,12 @@ error_middleware = ErrorHandlingMiddleware(
     transform_errors=True,
 )
 mcp.add_middleware(error_middleware)
+
+telemetry_middleware = TelemetryMiddleware(logger=logger)
+mcp.add_middleware(telemetry_middleware)
+
+validation_middleware = ImprovedValidationMiddleware(logger=logger)
+mcp.add_middleware(validation_middleware)
 
 # Register tools with the module-level mcp instance
 blur.register_tool(mcp)
@@ -168,17 +167,20 @@ def main():
     # For actual server execution, we'll use the global mcp instance
     logger.info(f"Starting MCP server with transport: {args.transport}")
     
+    fastmcp_log_level = os.getenv("FASTMCP_LOG_LEVEL", "DEBUG")
+
     # Configure transport with appropriate parameters
     if args.transport in ["streamable-http", "sse"]:
         mcp.run(
             transport=args.transport,
             host=args.host,
             port=args.port,
-            path=args.path
+            path=args.path,
+            log_level=fastmcp_log_level
         )
     else:
         # Use default stdio transport
-        mcp.run()
+        mcp.run(log_level=fastmcp_log_level)
 
 if __name__ == "__main__":
     main()

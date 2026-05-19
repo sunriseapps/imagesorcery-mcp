@@ -42,7 +42,17 @@ class TelemetryMiddleware(Middleware):
     def _get_version(self) -> str:
         """Get package version."""
         try:
-            return version("imagesorcery-mcp")
+            package_version = version("imagesorcery-mcp")
+            if package_version:
+                return package_version
+        except Exception:
+            pass
+
+        try:
+            import toml
+
+            pyproject_path = Path(__file__).resolve().parents[3] / "pyproject.toml"
+            return toml.load(pyproject_path)["project"]["version"]
         except Exception:
             self.logger.warning("Could not determine package version for telemetry.")
             return "unknown"

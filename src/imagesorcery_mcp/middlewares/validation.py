@@ -2,7 +2,6 @@ import logging
 import re
 from typing import Any
 
-from fastmcp.exceptions import ToolError
 from fastmcp.server.middleware import CallNext, Middleware, MiddlewareContext
 from mcp import McpError
 from mcp.types import ErrorData
@@ -18,7 +17,7 @@ class ImprovedValidationMiddleware(Middleware):
         """Handle messages with improved validation error reporting."""
         try:
             return await call_next(context)
-        except ToolError as e:
+        except Exception as e:
             error_msg = str(e)
             
             if "validation error for call[" in error_msg:
@@ -41,11 +40,16 @@ class ImprovedValidationMiddleware(Middleware):
                     if param_match:
                         param_name = param_match.group(1)
                         errors.append(f"Missing required parameter '{param_name}'")
+
+                invalid_value_match = re.search(r"input_value='([^']+)'", error_msg)
+                if invalid_value_match:
+                    invalid_value = invalid_value_match.group(1)
+                    errors.append(f"Invalid value '{invalid_value}'")
                 
                 if errors:
-                    error_message = "Validation error: " + "; ".join(errors)
+                    error_message = "Input validation error: " + "; ".join(errors)
                 else:
-                    error_message = f"Validation error in tool '{tool_name}': check that all parameters are correctly named and have the right types"
+                    error_message = f"Input validation error in tool '{tool_name}': check that all parameters are correctly named and have the right types"
                 
                 self.logger.error(error_message)
                 self.logger.debug(f"Original error: {error_msg}")
@@ -54,6 +58,4 @@ class ImprovedValidationMiddleware(Middleware):
                     ErrorData(code=-32602, message=error_message)
                 ) from e
             
-            raise
-        except Exception:
             raise

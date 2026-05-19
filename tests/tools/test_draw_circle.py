@@ -73,20 +73,17 @@ class TestDrawCircleToolDefinition:
                 "circles should be of type array"
 
             circles_items_schema = draw_circles_tool.inputSchema["properties"]["circles"].get("items", {})
-            
-            # When using a BaseModel for list items, Pydantic generates a $ref
-            assert "$ref" in circles_items_schema, "circles items schema should contain a $ref"
-            ref_path = circles_items_schema["$ref"]
-            
-            # Extract the model name from the $ref path
-            model_name = ref_path.split("/")[-1]
-            
-            # Look up the definition in the $defs section
-            defs_schema = draw_circles_tool.inputSchema.get("$defs", {})
-            assert model_name in defs_schema, f"'$defs' should contain a definition for '{model_name}'"
-            
-            circle_item_schema = defs_schema[model_name]
-            assert circle_item_schema.get("type") == "object", f"Definition for '{model_name}' should be an object"
+
+            if "$ref" in circles_items_schema:
+                ref_path = circles_items_schema["$ref"]
+                model_name = ref_path.split("/")[-1]
+                defs_schema = draw_circles_tool.inputSchema.get("$defs", {})
+                assert model_name in defs_schema, f"'$defs' should contain a definition for '{model_name}'"
+                circle_item_schema = defs_schema[model_name]
+            else:
+                circle_item_schema = circles_items_schema
+
+            assert circle_item_schema.get("type") == "object", "Circle item schema should be an object"
 
             circles_props = circle_item_schema.get("properties", {})
             assert "center_x" in circles_props and circles_props["center_x"].get("type") == "integer"

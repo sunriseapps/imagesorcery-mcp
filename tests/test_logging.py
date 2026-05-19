@@ -8,6 +8,8 @@ from datetime import datetime
 
 import pytest
 
+from imagesorcery_mcp.logging_config import logger as imagesorcery_logger
+
 
 @pytest.fixture
 def temp_log_file():
@@ -22,11 +24,7 @@ def test_log_structure_and_components(temp_log_file):
     Test that logs have the correct structure and all components are properly formatted
     using the actual logging configuration from the project.
     """
-    # Import the logging configuration first to ensure it's initialized
-    
-    # Get the actual imagesorcery logger
-    imagesorcery_logger = logging.getLogger("imagesorcery")
-    
+    # Get the actual imagesorcery logger initialized by logging_config
     # Create a temporary handler to capture logs
     handler = logging.FileHandler(temp_log_file)
     # Use the same formatter as the original logger
@@ -82,11 +80,7 @@ def test_log_structure_and_components(temp_log_file):
 
 def test_different_modules_log_correctly(temp_log_file):
     """Test that logs from different modules include correct module names."""
-    # Import the logging configuration first
-    
-    # Get the actual imagesorcery logger
-    imagesorcery_logger = logging.getLogger("imagesorcery")
-    
+    # Get the actual imagesorcery logger initialized by logging_config
     # Setup a new handler for our test log file using the same formatter
     handler = logging.FileHandler(temp_log_file)
     original_formatter = imagesorcery_logger.handlers[0].formatter
@@ -115,11 +109,7 @@ def test_different_log_levels(temp_log_file):
     Test that different log levels are correctly formatted and filtered 
     according to the logger's level setting.
     """
-    # Import the logging configuration first
-    
-    # Get the actual imagesorcery logger
-    imagesorcery_logger = logging.getLogger("imagesorcery")
-    
+    # Get the actual imagesorcery logger initialized by logging_config
     # Store the original level to restore it later
     original_level = imagesorcery_logger.level
     
