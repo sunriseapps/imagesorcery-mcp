@@ -348,6 +348,18 @@ Available transport options:
 - `--path`: Specify endpoint path for HTTP-based transports (default: /mcp)
 </details>
 
+## 🔐 File Access Restrictions
+
+By default, ImageSorcery MCP does not restrict file paths. To limit tools to specific directories, set `IMAGESORCERY_AVAILABLE_PATHS` to one or more allowed directories.
+
+Use the platform path-list separator (`:` on Linux/macOS, `;` on Windows). Comma-separated values are also accepted.
+
+```bash
+IMAGESORCERY_AVAILABLE_PATHS="/home/user/images:/home/user/output" imagesorcery-mcp
+```
+
+When this variable is set, all tool arguments named `path` or ending with `_path` must resolve inside one of the allowed directories. Relative paths, `..`, and `~` are normalized before comparison. Symlinks are not resolved, so links placed inside allowed directories remain accessible.
+
 ## 🔒 Privacy & Telemetry
 
 We are committed to your privacy. ImageSorcery MCP is designed to run locally, ensuring your images and data stay on your machine.

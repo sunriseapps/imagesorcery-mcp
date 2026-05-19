@@ -25,6 +25,7 @@ try:
 except Exception:
     logger.debug("python-dotenv not available, skipping .env loading")
 
+from imagesorcery_mcp.middlewares.path_access import PathAccessMiddleware  # noqa: E402
 from imagesorcery_mcp.middlewares.telemetry import TelemetryMiddleware  # noqa: E402
 from imagesorcery_mcp.middlewares.validation import (  # noqa: E402
     ImprovedValidationMiddleware,  # noqa: E402
@@ -69,6 +70,9 @@ mcp.add_middleware(error_middleware)
 
 telemetry_middleware = TelemetryMiddleware(logger=logger)
 mcp.add_middleware(telemetry_middleware)
+
+path_access_middleware = PathAccessMiddleware(logger=logger)
+mcp.add_middleware(path_access_middleware)
 
 validation_middleware = ImprovedValidationMiddleware(logger=logger)
 mcp.add_middleware(validation_middleware)
