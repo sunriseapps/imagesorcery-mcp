@@ -228,6 +228,19 @@ You can run this process anytime to restore the default models and attempt `clip
 
 Add to your MCP client these settings.
 
+**With UVX (no installation needed):**
+```json
+"mcpServers": {
+    "imagesorcery": {
+      "command": "uvx",
+      "args": ["--from", "imagesorcery-mcp", "imagesorcery-mcp"],
+      "transportType": "stdio",
+      "autoApprove": ["blur", "change_color", "config", "crop", "detect", "draw_arrows", "draw_circles", "draw_lines", "draw_rectangles", "draw_texts", "fill", "find", "get_metainfo", "ocr", "overlay", "resize", "rotate"],
+      "timeout": 100
+    }
+}
+```
+
 **For pipx installation (recommended):**
 ```json
 "mcpServers": {
